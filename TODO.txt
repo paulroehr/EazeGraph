@@ -1,0 +1,6 @@
+BarChart
+   wenn FixedBarWidth > GraphWidth
+   Touch
+
+PieChart
+    indikator dynamisch berechnen lassen

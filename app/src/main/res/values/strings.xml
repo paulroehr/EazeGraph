@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">EazeGraph Chart Library</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_chart">ChartActivity</string>
+    <string name="nav_bar_chart">Bar Chart</string>
+    <string name="nav_stacked_bar_chart">Stacked Bar Chart</string>
+    <string name="nav_pie_chart">Pie Chart</string>
+    <string name="nav_value_line_chart">Line Chart</string>
+    <string name="nav_cubic_value_line_chart">Cubic Line Chart</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+    <string name="action_restart">Restart</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>

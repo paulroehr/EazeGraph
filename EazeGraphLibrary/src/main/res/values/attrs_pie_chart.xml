@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="PieChart">
+        <attr name="innerPadding"           format="float"/>
+        <attr name="innerPaddingOutline"    format="float"/>
+        <attr name="useInnerPadding"        format="boolean"/>
+        <attr name="highlightStrength"      format="float"/>
+        <attr name="usePieRotation"         format="boolean"/>
+        <attr name="autoCenter"             format="boolean"/>
+        <attr name="drawValueInPie"         format="boolean"/>
+        <attr name="valueTextSize"          format="dimension"/>
+        <attr name="valueTextColor"         format="color"/>
+
+    </declare-styleable>
+
+</resources>

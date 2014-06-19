@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="BaseBarChart">
+        <attr name="barOutline"         format="boolean"/>
+        <attr name="barWidth"           format="dimension" />
+        <attr name="barMargin"          format="dimension" />
+        <attr name="fixedBarWidth"      format="boolean"/>
+        <attr name="bottomAxisColor"    format="color" />
+        <attr name="bottomAxisStroke"   format="dimension" />
+    </declare-styleable>
+
+</resources>

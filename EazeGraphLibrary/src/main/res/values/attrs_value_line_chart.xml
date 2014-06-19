@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="ValueLineChart">
+        <attr name="curveSmoothness"        format="float"/>
+        <attr name="useCubic"               format="boolean"/>
+        <attr name="useOverlapFill"         format="boolean"/>
+        <attr name="lineStroke"             format="dimension"/>
+        <attr name="showValueIndicator"     format="boolean"/>
+        <attr name="indicatorWidth"         format="dimension"/>
+        <attr name="indicatorColor"         format="color"/>
+        <attr name="indicatorTextSize"      format="dimension"/>
+        <attr name="indicatorLeftPadding"   format="dimension"/>
+        <attr name="indicatorTopPadding"    format="dimension"/>
+    </declare-styleable>
+
+</resources>
