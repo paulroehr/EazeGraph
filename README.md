@@ -1,8 +1,18 @@
 EazeGraph
 =========
 
+EazeGraph is an Android library for creating beautiful and fancy charts in the easiest way possible.
 
-This library currently offers 4 different 
+This library currently offers 4 different chart types, which can be viewed below.
+
+IMPORTANT:
+This library is not intented for "mathematical" purposes like "achartengine" or "androidplot". It is intented to have a beautiful visual presentation of "user related"-data where only one value is provided and the rest is calculated dynamically.
+
+So for example it's not possible to push 2D-values in the LineChart and let them plot just like in our beloved math lessons.
+
+If you want such functionality either you use one of the libraries I named before or you wait some time until I finished a "mathematical plotting"-chart ;)
+
+Currently LineCharts and BarCharts only support positive values. I will provide this functionality later.
 
 Chart types
 ===========
@@ -20,17 +30,31 @@ Chart types
 ![EazeGraph Pie Chart][7]
 
 
-- Line Chart (based on one value)
+- Line Chart
 
 ![EazeGraph Line Chart][8]
 ![EazeGraph Cubic Line Chart][9]
 
+
+Examples
+========
+
+Examples on how to correctly use these charts are either below or you can view the source of the sample app I provided.
 
 Including in your project
 =========================
 
 Usage
 =====
+
+Wiki
+====
+
+Changelog
+=========
+
+** 1.0.0 **
+* initial commit of this library
 
 License
 =======
