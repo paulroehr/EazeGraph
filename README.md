@@ -86,6 +86,7 @@ Credit
 This library was developed for the official YAZIO Android app:
 
 https://play.google.com/store/apps/details?id=com.yazio.android
+
 https://play.google.com/store/apps/details?id=com.yazio.android.pro
 
 License
