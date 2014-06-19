@@ -1,6 +1,8 @@
 EazeGraph
 =========
 
+THIS LIBRARY WILL BE AVAILABLE IN THE NEXT FEW DAYS (19. Jun 2014)
+
 EazeGraph is an Android library for creating beautiful and fancy charts. Its main goal was to create a lighweight library which is easy to use and highly customizeable with an "up-to-date"-look.
 
 Currently 4 different chart types are available, which can be viewed below.
