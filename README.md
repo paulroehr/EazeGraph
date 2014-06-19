@@ -63,6 +63,22 @@ If you want to see the library in action, just download the sample APK from the 
 Including in your project
 =========================
 
+Insert in your root project's 'build.gradle' under repositories:
+
+    repositories {
+        maven {
+            url 'https://oss.sonatype.org/content/groups/public'
+        }
+    }
+
+and in your android app project folder in the 'build.gradle' under dependencies:
+
+    dependencies {
+        compile 'com.github.blackfizz:eazegraph:1.0.0-SNAPSHOT'
+    }
+
+That's it. now you are ready to use the library!
+
 Usage
 =====
 
