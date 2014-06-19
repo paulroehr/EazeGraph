@@ -23,21 +23,22 @@ Chart types
 
 - Bar Chart
 
-![EazeGraph Bar Chart][5]
+<img src="https://raw.github.com/blackfizz/EazeGraph/master/imagery/bar_chart.png" width="400px" height="300px" />
+
 
 - Stacked Bar Chart
 
-![EazeGraph Stacked Bar Chart][6]
+<img src="https://raw.github.com/blackfizz/EazeGraph/master/imagery/stacked_bar_chart.png" width="450px" height="300px" />
 
 - Pie Chart
 
-![EazeGraph Pie Chart][7]
+<img src="https://raw.github.com/blackfizz/EazeGraph/master/imagery/pie_chart.png" width="400px" height="420px" >
 
 
 - Line Chart
 
-![EazeGraph Line Chart][8]
-![EazeGraph Cubic Line Chart][9]
+<img src="https://raw.github.com/blackfizz/EazeGraph/master/imagery/line_chart.png" width="600px" height="320px" />
+<img src="https://raw.github.com/blackfizz/EazeGraph/master/imagery/cubic_line_chart.png" width="600px" height="320px" />
 
 
 Features
