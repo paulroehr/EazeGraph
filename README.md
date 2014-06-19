@@ -53,4 +53,4 @@ License
 [6]: https://raw.github.com/blackfizz/EazeGraph/master/imagery/stacked_bar_chart.png
 [7]: https://raw.github.com/blackfizz/EazeGraph/master/imagery/pie_chart.png
 [8]: https://raw.github.com/blackfizz/EazeGraph/master/imagery/line_chart.png
-[9]: https://raw.github.com/blackfizz/EazeGraph/master/imagery/cucbic_line_chart.png
+[9]: https://raw.github.com/blackfizz/EazeGraph/master/imagery/cubic_line_chart.png
