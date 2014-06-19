@@ -80,6 +80,14 @@ Contributing
 
 I would love to see people contributing to this project. So just go ahead. If you think you did something amazing and your feature should be implemented in this library, make a pull request! Do not hesitate.
 
+Credit
+======
+
+This library was developed for the official YAZIO Android app:
+
+https://play.google.com/store/apps/details?id=com.yazio.android
+https://play.google.com/store/apps/details?id=com.yazio.android.pro
+
 License
 =======
 
