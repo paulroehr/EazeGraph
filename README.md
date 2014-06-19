@@ -5,8 +5,9 @@ EazeGraph is an Android library for creating beautiful and fancy charts in the e
 
 This library currently offers 4 different chart types, which can be viewed below.
 
+__________
 IMPORTANT:
-_________
+
 This library is not intented for "mathematical" purposes like "achartengine" or "androidplot". It is intented to have a beautiful visual presentation of "user related"-data where only one value is provided and the rest is calculated dynamically.
 
 So for example it's not possible to push 2D-values in the LineChart and let them plot just like in our beloved math lessons.
