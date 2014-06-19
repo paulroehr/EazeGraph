@@ -1,8 +1,30 @@
 EazeGraph
 =========
 
-Including
-=========
+
+This library currently offers 4 different 
+
+Chart types
+===========
+
+- Bar Chart
+
+
+
+- Stacked Bar Chart
+
+
+
+- Pie Chart
+
+
+
+- Line Chart (based on one value)
+
+
+
+Including in your project
+=========================
 
 Usage
 =====
