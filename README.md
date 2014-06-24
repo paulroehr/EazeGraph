@@ -75,7 +75,7 @@ Insert in your root project's 'build.gradle' under repositories:
 and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
-        compile group: 'com.github.blackfizz', name: 'eazegraph', version: '1.0.0-SNAPSHOT', ext: 'aar'
+        compile 'com.github.blackfizz:eazegraph:1.0.1-SNAPSHOT@aar'
     }
 
 That's it. now you are ready to use the library!
@@ -88,6 +88,9 @@ Wiki
 
 Changelog
 =========
+
+**1.0.1**
+* added 'eg' namespace for attributes
 
 **1.0.0**
 * initial commit of this library
