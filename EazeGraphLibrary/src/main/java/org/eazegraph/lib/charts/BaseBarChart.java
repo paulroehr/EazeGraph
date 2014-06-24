@@ -79,12 +79,12 @@ public abstract class BaseBarChart extends BaseChart {
 
         try {
 
-            mBarOutline         = a.getBoolean(R.styleable.BaseBarChart_barOutline,         DEF_BAR_OUTLINE);
-            mBarWidth           = a.getDimension(R.styleable.BaseBarChart_barWidth,         Utils.dpToPx(DEF_BAR_WIDTH));
-            mBarMargin          = a.getDimension(R.styleable.BaseBarChart_barMargin,        Utils.dpToPx(DEF_BAR_MARGIN));
-            mFixedBarWidth      = a.getBoolean(R.styleable.BaseBarChart_fixedBarWidth,      DEF_FIXED_BAR_WIDTH);
-            mBottomAxisColor    = a.getColor(R.styleable.BaseBarChart_bottomAxisColor,      DEF_BOTTOM_AXIS_COLOR);
-            mBottomAxisStroke   = a.getDimension(R.styleable.BaseBarChart_bottomAxisStroke, Utils.dpToPx(DEF_BOTTOM_AXIS_STROKE));
+            mBarOutline         = a.getBoolean(R.styleable.BaseBarChart_egBarOutline,         DEF_BAR_OUTLINE);
+            mBarWidth           = a.getDimension(R.styleable.BaseBarChart_egBarWidth,         Utils.dpToPx(DEF_BAR_WIDTH));
+            mBarMargin          = a.getDimension(R.styleable.BaseBarChart_egBarMargin,        Utils.dpToPx(DEF_BAR_MARGIN));
+            mFixedBarWidth      = a.getBoolean(R.styleable.BaseBarChart_egFixedBarWidth,      DEF_FIXED_BAR_WIDTH);
+            mBottomAxisColor    = a.getColor(R.styleable.BaseBarChart_egBottomAxisColor,      DEF_BOTTOM_AXIS_COLOR);
+            mBottomAxisStroke   = a.getDimension(R.styleable.BaseBarChart_egBottomAxisStroke, Utils.dpToPx(DEF_BOTTOM_AXIS_STROKE));
 
         } finally {
             // release the TypedArray so that it can be reused.

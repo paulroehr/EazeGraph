@@ -71,9 +71,9 @@ public abstract class BaseChart extends ViewGroup {
 
         try {
 
-            mLegendHeight       = a.getDimension(R.styleable.BaseChart_legendHeight,     Utils.dpToPx(DEF_LEGEND_HEIGHT));
-            mLegendTextSize     = a.getDimension(R.styleable.BaseChart_legendTextSize,   Utils.dpToPx(DEF_LEGEND_TEXT_SIZE));
-            mAnimationTime      = a.getInt(R.styleable.BaseChart_animationTime,          DEF_ANIMATION_TIME);
+            mLegendHeight       = a.getDimension(R.styleable.BaseChart_egLegendHeight,     Utils.dpToPx(DEF_LEGEND_HEIGHT));
+            mLegendTextSize     = a.getDimension(R.styleable.BaseChart_egLegendTextSize,   Utils.dpToPx(DEF_LEGEND_TEXT_SIZE));
+            mAnimationTime      = a.getInt(R.styleable.BaseChart_egAnimationTime,          DEF_ANIMATION_TIME);
 
         } finally {
             // release the TypedArray so that it can be reused.

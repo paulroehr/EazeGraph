@@ -10,8 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:padding="8dp"
-        app:legendTextSize="18sp"
-        app:usePieRotation="true"
-        app:valueTextSize="36sp"/>
+        app:egLegendTextSize="18sp"
+        app:egUsePieRotation="true"
+        app:egValueTextSize="36sp"/>
 
 </FrameLayout>

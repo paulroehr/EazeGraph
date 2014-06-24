@@ -96,17 +96,17 @@ public class ValueLineChart extends BaseChart {
 
         try {
 
-            mUseCubic               = a.getBoolean(R.styleable.ValueLineChart_useCubic,                 DEF_USE_CUBIC);
-            mUseOverlapFill         = a.getBoolean(R.styleable.ValueLineChart_useOverlapFill,           DEF_USE_OVERLAP_FILL);
-            mLineStroke             = a.getDimension(R.styleable.ValueLineChart_lineStroke, Utils.dpToPx(DEF_LINE_STROKE));
-            mFirstMultiplier        = a.getFloat(R.styleable.ValueLineChart_curveSmoothness, DEF_FIRST_MULTIPLIER);
+            mUseCubic               = a.getBoolean(R.styleable.ValueLineChart_egUseCubic,                 DEF_USE_CUBIC);
+            mUseOverlapFill         = a.getBoolean(R.styleable.ValueLineChart_egUseOverlapFill,           DEF_USE_OVERLAP_FILL);
+            mLineStroke             = a.getDimension(R.styleable.ValueLineChart_egLineStroke, Utils.dpToPx(DEF_LINE_STROKE));
+            mFirstMultiplier        = a.getFloat(R.styleable.ValueLineChart_egCurveSmoothness, DEF_FIRST_MULTIPLIER);
             mSecondMultiplier       = 1.0f - mFirstMultiplier;
-            mShowIndicator          = a.getBoolean(R.styleable.ValueLineChart_showValueIndicator,       DEF_SHOW_INDICATOR);
-            mIndicatorWidth         = a.getDimension(R.styleable.ValueLineChart_indicatorWidth, Utils.dpToPx(DEF_INDICATOR_WIDTH));
-            mIndicatorColor         = a.getColor(R.styleable.ValueLineChart_indicatorColor, DEF_INDICATOR_COLOR);
-            mIndicatorTextSize      = a.getDimension(R.styleable.ValueLineChart_indicatorWidth, Utils.dpToPx(DEF_INDICATOR_TEXT_SIZE));
-            mIndicatorLeftPadding   = a.getDimension(R.styleable.ValueLineChart_indicatorLeftPadding, Utils.dpToPx(DEF_INDICATOR_LEFT_PADDING));
-            mIndicatorTopPadding    = a.getDimension(R.styleable.ValueLineChart_indicatorTopPadding,    Utils.dpToPx(DEF_INDICATOR_TOP_PADDING));
+            mShowIndicator          = a.getBoolean(R.styleable.ValueLineChart_egShowValueIndicator,       DEF_SHOW_INDICATOR);
+            mIndicatorWidth         = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth, Utils.dpToPx(DEF_INDICATOR_WIDTH));
+            mIndicatorColor         = a.getColor(R.styleable.ValueLineChart_egIndicatorColor, DEF_INDICATOR_COLOR);
+            mIndicatorTextSize      = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth, Utils.dpToPx(DEF_INDICATOR_TEXT_SIZE));
+            mIndicatorLeftPadding   = a.getDimension(R.styleable.ValueLineChart_egIndicatorLeftPadding, Utils.dpToPx(DEF_INDICATOR_LEFT_PADDING));
+            mIndicatorTopPadding    = a.getDimension(R.styleable.ValueLineChart_egIndicatorTopPadding,    Utils.dpToPx(DEF_INDICATOR_TOP_PADDING));
 
         } finally {
             // release the TypedArray so that it can be reused.

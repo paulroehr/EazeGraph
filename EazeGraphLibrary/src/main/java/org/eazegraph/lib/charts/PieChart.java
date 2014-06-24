@@ -127,15 +127,15 @@ public class PieChart extends BaseChart {
 
         try {
 
-            mUseInnerPadding     = a.getBoolean(R.styleable.PieChart_useInnerPadding,   DEF_USE_INNER_PADDING);
-            mInnerPadding        = a.getFloat(R.styleable.PieChart_innerPadding, DEF_INNER_PADDING);
-            mInnerPaddingOutline = a.getFloat(R.styleable.PieChart_innerPaddingOutline, DEF_INNER_PADDING_OUTLINE);
-            mHighlightStrength   = a.getFloat(R.styleable.PieChart_highlightStrength, DEF_HIGHLIGHT_STRENGTH);
-            mUsePieRotation      = a.getBoolean(R.styleable.PieChart_usePieRotation, DEF_USE_PIE_ROTATION);
-            mAutoCenterInSlice   = a.getBoolean(R.styleable.PieChart_autoCenter, DEF_AUTO_CENTER);
-            mDrawValueInPie      = a.getBoolean(R.styleable.PieChart_drawValueInPie, DEF_DRAW_VALUE_IN_PIE);
-            mValueTextSize       = a.getDimension(R.styleable.PieChart_valueTextSize, Utils.dpToPx(DEF_VALUE_TEXT_SIZE));
-            mValueTextColor      = a.getColor(R.styleable.PieChart_valueTextColor, DEF_VALUE_TEXT_COLOR);
+            mUseInnerPadding     = a.getBoolean(R.styleable.PieChart_egUseInnerPadding,   DEF_USE_INNER_PADDING);
+            mInnerPadding        = a.getFloat(R.styleable.PieChart_egInnerPadding, DEF_INNER_PADDING);
+            mInnerPaddingOutline = a.getFloat(R.styleable.PieChart_egInnerPaddingOutline, DEF_INNER_PADDING_OUTLINE);
+            mHighlightStrength   = a.getFloat(R.styleable.PieChart_egHighlightStrength, DEF_HIGHLIGHT_STRENGTH);
+            mUsePieRotation      = a.getBoolean(R.styleable.PieChart_egUsePieRotation, DEF_USE_PIE_ROTATION);
+            mAutoCenterInSlice   = a.getBoolean(R.styleable.PieChart_egAutoCenter, DEF_AUTO_CENTER);
+            mDrawValueInPie      = a.getBoolean(R.styleable.PieChart_egDrawValueInPie, DEF_DRAW_VALUE_IN_PIE);
+            mValueTextSize       = a.getDimension(R.styleable.PieChart_egValueTextSize, Utils.dpToPx(DEF_VALUE_TEXT_SIZE));
+            mValueTextColor      = a.getColor(R.styleable.PieChart_egValueTextColor, DEF_VALUE_TEXT_COLOR);
 
         } finally {
             // release the TypedArray so that it can be reused.

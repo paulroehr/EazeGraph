@@ -11,10 +11,10 @@
         android:id="@+id/linechart"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        app:useCubic="false"
-        app:useOverlapFill="false"
-        app:curveSmoothness="0.4"
-        app:indicatorColor="#FE6DA8"
-        app:legendHeight="40dp"/>
+        app:egUseCubic="false"
+        app:egUseOverlapFill="false"
+        app:egCurveSmoothness="0.4"
+        app:egIndicatorColor="#FE6DA8"
+        app:egLegendHeight="40dp"/>
 
 </LinearLayout>

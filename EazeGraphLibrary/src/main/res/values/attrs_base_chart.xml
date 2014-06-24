@@ -2,9 +2,9 @@
 <resources>
 
     <declare-styleable name="BaseChart">
-        <attr name="animationTime"  format="integer"/>
-        <attr name="legendHeight"   format="dimension" />
-        <attr name="legendTextSize" format="dimension"/>
+        <attr name="egAnimationTime"  format="integer"/>
+        <attr name="egLegendHeight"   format="dimension" />
+        <attr name="egLegendTextSize" format="dimension"/>
     </declare-styleable>
 
 </resources>

@@ -2,15 +2,15 @@
 <resources>
 
     <declare-styleable name="PieChart">
-        <attr name="innerPadding"           format="float"/>
-        <attr name="innerPaddingOutline"    format="float"/>
-        <attr name="useInnerPadding"        format="boolean"/>
-        <attr name="highlightStrength"      format="float"/>
-        <attr name="usePieRotation"         format="boolean"/>
-        <attr name="autoCenter"             format="boolean"/>
-        <attr name="drawValueInPie"         format="boolean"/>
-        <attr name="valueTextSize"          format="dimension"/>
-        <attr name="valueTextColor"         format="color"/>
+        <attr name="egInnerPadding"           format="float"/>
+        <attr name="egInnerPaddingOutline"    format="float"/>
+        <attr name="egUseInnerPadding"        format="boolean"/>
+        <attr name="egHighlightStrength"      format="float"/>
+        <attr name="egUsePieRotation"         format="boolean"/>
+        <attr name="egAutoCenter"             format="boolean"/>
+        <attr name="egDrawValueInPie"         format="boolean"/>
+        <attr name="egValueTextSize"          format="dimension"/>
+        <attr name="egValueTextColor"         format="color"/>
 
     </declare-styleable>
 
