@@ -86,6 +86,8 @@ Usage
 Wiki
 ====
 
+[Project Wiki][10]
+
 Changelog
 =========
 
@@ -131,3 +133,4 @@ License
 [7]: https://raw.github.com/blackfizz/EazeGraph/master/imagery/pie_chart.png
 [8]: https://raw.github.com/blackfizz/EazeGraph/master/imagery/line_chart.png
 [9]: https://raw.github.com/blackfizz/EazeGraph/master/imagery/cubic_line_chart.png
+[10]: https://github.com/blackfizz/EazeGraph/wiki
