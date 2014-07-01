@@ -82,8 +82,29 @@ public class CubicValueLineChartFragment extends ChartFragment {
         series.addPoint(new ValueLinePoint("Mai", 3.5f));
         series.addPoint(new ValueLinePoint("Jun", 2.4f));
 
+        ValueLineSeries series1 = new ValueLineSeries();
+        series1.setColor(0xFFFFB7F1);
 
+        series1.addPoint(new ValueLinePoint("Jan", 1.4f));
+        series1.addPoint(new ValueLinePoint("Feb", 4.4f));
+        series1.addPoint(new ValueLinePoint("Mar", 2.4f));
+        series1.addPoint(new ValueLinePoint("Apr", 5.2f));
+        series1.addPoint(new ValueLinePoint("Mai", 2.6f));
+        series1.addPoint(new ValueLinePoint("Jun", 5.0f));
+        series1.addPoint(new ValueLinePoint("Jul", 7.5f));
+        series1.addPoint(new ValueLinePoint("Aug", 1.4f));
+        series1.addPoint(new ValueLinePoint("Sep", 5.4f));
+        series1.addPoint(new ValueLinePoint("Oct", 2.4f));
+        series1.addPoint(new ValueLinePoint("Nov", 7.4f));
+        series1.addPoint(new ValueLinePoint("Dec", 5.0f));
+        series1.addPoint(new ValueLinePoint("Jan", 2.2f));
+        series1.addPoint(new ValueLinePoint("Feb", 6.4f));
+        series1.addPoint(new ValueLinePoint("Mar", 3.6f));
+        series1.addPoint(new ValueLinePoint("Apr", 6.0f));
+        series1.addPoint(new ValueLinePoint("Mai", 1.5f));
+        series1.addPoint(new ValueLinePoint("Jun", 7.4f));
 
+        mCubicValueLineChart.addSeries(series1);
         mCubicValueLineChart.addSeries(series);
         mCubicValueLineChart.setOnPointFocusedListener(new IOnPointFocusedListener() {
             @Override

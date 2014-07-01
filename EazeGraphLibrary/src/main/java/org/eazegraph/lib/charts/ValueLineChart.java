@@ -279,7 +279,7 @@ public class ValueLineChart extends BaseChart {
         mRevealAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                mRevealValue = (animation.getAnimatedFraction());
+                mRevealValue = animation.getAnimatedFraction();
 
                 mScale.reset();
                 mScale.setScale(1, 1.f * mRevealValue, 0, mUseableGraphHeight + mTopPadding);
@@ -336,7 +336,6 @@ public class ValueLineChart extends BaseChart {
 
     @Override
     protected void onDataChanged() {
-        super.onDataChanged();
 
         if(!mSeries.isEmpty()) {
             int   seriesCount = mSeries.size();
@@ -356,7 +355,7 @@ public class ValueLineChart extends BaseChart {
                 int   seriesPointCount  = series.getSeries().size();
 
                 // check if more than one point is available
-                if (seriesPointCount == 1) {
+                if (seriesPointCount <= 1) {
                     Log.w(LOG_TAG, "More than one point should be available!");
                 }
                 else {
@@ -501,6 +500,9 @@ public class ValueLineChart extends BaseChart {
                 }
             }
         }
+
+        super.onDataChanged();
+        mLegend.invalidate();
     }
 
     protected void onLegendDataChanged() {
@@ -581,14 +583,16 @@ public class ValueLineChart extends BaseChart {
             if(mShowIndicator && mSeries.size() == 1) {
                 mIndicatorPaint.setColor(mIndicatorColor);
                 canvas.drawLine(mTouchedArea.getX(), 0, mTouchedArea.getX(), mGraphHeight, mIndicatorPaint);
+
+                if(mFocusedPoint != null) {
+                    canvas.drawText("" + mFocusedPoint.getValue(),
+                            mTouchedArea.getX() + mIndicatorLeftPadding,
+                            mValueTextHeight + mIndicatorTopPadding,
+                            mIndicatorPaint);
+                }
             }
 
-            if(mFocusedPoint != null) {
-                canvas.drawText("" + mFocusedPoint.getValue(),
-                        mTouchedArea.getX() + mIndicatorLeftPadding,
-                        mValueTextHeight + mIndicatorTopPadding,
-                        mIndicatorPaint);
-            }
+
 
         }
 
@@ -741,26 +745,27 @@ public class ValueLineChart extends BaseChart {
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
 
-            if(mUseCustomLegend) {
-                for (LegendModel model : mLegendList) {
-                    Rect textBounds = model.getTextBounds();
-                    RectF bounds = model.getLegendBounds();
-                    canvas.drawText(model.getLegendLabel(), bounds.centerX() - (textBounds.width() / 2), bounds.centerY(), mLegendPaint);
-                    canvas.drawLine(bounds.centerX(), bounds.centerY() - textBounds.height() - mLegendTopPadding, bounds.centerX(), mLegendTopPadding, mLegendPaint);
-                }
-            }
-            else {
-                List<? extends BaseModel> list = mSeries.get(0).getSeries();
-                for (BaseModel model : list) {
-                    if(model.canShowLabel()) {
+            if(!mSeries.isEmpty()) {
+                if (mUseCustomLegend) {
+                    for (LegendModel model : mLegendList) {
+                        Rect textBounds = model.getTextBounds();
                         RectF bounds = model.getLegendBounds();
-                        canvas.drawText(model.getLegendLabel(), model.getLegendLabelPosition(), bounds.bottom - mMaxFontHeight, mLegendPaint);
-                        canvas.drawLine(
-                                bounds.centerX(),
-                                bounds.bottom - mMaxFontHeight*2 - mLegendTopPadding,
-                                bounds.centerX(),
-                                mLegendTopPadding, mLegendPaint
-                        );
+                        canvas.drawText(model.getLegendLabel(), bounds.centerX() - (textBounds.width() / 2), bounds.centerY(), mLegendPaint);
+                        canvas.drawLine(bounds.centerX(), bounds.centerY() - textBounds.height() - mLegendTopPadding, bounds.centerX(), mLegendTopPadding, mLegendPaint);
+                    }
+                } else {
+                    List<? extends BaseModel> list = mSeries.get(0).getSeries();
+                    for (BaseModel model : list) {
+                        if (model.canShowLabel()) {
+                            RectF bounds = model.getLegendBounds();
+                            canvas.drawText(model.getLegendLabel(), model.getLegendLabelPosition(), bounds.bottom - mMaxFontHeight, mLegendPaint);
+                            canvas.drawLine(
+                                    bounds.centerX(),
+                                    bounds.bottom - mMaxFontHeight * 2 - mLegendTopPadding,
+                                    bounds.centerX(),
+                                    mLegendTopPadding, mLegendPaint
+                            );
+                        }
                     }
                 }
             }
