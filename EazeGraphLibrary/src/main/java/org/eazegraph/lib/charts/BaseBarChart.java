@@ -243,7 +243,7 @@ public abstract class BaseBarChart extends BaseChart {
             // calculate the bar width if the bars should be dynamically displayed
             barWidth = (mGraphWidth / _DataSize) - margin;
         }
-		else {
+        else {
             // calculate margin between bars if the bars have a fixed width
             float cumulatedBarWidths = barWidth * _DataSize;
             float remainingWidth = mGraphWidth - cumulatedBarWidths;
