@@ -75,7 +75,7 @@ Insert in your root project's 'build.gradle' under repositories:
 and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
-        compile 'com.github.blackfizz:eazegraph:1.0.1-SNAPSHOT@aar'
+        compile 'com.github.blackfizz:eazegraph:1.0.4-SNAPSHOT@aar'
     }
 
 That's it. now you are ready to use the library!
