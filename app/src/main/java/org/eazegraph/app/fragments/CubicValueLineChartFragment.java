@@ -81,9 +81,11 @@ public class CubicValueLineChartFragment extends ChartFragment {
         series.addPoint(new ValueLinePoint("Apr", 1.0f));
         series.addPoint(new ValueLinePoint("Mai", 3.5f));
         series.addPoint(new ValueLinePoint("Jun", 2.4f));
+        series.addPoint(new ValueLinePoint("Jan", 2.4f));
+        series.addPoint(new ValueLinePoint("Feb", 3.4f));
 
         ValueLineSeries series1 = new ValueLineSeries();
-        series1.setColor(0xFFFFB7F1);
+        series1.setColor(0xFFB3F7B1);
 
         series1.addPoint(new ValueLinePoint("Jan", 1.4f));
         series1.addPoint(new ValueLinePoint("Feb", 4.4f));
@@ -104,8 +106,9 @@ public class CubicValueLineChartFragment extends ChartFragment {
         series1.addPoint(new ValueLinePoint("Mai", 1.5f));
         series1.addPoint(new ValueLinePoint("Jun", 7.4f));
 
-        mCubicValueLineChart.addSeries(series1);
+//        mCubicValueLineChart.addSeries(series1);
         mCubicValueLineChart.addSeries(series);
+        mCubicValueLineChart.addStandardValue(2.3f);
         mCubicValueLineChart.setOnPointFocusedListener(new IOnPointFocusedListener() {
             @Override
             public void onPointFocused(int _PointPos) {

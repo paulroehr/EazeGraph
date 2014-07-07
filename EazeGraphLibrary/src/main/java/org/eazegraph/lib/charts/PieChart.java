@@ -299,6 +299,12 @@ public class PieChart extends BaseChart {
         onDataChanged();
     }
 
+    public void clearChart() {
+        mPieData.clear();
+        mTotalValue = 0;
+        onDataChanged();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         // Let the GestureDetector interpret this event

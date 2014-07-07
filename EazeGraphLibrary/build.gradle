@@ -1,13 +1,13 @@
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 19
+    compileSdkVersion 20
     buildToolsVersion "19.1.0"
 
     defaultConfig {
         applicationId "org.eazegraph.lib"
         minSdkVersion 14
-        targetSdkVersion 19
+        targetSdkVersion 20
         versionCode 1
         versionName "1.0.0"
     }

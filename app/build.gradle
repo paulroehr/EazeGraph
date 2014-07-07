@@ -1,7 +1,7 @@
 apply plugin: 'android'
 
 android {
-    compileSdkVersion 19
+    compileSdkVersion 20
     buildToolsVersion "19.1.0"
 
     signingConfigs {
@@ -16,7 +16,7 @@ android {
     defaultConfig {
         applicationId "org.eazegraph.app"
         minSdkVersion 14
-        targetSdkVersion 19
+        targetSdkVersion 20
         versionCode 1
         versionName "1.0"
     }

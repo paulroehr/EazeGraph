@@ -2,16 +2,19 @@
 <resources>
 
     <declare-styleable name="ValueLineChart">
-        <attr name="egCurveSmoothness"        format="float"/>
-        <attr name="egUseCubic"               format="boolean"/>
-        <attr name="egUseOverlapFill"         format="boolean"/>
-        <attr name="egLineStroke"             format="dimension"/>
-        <attr name="egShowValueIndicator"     format="boolean"/>
-        <attr name="egIndicatorWidth"         format="dimension"/>
-        <attr name="egIndicatorColor"         format="color"/>
-        <attr name="egIndicatorTextSize"      format="dimension"/>
-        <attr name="egIndicatorLeftPadding"   format="dimension"/>
-        <attr name="egIndicatorTopPadding"    format="dimension"/>
+        <attr name="egCurveSmoothness"              format="float"/>
+        <attr name="egUseCubic"                     format="boolean"/>
+        <attr name="egUseOverlapFill"               format="boolean"/>
+        <attr name="egLineStroke"                   format="dimension"/>
+        <attr name="egShowValueIndicator"           format="boolean"/>
+        <attr name="egIndicatorWidth"               format="dimension"/>
+        <attr name="egIndicatorColor"               format="color"/>
+        <attr name="egIndicatorTextSize"            format="dimension"/>
+        <attr name="egIndicatorLeftPadding"         format="dimension"/>
+        <attr name="egIndicatorTopPadding"          format="dimension"/>
+        <attr name="egShowStandardValue"            format="boolean"/>
+        <attr name="egStandardValueIndicatorHeight" format="dimension"/>
+        <attr name="egStandardValueColor"           format="color"/>
     </declare-styleable>
 
 </resources>

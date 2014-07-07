@@ -65,6 +65,11 @@ public class StackedBarChart extends BaseBarChart {
         return mData;
     }
 
+    public void clearChart() {
+        mData.clear();
+        onDataChanged();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean result = false;
@@ -125,7 +130,7 @@ public class StackedBarChart extends BaseBarChart {
             last += _Width + (_Margin / 2);
         }
 
-        Utils.calculateLegendInformation(mData, mLeftPadding, mLegendPaint);
+        Utils.calculateLegendInformation(mData, mLeftPadding, mGraphWidth + mLeftPadding, mLegendPaint);
     }
 
     protected void drawBars(Canvas canvas) {

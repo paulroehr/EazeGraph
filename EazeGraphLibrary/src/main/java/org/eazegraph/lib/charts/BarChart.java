@@ -79,6 +79,11 @@ public class BarChart extends BaseBarChart {
         return mData;
     }
 
+    public void clearChart() {
+        mData.clear();
+        onDataChanged();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean result = false;
@@ -127,7 +132,7 @@ public class BarChart extends BaseBarChart {
 
         }
 
-        Utils.calculateLegendInformation(mData, mLeftPadding, mLegendPaint);
+        Utils.calculateLegendInformation(mData, mLeftPadding, mGraphWidth + mLeftPadding, mLegendPaint);
     }
 
     protected void drawBars(Canvas canvas) {

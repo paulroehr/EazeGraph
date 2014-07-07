@@ -21,6 +21,7 @@ import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.util.Log;
 
 import java.util.List;
 
@@ -73,7 +74,7 @@ public class Utils {
      * @param _StartX Left starting point on the screen. Should be the absolute pixel value!
      * @param _Paint  The correctly set Paint which will be used for the text painting in the later process
      */
-    public static void calculateLegendInformation(List<? extends BaseModel> _Models, float _StartX, Paint _Paint) {
+    public static void calculateLegendInformation(List<? extends BaseModel> _Models, float _StartX, float _EndX, Paint _Paint) {
         float lastX = _StartX;
         float textMargin = Utils.dpToPx(10.f);
 
@@ -87,8 +88,9 @@ public class Utils {
                 _Paint.getTextBounds(model.getLegendLabel(), 0, model.getLegendLabel().length(), textBounds);
                 model.setTextBounds(textBounds);
 
-                float centerX = legendBounds.centerX();
-                float textStartPos = centerX - (textBounds.width() / 2) - textMargin;
+                float centerX           = legendBounds.centerX();
+                float centeredTextPos   = centerX - (textBounds.width() / 2);
+                float textStartPos      = centeredTextPos - textMargin;
 
                 if (lastX == _StartX) {
                     model.setShowLabel(true);
@@ -99,10 +101,15 @@ public class Utils {
                         lastX = textBounds.width();
                     } else {
                         // set text centered beneath the line
-                        model.setLegendLabelPosition((int) (centerX - textBounds.width() / 2));
-                        lastX = centerX + textBounds.width() / 2;
+                        model.setLegendLabelPosition((int) centeredTextPos);
+                        lastX = centerX + (textBounds.width() / 2);
                     }
-                } else {
+                }
+                // check if the text is too big to fit on the screen
+                else if(centeredTextPos + textBounds.width() > _EndX) {
+                    model.setShowLabel(false);
+                }
+                else {
                     // check if the current legend label overrides the label before
                     // if the label overrides the label before, the current label will not be shown.
                     // If not the label will be shown and the label position is calculated
@@ -114,14 +121,17 @@ public class Utils {
                         } else {
                             model.setShowLabel(false);
                         }
-                    } else {
+                    }
+                    else {
                         model.setShowLabel(true);
-                        model.setLegendLabelPosition((int) (centerX - textBounds.width() / 2));
-                        lastX = centerX + textBounds.width() / 2;
+                        model.setLegendLabelPosition((int) centeredTextPos);
+                        lastX = centerX + (textBounds.width() / 2);
                     }
                 }
             }
         }
 
     }
+
+    private static final String LOG_TAG = Utils.class.getSimpleName();
 }

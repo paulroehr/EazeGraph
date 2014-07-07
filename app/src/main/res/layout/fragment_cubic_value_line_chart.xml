@@ -16,6 +16,6 @@
         app:egCurveSmoothness="0.4"
         app:egIndicatorColor="#FE6DA8"
         app:egLegendHeight="40dp"
-        />
+        app:egShowStandardValue="true"/>
 
 </LinearLayout>

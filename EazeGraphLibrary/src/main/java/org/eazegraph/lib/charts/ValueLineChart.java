@@ -56,17 +56,21 @@ public class ValueLineChart extends BaseChart {
         super(context);
         initializeGraph();
 
-        mUseCubic               = DEF_USE_CUBIC;
-        mUseOverlapFill         = DEF_USE_OVERLAP_FILL;
-        mLineStroke             = Utils.dpToPx(DEF_LINE_STROKE);
-        mFirstMultiplier        = DEF_FIRST_MULTIPLIER;
-        mSecondMultiplier       = 1.0f - mFirstMultiplier;
-        mShowIndicator          = DEF_SHOW_INDICATOR;
-        mIndicatorWidth         = Utils.dpToPx(DEF_INDICATOR_WIDTH);
-        mIndicatorColor         = DEF_INDICATOR_COLOR;
-        mIndicatorTextSize      = Utils.dpToPx(DEF_INDICATOR_TEXT_SIZE);
-        mIndicatorLeftPadding   = Utils.dpToPx(DEF_INDICATOR_LEFT_PADDING);
-        mIndicatorTopPadding    = Utils.dpToPx(DEF_INDICATOR_TOP_PADDING);
+        mUseCubic                     = DEF_USE_CUBIC;
+        mUseOverlapFill               = DEF_USE_OVERLAP_FILL;
+        mLineStroke                   = Utils.dpToPx(DEF_LINE_STROKE);
+        mFirstMultiplier              = DEF_FIRST_MULTIPLIER;
+        mSecondMultiplier             = 1.0f - mFirstMultiplier;
+        mShowIndicator                = DEF_SHOW_INDICATOR;
+        mIndicatorWidth               = Utils.dpToPx(DEF_INDICATOR_WIDTH);
+        mIndicatorColor               = DEF_INDICATOR_COLOR;
+        mIndicatorTextSize            = Utils.dpToPx(DEF_INDICATOR_TEXT_SIZE);
+        mIndicatorLeftPadding         = Utils.dpToPx(DEF_INDICATOR_LEFT_PADDING);
+        mIndicatorTopPadding          = Utils.dpToPx(DEF_INDICATOR_TOP_PADDING);
+        mShowStandardValue            = DEF_SHOW_STANDARD_VALUE;
+        mStandardValueIndicatorHeight = Utils.dpToPx(DEF_STANDARD_VALUE_INDICATOR_HEIGHT);
+        mStandardValueColor           = DEF_STANDARD_VALUE_COLOR;
+
     }
 
     /**
@@ -96,17 +100,20 @@ public class ValueLineChart extends BaseChart {
 
         try {
 
-            mUseCubic               = a.getBoolean(R.styleable.ValueLineChart_egUseCubic,                 DEF_USE_CUBIC);
-            mUseOverlapFill         = a.getBoolean(R.styleable.ValueLineChart_egUseOverlapFill,           DEF_USE_OVERLAP_FILL);
-            mLineStroke             = a.getDimension(R.styleable.ValueLineChart_egLineStroke, Utils.dpToPx(DEF_LINE_STROKE));
-            mFirstMultiplier        = a.getFloat(R.styleable.ValueLineChart_egCurveSmoothness, DEF_FIRST_MULTIPLIER);
-            mSecondMultiplier       = 1.0f - mFirstMultiplier;
-            mShowIndicator          = a.getBoolean(R.styleable.ValueLineChart_egShowValueIndicator,       DEF_SHOW_INDICATOR);
-            mIndicatorWidth         = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth, Utils.dpToPx(DEF_INDICATOR_WIDTH));
-            mIndicatorColor         = a.getColor(R.styleable.ValueLineChart_egIndicatorColor, DEF_INDICATOR_COLOR);
-            mIndicatorTextSize      = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth, Utils.dpToPx(DEF_INDICATOR_TEXT_SIZE));
-            mIndicatorLeftPadding   = a.getDimension(R.styleable.ValueLineChart_egIndicatorLeftPadding, Utils.dpToPx(DEF_INDICATOR_LEFT_PADDING));
-            mIndicatorTopPadding    = a.getDimension(R.styleable.ValueLineChart_egIndicatorTopPadding,    Utils.dpToPx(DEF_INDICATOR_TOP_PADDING));
+            mUseCubic                     = a.getBoolean(R.styleable.ValueLineChart_egUseCubic,                         DEF_USE_CUBIC);
+            mUseOverlapFill               = a.getBoolean(R.styleable.ValueLineChart_egUseOverlapFill,                   DEF_USE_OVERLAP_FILL);
+            mLineStroke                   = a.getDimension(R.styleable.ValueLineChart_egLineStroke,                     Utils.dpToPx(DEF_LINE_STROKE));
+            mFirstMultiplier              = a.getFloat(R.styleable.ValueLineChart_egCurveSmoothness,                    DEF_FIRST_MULTIPLIER);
+            mSecondMultiplier             = 1.0f - mFirstMultiplier;
+            mShowIndicator                = a.getBoolean(R.styleable.ValueLineChart_egShowValueIndicator,               DEF_SHOW_INDICATOR);
+            mIndicatorWidth               = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth,                 Utils.dpToPx(DEF_INDICATOR_WIDTH));
+            mIndicatorColor               = a.getColor(R.styleable.ValueLineChart_egIndicatorColor,                     DEF_INDICATOR_COLOR);
+            mIndicatorTextSize            = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth,                 Utils.dpToPx(DEF_INDICATOR_TEXT_SIZE));
+            mIndicatorLeftPadding         = a.getDimension(R.styleable.ValueLineChart_egIndicatorLeftPadding,           Utils.dpToPx(DEF_INDICATOR_LEFT_PADDING));
+            mIndicatorTopPadding          = a.getDimension(R.styleable.ValueLineChart_egIndicatorTopPadding,            Utils.dpToPx(DEF_INDICATOR_TOP_PADDING));
+            mShowStandardValue            = a.getBoolean(R.styleable.ValueLineChart_egShowStandardValue,                DEF_SHOW_STANDARD_VALUE);
+            mStandardValueIndicatorHeight = a.getDimension(R.styleable.ValueLineChart_egStandardValueIndicatorHeight,   Utils.dpToPx(DEF_STANDARD_VALUE_INDICATOR_HEIGHT));
+            mStandardValueColor           = a.getColor(R.styleable.ValueLineChart_egStandardValueColor,                 DEF_STANDARD_VALUE_COLOR);
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -130,6 +137,11 @@ public class ValueLineChart extends BaseChart {
         mLegendList.addAll(_Legend);
         mUseCustomLegend = true;
         onLegendDataChanged();
+    }
+
+    public void addStandardValue(float _standardValue) {
+        mStandardValue = _standardValue;
+        onDataChanged();
     }
 
     public void setOnPointFocusedListener(IOnPointFocusedListener _listener) {
@@ -206,6 +218,33 @@ public class ValueLineChart extends BaseChart {
 
     public void setIndicatorTopPadding(float _indicatorTopPadding) {
         mIndicatorTopPadding = _indicatorTopPadding;
+    }
+
+    public boolean isShowStandardValue() {
+        return mShowStandardValue;
+    }
+
+    public void setShowStandardValue(boolean _showStandardValue) {
+        mShowStandardValue = _showStandardValue;
+        invalidate();
+    }
+
+    public float getStandardValueIndicatorHeight() {
+        return mStandardValueIndicatorHeight;
+    }
+
+    public void setStandardValueIndicatorHeight(float _standardValueIndicatorHeight) {
+        mStandardValueIndicatorHeight = Utils.dpToPx(_standardValueIndicatorHeight);
+        invalidate();
+    }
+
+    public int getStandardValueColor() {
+        return mStandardValueColor;
+    }
+
+    public void setStandardValueColor(int _standardValueColor) {
+        mStandardValueColor = _standardValueColor;
+        invalidate();
     }
 
     /**
@@ -348,7 +387,19 @@ public class ValueLineChart extends BaseChart {
                 }
             }
 
+            // check if the standardvalue is greater than all other values
+            if(mShowStandardValue) {
+                if(mStandardValue > maxValue) {
+                    maxValue = mStandardValue;
+                }
+            }
+
             float heightMultiplier  = mUseableGraphHeight / maxValue;
+
+            // calculate the y position for standardValue
+            if(mShowStandardValue) {
+                mStandardValueY = (mUseableGraphHeight + mTopPadding) - (mStandardValue * heightMultiplier);
+            }
 
             for (ValueLineSeries series : mSeries) {
 
@@ -360,15 +411,10 @@ public class ValueLineChart extends BaseChart {
                 }
                 else {
 
-                    float widthOffset = mGraphWidth / seriesPointCount;
+                    float widthOffset = (float) mGraphWidth / (float) seriesPointCount;
                     widthOffset += widthOffset / seriesPointCount;
                     float currentOffset = 0;
                     series.setWidthOffset(widthOffset);
-
-                    // if a cubic curve is drawn, reduce the point count by 1 to avoid having a little extra space at the end of the graph
-                    if (mUseCubic) {
-                        widthOffset = mWidth / (seriesPointCount - 1);
-                    }
 
                     // used to store first point and set it later as ending point, if a graph fill is selected
                     float firstX = currentOffset;
@@ -474,7 +520,7 @@ public class ValueLineChart extends BaseChart {
 
                         index++;
                     }
-                    Utils.calculateLegendInformation(mSeries.get(0).getSeries(), 0, mLegendPaint);
+                    Utils.calculateLegendInformation(mSeries.get(0).getSeries(), mLeftPadding, mGraphWidth + mLeftPadding, mLegendPaint);
                 }
             }
 
@@ -582,6 +628,7 @@ public class ValueLineChart extends BaseChart {
             canvas.restore();
             if(mShowIndicator && mSeries.size() == 1) {
                 mIndicatorPaint.setColor(mIndicatorColor);
+                mIndicatorPaint.setStrokeWidth(mIndicatorWidth);
                 canvas.drawLine(mTouchedArea.getX(), 0, mTouchedArea.getX(), mGraphHeight, mIndicatorPaint);
 
                 if(mFocusedPoint != null) {
@@ -592,6 +639,11 @@ public class ValueLineChart extends BaseChart {
                 }
             }
 
+            if(mShowStandardValue) {
+                mIndicatorPaint.setColor(mStandardValueColor);
+                mIndicatorPaint.setStrokeWidth(mStandardValueIndicatorHeight);
+                canvas.drawLine(mLeftPadding, mStandardValueY,mLeftPadding + mGraphWidth, mStandardValueY, mIndicatorPaint );
+            }
 
 
         }
@@ -795,17 +847,21 @@ public class ValueLineChart extends BaseChart {
 
     private static final String LOG_TAG = ValueLineChart.class.getSimpleName();
 
-    public static final boolean DEF_USE_CUBIC               = false;
-    public static final boolean DEF_USE_OVERLAP_FILL        = false;
-    public static final float   DEF_LINE_STROKE             = 5f;
-    public static final float   DEF_FIRST_MULTIPLIER        = 0.33f;
-    public static final boolean DEF_SHOW_INDICATOR          = true;
-    public static final float   DEF_INDICATOR_WIDTH         = 2f;
-    public static final int     DEF_INDICATOR_COLOR         = 0xFF0000FF;
+    public static final boolean DEF_USE_CUBIC                       = false;
+    public static final boolean DEF_USE_OVERLAP_FILL                = false;
+    public static final float   DEF_LINE_STROKE                     = 5f;
+    public static final float   DEF_FIRST_MULTIPLIER                = 0.33f;
+    public static final boolean DEF_SHOW_INDICATOR                  = true;
+    public static final float   DEF_INDICATOR_WIDTH                 = 2f;
+    public static final int     DEF_INDICATOR_COLOR                 = 0xFF0000FF;
     // will be interpreted as sp value
-    public static final float   DEF_INDICATOR_TEXT_SIZE     = 15.f;
-    public static final float   DEF_INDICATOR_LEFT_PADDING  = 4.f;
-    public static final float   DEF_INDICATOR_TOP_PADDING   = 4.f;
+    public static final float   DEF_INDICATOR_TEXT_SIZE             = 15.f;
+    public static final float   DEF_INDICATOR_LEFT_PADDING          = 4.f;
+    public static final float   DEF_INDICATOR_TOP_PADDING           = 4.f;
+
+    public static final boolean DEF_SHOW_STANDARD_VALUE             = false;
+    public static final float   DEF_STANDARD_VALUE_INDICATOR_HEIGHT = 2f;
+    public static final int     DEF_STANDARD_VALUE_COLOR            = 0xFF00FF00;
 
     private int                     mUseableGraphHeight;
 
@@ -817,6 +873,8 @@ public class ValueLineChart extends BaseChart {
     private Paint                   mIndicatorPaint;
 
     private List<ValueLineSeries>   mSeries;
+    private float                   mStandardValue = 0;
+    private float                   mStandardValueY;
     private List<LegendModel>       mLegendList;
 
     private IOnPointFocusedListener mListener = null;
@@ -838,6 +896,9 @@ public class ValueLineChart extends BaseChart {
     private float                   mIndicatorTextSize;
     private float                   mIndicatorLeftPadding;
     private float                   mIndicatorTopPadding;
+    private boolean                 mShowStandardValue;
+    private float                   mStandardValueIndicatorHeight;
+    private int                     mStandardValueColor;
 
     protected Matrix                mScale = new Matrix();
 }
