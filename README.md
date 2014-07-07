@@ -90,6 +90,11 @@ Wiki
 
 Changelog
 =========
+**1.0.4**
+* added standard value for line chart and the corresponding XML-attributes
+* fixed some calculation bugs which caused some displaying errors when a lot of data is inserted
+* added clearing methods for Charts
+* fixed the legend calculation function
 
 **1.0.1**
 * added 'eg' namespace for attributes
