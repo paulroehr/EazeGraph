@@ -12,6 +12,7 @@
         <attr name="egValueTextSize"          format="dimension"/>
         <attr name="egValueTextColor"         format="color"/>
         <attr name="egUseCustomInnerValue"    format="boolean"/>
+        <attr name="egOpenClockwise"          format="boolean"/>
 
     </declare-styleable>
 

@@ -97,6 +97,7 @@ public class PieChart extends BaseChart {
         mValueTextSize       = Utils.dpToPx(DEF_VALUE_TEXT_SIZE);
         mValueTextColor      = DEF_VALUE_TEXT_COLOR;
         mUseCustomInnerValue = DEF_USE_CUSTOM_INNER_VALUE;
+        mOpenClockwise       = DEF_OPEN_CLOCKWISE;
 
         initializeGraph();
     }
@@ -128,16 +129,17 @@ public class PieChart extends BaseChart {
 
         try {
 
-            mUseInnerPadding     = a.getBoolean(R.styleable.PieChart_egUseInnerPadding,   DEF_USE_INNER_PADDING);
-            mInnerPadding        = a.getFloat(R.styleable.PieChart_egInnerPadding, DEF_INNER_PADDING);
-            mInnerPaddingOutline = a.getFloat(R.styleable.PieChart_egInnerPaddingOutline, DEF_INNER_PADDING_OUTLINE);
-            mHighlightStrength   = a.getFloat(R.styleable.PieChart_egHighlightStrength, DEF_HIGHLIGHT_STRENGTH);
-            mUsePieRotation      = a.getBoolean(R.styleable.PieChart_egUsePieRotation, DEF_USE_PIE_ROTATION);
-            mAutoCenterInSlice   = a.getBoolean(R.styleable.PieChart_egAutoCenter, DEF_AUTO_CENTER);
-            mDrawValueInPie      = a.getBoolean(R.styleable.PieChart_egDrawValueInPie, DEF_DRAW_VALUE_IN_PIE);
-            mValueTextSize       = a.getDimension(R.styleable.PieChart_egValueTextSize, Utils.dpToPx(DEF_VALUE_TEXT_SIZE));
-            mValueTextColor      = a.getColor(R.styleable.PieChart_egValueTextColor, DEF_VALUE_TEXT_COLOR);
+            mUseInnerPadding     = a.getBoolean(R.styleable.PieChart_egUseInnerPadding,     DEF_USE_INNER_PADDING);
+            mInnerPadding        = a.getFloat(R.styleable.PieChart_egInnerPadding,          DEF_INNER_PADDING);
+            mInnerPaddingOutline = a.getFloat(R.styleable.PieChart_egInnerPaddingOutline,   DEF_INNER_PADDING_OUTLINE);
+            mHighlightStrength   = a.getFloat(R.styleable.PieChart_egHighlightStrength,     DEF_HIGHLIGHT_STRENGTH);
+            mUsePieRotation      = a.getBoolean(R.styleable.PieChart_egUsePieRotation,      DEF_USE_PIE_ROTATION);
+            mAutoCenterInSlice   = a.getBoolean(R.styleable.PieChart_egAutoCenter,          DEF_AUTO_CENTER);
+            mDrawValueInPie      = a.getBoolean(R.styleable.PieChart_egDrawValueInPie,      DEF_DRAW_VALUE_IN_PIE);
+            mValueTextSize       = a.getDimension(R.styleable.PieChart_egValueTextSize,     Utils.dpToPx(DEF_VALUE_TEXT_SIZE));
+            mValueTextColor      = a.getColor(R.styleable.PieChart_egValueTextColor,        DEF_VALUE_TEXT_COLOR);
             mUseCustomInnerValue = a.getBoolean(R.styleable.PieChart_egUseCustomInnerValue, DEF_USE_CUSTOM_INNER_VALUE);
+            mOpenClockwise       = a.getBoolean(R.styleable.PieChart_egOpenClockwise,       DEF_OPEN_CLOCKWISE);
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -619,7 +621,14 @@ public class PieChart extends BaseChart {
                     mGraphPaint.setColor(model.getColor());
 
                     // TODO: put calculation in the animation onUpdate method and provide an animated value
-                    float startAngle = 360 - (model.getEndAngle() * mRevealValue);
+                    float startAngle;
+                    if(mOpenClockwise) {
+                        startAngle = model.getStartAngle() * mRevealValue;
+                    }
+                    else {
+                        startAngle = 360 - model.getEndAngle() * mRevealValue;
+                    }
+
                     float sweepAngle = (model.getEndAngle() - model.getStartAngle()) * mRevealValue;
                     canvas.drawArc(mGraphBounds,
                             startAngle,
@@ -640,11 +649,21 @@ public class PieChart extends BaseChart {
                 // Draw inner white circle
                 if (mUseInnerPadding) {
                     mGraphPaint.setColor(0xFFFFFFFF);
-                    canvas.drawArc(mInnerOutlineBounds,
-                            1,
-                            (360 * -mRevealValue) - 2,
-                            true,
-                            mGraphPaint);
+
+                    if(mOpenClockwise) {
+                        canvas.drawArc(mInnerOutlineBounds,
+                                0,
+                                (360 * mRevealValue),
+                                true,
+                                mGraphPaint);
+                    }
+                    else {
+                        canvas.drawArc(mInnerOutlineBounds,
+                                0,
+                                (360 * -mRevealValue),
+                                true,
+                                mGraphPaint);
+                    }
                 }
             }
             else {
@@ -932,6 +951,7 @@ public class PieChart extends BaseChart {
     public static final float   DEF_VALUE_TEXT_SIZE         = 14.f;
     public static final int     DEF_VALUE_TEXT_COLOR        = 0xFF898989;
     public static final boolean DEF_USE_CUSTOM_INNER_VALUE  = false;
+    public static final boolean DEF_OPEN_CLOCKWISE          = true;
 
     /**
      * The initial fling velocity is divided by this amount.
@@ -969,6 +989,7 @@ public class PieChart extends BaseChart {
     private float               mValueTextSize;
     private int                 mValueTextColor;
     private boolean             mUseCustomInnerValue;
+    private boolean             mOpenClockwise;
 
     private float               mCalculatedInnerPadding;
     private float               mCalculatedInnerPaddingOutline;
