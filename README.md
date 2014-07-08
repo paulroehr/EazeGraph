@@ -75,7 +75,7 @@ Insert in your root project's 'build.gradle' under repositories:
 and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
-        compile 'com.github.blackfizz:eazegraph:1.0.5-SNAPSHOT@aar'
+        compile 'com.github.blackfizz:eazegraph:1.0.6-SNAPSHOT@aar'
     }
 
 That's it. now you are ready to use the library!
@@ -90,6 +90,9 @@ Wiki
 
 Changelog
 =========
+**1.0.6**
+* added possibility to use a custom set inner value in PieChart
+
 **1.0.5**
 * added x-axis for Line Charts
 * Line Charts now support negative values

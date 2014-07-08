@@ -11,6 +11,7 @@
         <attr name="egDrawValueInPie"         format="boolean"/>
         <attr name="egValueTextSize"          format="dimension"/>
         <attr name="egValueTextColor"         format="color"/>
+        <attr name="egUseCustomInnerValue"    format="boolean"/>
 
     </declare-styleable>
 

@@ -26,6 +26,7 @@ public class PieModel extends BaseModel {
     }
 
     public PieModel(float _value, int _color) {
+        super("");
         mValue = _value;
         mColor = _color;
     }

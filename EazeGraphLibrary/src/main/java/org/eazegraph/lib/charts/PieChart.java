@@ -96,6 +96,7 @@ public class PieChart extends BaseChart {
         mDrawValueInPie      = DEF_DRAW_VALUE_IN_PIE;
         mValueTextSize       = Utils.dpToPx(DEF_VALUE_TEXT_SIZE);
         mValueTextColor      = DEF_VALUE_TEXT_COLOR;
+        mUseCustomInnerValue = DEF_USE_CUSTOM_INNER_VALUE;
 
         initializeGraph();
     }
@@ -136,6 +137,7 @@ public class PieChart extends BaseChart {
             mDrawValueInPie      = a.getBoolean(R.styleable.PieChart_egDrawValueInPie, DEF_DRAW_VALUE_IN_PIE);
             mValueTextSize       = a.getDimension(R.styleable.PieChart_egValueTextSize, Utils.dpToPx(DEF_VALUE_TEXT_SIZE));
             mValueTextColor      = a.getColor(R.styleable.PieChart_egValueTextColor, DEF_VALUE_TEXT_COLOR);
+            mUseCustomInnerValue = a.getBoolean(R.styleable.PieChart_egUseCustomInnerValue, DEF_USE_CUSTOM_INNER_VALUE);
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -297,6 +299,15 @@ public class PieChart extends BaseChart {
         mPieData.add(_Slice);
         mTotalValue += _Slice.getValue();
         onDataChanged();
+    }
+
+    public String getInnerValueString() {
+        return mInnerValueString;
+    }
+
+    public void setInnerValueString(String _innerValueString) {
+        mInnerValueString = _innerValueString;
+        mValueView.invalidate();
     }
 
     public void clearChart() {
@@ -732,10 +743,13 @@ public class PieChart extends BaseChart {
 
                 // center text in view
                 // TODO: put boundary calculation out of the onDraw method
-                String value = model.getValue()+"";
-                mValuePaint.getTextBounds(value, 0, value.length(), mValueTextBounds);
+                if(!mUseCustomInnerValue) {
+                    mInnerValueString = model.getValue()+"";
+                }
+
+                mValuePaint.getTextBounds(mInnerValueString, 0, mInnerValueString.length(), mValueTextBounds);
                 canvas.drawText(
-                        value,
+                        mInnerValueString,
                         mInnerBounds.centerX() - (mValueTextBounds.width() / 2),
                         mInnerBounds.centerY() + (mValueTextBounds.height() / 2),
                         mValuePaint
@@ -917,6 +931,7 @@ public class PieChart extends BaseChart {
     public static final boolean DEF_DRAW_VALUE_IN_PIE       = true;
     public static final float   DEF_VALUE_TEXT_SIZE         = 14.f;
     public static final int     DEF_VALUE_TEXT_COLOR        = 0xFF898989;
+    public static final boolean DEF_USE_CUSTOM_INNER_VALUE  = false;
 
     /**
      * The initial fling velocity is divided by this amount.
@@ -942,6 +957,7 @@ public class PieChart extends BaseChart {
     private float               mPieDiameter;
     private float               mPieRadius;
     private float               mTotalValue;
+    private String              mInnerValueString = "";
 
     private boolean             mUseInnerPadding;
     private float               mInnerPadding;
@@ -952,6 +968,7 @@ public class PieChart extends BaseChart {
     private boolean             mDrawValueInPie;
     private float               mValueTextSize;
     private int                 mValueTextColor;
+    private boolean             mUseCustomInnerValue;
 
     private float               mCalculatedInnerPadding;
     private float               mCalculatedInnerPaddingOutline;
