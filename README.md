@@ -14,7 +14,7 @@ So for example it's not possible to push 2D-values in the LineChart and let them
 
 If you want such functionality either you use one of the libraries I named before or you wait some time until I finished a "mathematical plotting"-chart ;)
 
-Currently LineCharts and BarCharts only support positive values. I will provide this functionality later.
+Currently BarCharts only support positive values. I will provide this functionality later.
 
 <b>Your Android application should at least use Android API Level 14 in order to use this library!!!</b>
 
@@ -75,7 +75,7 @@ Insert in your root project's 'build.gradle' under repositories:
 and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
-        compile 'com.github.blackfizz:eazegraph:1.0.4-SNAPSHOT@aar'
+        compile 'com.github.blackfizz:eazegraph:1.0.5-SNAPSHOT@aar'
     }
 
 That's it. now you are ready to use the library!
@@ -90,6 +90,10 @@ Wiki
 
 Changelog
 =========
+**1.0.5**
+* added x-axis for Line Charts
+* Line Charts now support negative values
+
 **1.0.4**
 * added standard value for line chart and the corresponding XML-attributes
 * fixed some calculation bugs which caused some displaying errors when a lot of data is inserted

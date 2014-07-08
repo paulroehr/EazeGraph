@@ -13,8 +13,9 @@
         <attr name="egIndicatorLeftPadding"         format="dimension"/>
         <attr name="egIndicatorTopPadding"          format="dimension"/>
         <attr name="egShowStandardValue"            format="boolean"/>
-        <attr name="egStandardValueIndicatorHeight" format="dimension"/>
+        <attr name="egStandardValueIndicatorStroke" format="dimension"/>
         <attr name="egStandardValueColor"           format="color"/>
+        <attr name="egXAxisStroke"                  format="dimension"/>
     </declare-styleable>
 
 </resources>
