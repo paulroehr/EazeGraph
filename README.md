@@ -75,7 +75,7 @@ Insert in your root project's 'build.gradle' under repositories:
 and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
-        compile 'com.github.blackfizz:eazegraph:1.0.7-SNAPSHOT@aar'
+        compile 'com.github.blackfizz:eazegraph:1.0.8-SNAPSHOT@aar'
     }
 
 That's it. now you are ready to use the library!
@@ -90,6 +90,10 @@ Wiki
 
 Changelog
 =========
+**1.0.8**
+* LineChart's value will now set its position the the left of the indicator, if it doesn't fit on the screen
+* fixed bug where the LineChart GraphOverlay wasn't updated when new values are imported 
+
 **1.0.7**
 * the opening animation can now be opened clockwise or counterclockwise (use attribute "egOpenClockwise"
 

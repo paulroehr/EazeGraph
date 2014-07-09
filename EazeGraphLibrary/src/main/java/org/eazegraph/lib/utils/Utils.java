@@ -133,5 +133,20 @@ public class Utils {
 
     }
 
+    /**
+     * Returns an string with or without the decimal places.
+     * @param _value
+     * @param _showDecimal
+     * @return
+     */
+    public static String getFloatString(float _value, boolean _showDecimal) {
+        if (_showDecimal) {
+            return _value+"";
+        }
+        else {
+            return ((int) _value) + "";
+        }
+    }
+
     private static final String LOG_TAG = Utils.class.getSimpleName();
 }
