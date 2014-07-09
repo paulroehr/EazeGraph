@@ -83,9 +83,9 @@ That's it. now you are ready to use the library!
 Usage
 =====
 
-- Bar Chart
+### Bar Chart
 
-XML:
+##### XML
 
     <org.eazegraph.lib.charts.BarChart
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -97,7 +97,7 @@ XML:
         app:egBarWidth="20dp"
         app:egLegendHeight="40dp"/>
 
-Java:
+##### Java
 
     BarChart mBarChart = (BarChart) findViewById(R.id.barchart);
     
@@ -112,9 +112,10 @@ Java:
     
     mBarChart.startAnimation();
 
-- Stacked Bar Chart
+__________
+### Stacked Bar Chart
  
-XML:
+##### XML
 
     <org.eazegraph.lib.charts.StackedBarChart
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -126,7 +127,7 @@ XML:
         app:egBarWidth="20dp"
         app:egLegendHeight="40dp"/>
 
-Java:
+##### Java
 
     StackedBarChart mStackedBarChart = (StackedBarChart) findViewById(R.id.stackedbarchart);
 
@@ -159,9 +160,10 @@ Java:
 
     mStackedBarChart.startAnimation();
 
-- PieChart
+__________
+### PieChart
  
-XML:
+##### XML
 
      <org.eazegraph.lib.charts.PieChart
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -174,7 +176,7 @@ XML:
         app:egValueTextSize="36sp"/>
 
 
-Java:
+##### Java
 
     PieChart mPieChart = (PieChart) findViewById(R.id.piechart);
     
@@ -185,9 +187,10 @@ Java:
     
     mPieChart.startAnimation();
 
-- Line Chart 
+__________
+### Line Chart 
  
-XML:
+##### XML
 
     <org.eazegraph.lib.charts.ValueLineChart
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -201,7 +204,7 @@ XML:
         app:egLegendHeight="40dp"
         app:egShowStandardValue="true"/>
 
-Java:
+##### Java
 
     ValueLineChart mCubicValueLineChart = (ValueLineChart) findViewById(R.id.cubiclinechart);
     
