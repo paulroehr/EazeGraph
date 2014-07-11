@@ -161,6 +161,11 @@ public class StackedBarChart extends BaseBarChart {
         return mData;
     }
 
+    @Override
+    protected int getDataSize() {
+        return mData.size();
+    }
+
     //##############################################################################################
     // Variables
     //##############################################################################################

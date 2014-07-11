@@ -181,7 +181,9 @@ public abstract class BaseBarChart extends BaseChart {
         mGraph.layout(0, 0, w, (int) (h - mLegendHeight));
         mLegend.layout(0, (int) (h - mLegendHeight), w, h);
 
-        onDataChanged();
+        if(getDataSize() > 0) {
+            onDataChanged();
+        }
     }
 
     @Override
@@ -256,6 +258,7 @@ public abstract class BaseBarChart extends BaseChart {
     protected abstract void calculateBounds(float _Width, float _Margin);
     protected abstract void drawBars(Canvas _Canvas);
     protected abstract List<? extends BaseModel> getLegendData();
+    protected abstract int getDataSize();
 
     //##############################################################################################
     // Graph

@@ -75,7 +75,7 @@ Insert in your root project's 'build.gradle' under repositories:
 and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
-        compile 'com.github.blackfizz:eazegraph:1.0.8-SNAPSHOT@aar'
+        compile 'com.github.blackfizz:eazegraph:1.0.9-SNAPSHOT@aar'
     }
 
 That's it. now you are ready to use the library!
@@ -90,6 +90,9 @@ Wiki
 
 Changelog
 =========
+**1.0.9**
+* fixed bug in BarCharts, when layout size changed and the chart tried to calculate positions for empty elements.
+
 **1.0.8**
 * LineChart's value will now set its position the the left of the indicator, if it doesn't fit on the screen
 * fixed bug where the LineChart GraphOverlay wasn't updated when new values are imported 

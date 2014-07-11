@@ -154,6 +154,11 @@ public class BarChart extends BaseBarChart {
         return mData;
     }
 
+    @Override
+    protected int getDataSize() {
+        return mData.size();
+    }
+
     //##############################################################################################
     // Variables
     //##############################################################################################
