@@ -73,7 +73,7 @@ Insert in your root project's 'build.gradle' under repositories:
 and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
-        compile 'com.github.blackfizz:eazegraph:1.0.9-SNAPSHOT@aar'
+        compile 'com.github.blackfizz:eazegraph:1.0.10-SNAPSHOT@aar'
     }
 
 That's it. now you are ready to use the library!
@@ -232,6 +232,9 @@ Wiki
 
 Changelog
 =========
+**1.0.10**
+* fixed bug in PieChart's current item calculation and autocenter
+
 **1.0.9**
 * fixed bug in BarCharts, when layout size changed and the chart tried to calculate positions for empty elements.
 

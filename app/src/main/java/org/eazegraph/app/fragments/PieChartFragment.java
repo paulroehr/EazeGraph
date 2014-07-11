@@ -67,7 +67,7 @@ public class PieChartFragment extends ChartFragment {
         mPieChart.setOnItemFocusChangedListener(new IOnItemFocusChangedListener() {
             @Override
             public void onItemFocusChanged(int _Position) {
-                Log.d("PieChart", "Position: " + _Position);
+//                Log.d("PieChart", "Position: " + _Position);
             }
         });
     }

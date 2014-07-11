@@ -62,6 +62,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -289,9 +290,8 @@ public class PieChart extends BaseChart {
      * @param rotation The current pie rotation, in degrees.
      */
     public void setPieRotation(int rotation) {
-        rotation = (rotation % 360 + 360) % 360;
-        mPieRotation = rotation;
-        mGraph.rotateTo(rotation);
+        mPieRotation = (rotation % 360 + 360) % 360;
+        mGraph.rotateTo(mPieRotation);
 
         calcCurrentItem();
     }
@@ -519,7 +519,16 @@ public class PieChart extends BaseChart {
      * field accordingly.
      */
     private void calcCurrentItem() {
-        int pointerAngle = (mIndicatorAngle + 360 + mPieRotation) % 360;
+        int pointerAngle;
+
+        // calculate the correct pointer angle, depending on clockwise drawing or not
+        if(mOpenClockwise) {
+            pointerAngle = (mIndicatorAngle + 360 - mPieRotation) % 360;
+        }
+        else {
+            pointerAngle = (mIndicatorAngle + 180 + mPieRotation) % 360;
+        }
+
         for (int i = 0; i < mPieData.size(); ++i) {
             PieModel model = mPieData.get(i);
             if (model.getStartAngle() <= pointerAngle && pointerAngle <= model.getEndAngle()) {
@@ -579,11 +588,18 @@ public class PieChart extends BaseChart {
     private void centerOnCurrentItem() {
         if(!mPieData.isEmpty()) {
             PieModel current = mPieData.get(getCurrentItem());
-            int targetAngle = current.getStartAngle() + (current.getEndAngle() - current.getStartAngle()) / 2;
-            targetAngle -= mIndicatorAngle;
-            if (targetAngle < 0 && mPieRotation > 90) targetAngle += 360;
+            int targetAngle;
 
-            // Fancy animated version
+            if(mOpenClockwise) {
+                targetAngle = (mIndicatorAngle - current.getStartAngle()) - ((current.getEndAngle() - current.getStartAngle()) / 2);
+                if (targetAngle < 0 && mPieRotation > 0) targetAngle += 360;
+            }
+            else {
+                targetAngle = current.getStartAngle() + (current.getEndAngle() - current.getStartAngle()) / 2;
+                targetAngle += mIndicatorAngle;
+                if (targetAngle > 270 && mPieRotation < 90) targetAngle -= 360;
+            }
+
             mAutoCenterAnimator.setIntValues(targetAngle);
             mAutoCenterAnimator.setDuration(AUTOCENTER_ANIM_DURATION).start();
         }
@@ -996,8 +1012,8 @@ public class PieChart extends BaseChart {
 
     private int                 mPieRotation;
     // Indicator is located at the bottom
-    private int                 mIndicatorAngle = 270;
-    private int                 mCurrentItem;
+    private int                 mIndicatorAngle = 90;
+    private int                 mCurrentItem = 0;
 
     private ObjectAnimator      mAutoCenterAnimator;
     private Scroller            mScroller;
