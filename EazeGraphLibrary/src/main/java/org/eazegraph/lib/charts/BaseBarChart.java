@@ -202,8 +202,10 @@ public abstract class BaseBarChart extends BaseChart {
         mGraph = new Graph(getContext());
         addView(mGraph);
 
-        mLegend = new Legend(getContext());
-        addView(mLegend);
+        if (mUseLegend) {
+            mLegend = new Legend(getContext());
+            addView(mLegend);
+        }
 
         mRevealAnimator = ValueAnimator.ofFloat(0, 1);
         mRevealAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -354,6 +356,15 @@ public abstract class BaseBarChart extends BaseChart {
         @Override
         protected void onSizeChanged(int w, int h, int oldw, int oldh) {
             super.onSizeChanged(w, h, oldw, oldh);
+        }
+
+    }
+
+    @Override
+    public void setUseLegend(boolean useLegend) {
+        super.setUseLegend(useLegend);
+        if (mLegend != null) {
+            mLegend.setVisibility(useLegend ? View.VISIBLE : View.GONE);
         }
 
     }

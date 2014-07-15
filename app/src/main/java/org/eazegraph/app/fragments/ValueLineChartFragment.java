@@ -43,6 +43,9 @@ public class ValueLineChartFragment extends ChartFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_value_line_chart, container, false);
         mValueLineChart = (ValueLineChart) view.findViewById(R.id.linechart);
+        mValueLineChart2 = (ValueLineChart) view.findViewById(R.id.linechart2);
+        mValueLineChart.setUseLegend(true);
+        mValueLineChart2.setUseLegend(false);
         loadData();
         return view;
     }
@@ -52,11 +55,13 @@ public class ValueLineChartFragment extends ChartFragment {
     public void onResume() {
         super.onResume();
         mValueLineChart.startAnimation();
+        mValueLineChart2.startAnimation();
     }
 
     @Override
     public void restartAnimation() {
         mValueLineChart.startAnimation();
+        mValueLineChart2.startAnimation();
     }
 
     private void loadData() {
@@ -92,8 +97,16 @@ public class ValueLineChartFragment extends ChartFragment {
                 Log.d("Test", "Pos: " + _PointPos);
             }
         });
+        mValueLineChart2.addSeries(series);
+        mValueLineChart2.setOnPointFocusedListener(new IOnPointFocusedListener() {
+            @Override
+            public void onPointFocused(int _PointPos) {
+                Log.d("Test", "Pos: " + _PointPos);
+            }
+        });
 
     }
 
     private ValueLineChart mValueLineChart;
+    private ValueLineChart mValueLineChart2;
 }

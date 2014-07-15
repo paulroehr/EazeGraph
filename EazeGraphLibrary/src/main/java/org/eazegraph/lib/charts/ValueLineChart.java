@@ -327,8 +327,10 @@ public class ValueLineChart extends BaseChart {
         mGraphOverlay = new GraphOverlay(getContext());
         addView(mGraphOverlay);
 
-        mLegend = new Legend(getContext());
-        addView(mLegend);
+        if (mUseLegend) {
+            mLegend = new Legend(getContext());
+            addView(mLegend);
+        }
 
         mRevealAnimator = ValueAnimator.ofFloat(0, 1);
         mRevealAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -956,6 +958,14 @@ public class ValueLineChart extends BaseChart {
             super.onSizeChanged(w, h, oldw, oldh);
             mLegendWidth = w;
             mLegendHeight = h;
+        }
+    }
+
+    @Override
+    public void setUseLegend(boolean useLegend) {
+        super.setUseLegend(useLegend);
+        if (mLegend != null) {
+            mLegend.setVisibility(useLegend ? View.VISIBLE : View.GONE);
         }
     }
 

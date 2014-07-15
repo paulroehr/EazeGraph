@@ -38,6 +38,9 @@ public class BarChartFragment extends ChartFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_bar_chart, container, false);
         mBarChart = (BarChart) view.findViewById(R.id.barchart);
+        mBarChart.setUseLegend(true);
+        mBarChart2 = (BarChart) view.findViewById(R.id.barchart2);
+        mBarChart2.setUseLegend(false);
         loadData();
         return view;
     }
@@ -46,11 +49,13 @@ public class BarChartFragment extends ChartFragment {
     public void onResume() {
         super.onResume();
         mBarChart.startAnimation();
+        mBarChart2.startAnimation();
     }
 
     @Override
     public void restartAnimation() {
         mBarChart.startAnimation();
+        mBarChart2.startAnimation();
     }
 
     private void loadData() {
@@ -62,7 +67,25 @@ public class BarChartFragment extends ChartFragment {
         mBarChart.addBar(new BarModel(2.f,  0xFF343456));
         mBarChart.addBar(new BarModel(0.4f, 0xFF1FF4AC));
         mBarChart.addBar(new BarModel(4.f,  0xFF1BA4E6));
+        mBarChart.addBar(new BarModel(2.7f, 0xFF56B7F1));
+        mBarChart.addBar(new BarModel(2.f,  0xFF343456));
+        mBarChart.addBar(new BarModel(0.4f, 0xFF1FF4AC));
+        mBarChart.addBar(new BarModel(4.f,  0xFF1BA4E6));
+
+        mBarChart2.addBar(new BarModel(2.3f, 0xFF123456));
+        mBarChart2.addBar(new BarModel(2.f,  0xFF343456));
+        mBarChart2.addBar(new BarModel(3.3f, 0xFF563456));
+        mBarChart2.addBar(new BarModel(1.1f, 0xFF873F56));
+        mBarChart2.addBar(new BarModel(2.7f, 0xFF56B7F1));
+        mBarChart2.addBar(new BarModel(2.f,  0xFF343456));
+        mBarChart2.addBar(new BarModel(0.4f, 0xFF1FF4AC));
+        mBarChart2.addBar(new BarModel(4.f,  0xFF1BA4E6));
+        mBarChart2.addBar(new BarModel(2.7f, 0xFF56B7F1));
+        mBarChart2.addBar(new BarModel(2.f,  0xFF343456));
+        mBarChart2.addBar(new BarModel(0.4f, 0xFF1FF4AC));
+        mBarChart2.addBar(new BarModel(4.f,  0xFF1BA4E6));
     }
 
     private BarChart mBarChart;
+    private BarChart mBarChart2;
 }
