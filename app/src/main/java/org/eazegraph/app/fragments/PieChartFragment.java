@@ -43,6 +43,9 @@ public class PieChartFragment extends ChartFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_pie_chart, container, false);
         mPieChart = (PieChart) view.findViewById(R.id.piechart);
+        mPieChart.setUseLegend(true);
+        mPieChart2 = (PieChart) view.findViewById(R.id.piechart2);
+        mPieChart2.setUseLegend(false);
         loadData();
         return view;
     }
@@ -51,10 +54,12 @@ public class PieChartFragment extends ChartFragment {
     public void onResume() {
         super.onResume();
         mPieChart.startAnimation();
+        mPieChart.startAnimation();
     }
 
     @Override
     public void restartAnimation() {
+        mPieChart.startAnimation();
         mPieChart.startAnimation();
     }
 
@@ -70,7 +75,20 @@ public class PieChartFragment extends ChartFragment {
 //                Log.d("PieChart", "Position: " + _Position);
             }
         });
+
+        mPieChart2.addPieSlice(new PieModel("Freetime", 15, Color.parseColor("#FE6DA8")));
+        mPieChart2.addPieSlice(new PieModel("Sleep", 25, Color.parseColor("#56B7F1")));
+        mPieChart2.addPieSlice(new PieModel("Work", 35, Color.parseColor("#CDA67F")));
+        mPieChart2.addPieSlice(new PieModel("Eating", 9, Color.parseColor("#FED70E")));
+
+        mPieChart2.setOnItemFocusChangedListener(new IOnItemFocusChangedListener() {
+            @Override
+            public void onItemFocusChanged(int _Position) {
+//                Log.d("PieChart", "Position: " + _Position);
+            }
+        });
     }
 
     private PieChart mPieChart;
+    private PieChart mPieChart2;
 }

@@ -16,6 +16,18 @@
         app:egCurveSmoothness="0.4"
         app:egIndicatorColor="#FE6DA8"
         app:egLegendHeight="40dp"
-        app:egShowStandardValue="true"/>
+        app:egShowStandardValue="true"
+        android:layout_marginBottom="16dp" />
+
+    <org.eazegraph.lib.charts.ValueLineChart
+        android:id="@+id/cubiclinechart2"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:egUseCubic="true"
+        app:egUseOverlapFill="true"
+        app:egCurveSmoothness="0.4"
+        app:egIndicatorColor="#FE6DA8"
+        app:egLegendHeight="40dp"
+        app:egShowStandardValue="true" />
 
 </LinearLayout>
