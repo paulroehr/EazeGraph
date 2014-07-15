@@ -407,11 +407,13 @@ public class PieChart extends BaseChart {
         setLayerToSW(mGraph);
         addView(mGraph);
 
-        mValueView = new InnerValueView(getContext());
-        addView(mValueView);
+        if (mUseLegend) {
+            mValueView = new InnerValueView(getContext());
+            addView(mValueView);
 
-        mLegend = new Legend(getContext());
-        addView(mLegend);
+            mLegend = new Legend(getContext());
+            addView(mLegend);
+        }
 
         mRevealAnimator = ValueAnimator.ofFloat(0, 1);
         mRevealAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -950,6 +952,22 @@ public class PieChart extends BaseChart {
         return !mScroller.isFinished() || mAutoCenterAnimator.isRunning();
     }
 
+    @Override
+    public void setUseLegend(boolean useLegend) {
+        super.setUseLegend(useLegend);
+        mUsePieRotation = useLegend;
+        if (mLegend != null) {
+            mLegend.setVisibility(useLegend ? View.VISIBLE : View.GONE);
+        }
+
+        if (mValueView != null) {
+            mValueView.setVisibility(useLegend ? View.VISIBLE : View.GONE);
+        }
+
+        if (useLegend) {
+
+        }
+    }
 
     //##############################################################################################
     // Variables

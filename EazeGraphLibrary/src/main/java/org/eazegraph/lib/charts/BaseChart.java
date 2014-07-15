@@ -106,6 +106,10 @@ public abstract class BaseChart extends ViewGroup {
         mAnimationTime = _animationTime;
     }
 
+    public void setUseLegend(boolean useLegend) {
+        this.mUseLegend = useLegend;
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -167,4 +171,5 @@ public abstract class BaseChart extends ViewGroup {
     protected float             mRevealValue        = 1.0f;
     protected int               mAnimationTime      = 1000;
     protected boolean           mStartedAnimation   = false;
+    protected boolean           mUseLegend          = true;
 }
