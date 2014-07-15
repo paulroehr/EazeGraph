@@ -55,3 +55,7 @@ Thumbs.db
 
 #Mirror
 mirror/
+EazeGraphLibrary/build.gradle
+app/build.gradle
+build.gradle
+gradle/wrapper/gradle-wrapper.properties
