@@ -609,6 +609,11 @@ public class PieChart extends BaseChart {
         return mGraphBounds;
     }
 
+    @Override
+    protected int getDataSize() {
+        return mPieData.size();
+    }
+
     //##############################################################################################
     // Graph
     //##############################################################################################
