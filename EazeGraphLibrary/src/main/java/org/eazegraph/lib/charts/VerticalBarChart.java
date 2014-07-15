@@ -1,36 +1,23 @@
-/**
-*
-*   Copyright (C) 2014 Paul Cech
-*
-*   Licensed under the Apache License, Version 2.0 (the "License");
-*   you may not use this file except in compliance with the License.
-*   You may obtain a copy of the License at
-*
-*   http://www.apache.org/licenses/LICENSE-2.0
-*
-*   Unless required by applicable law or agreed to in writing, software
-*   distributed under the License is distributed on an "AS IS" BASIS,
-*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*   See the License for the specific language governing permissions and
-*   limitations under the License.
-*/
-
 package org.eazegraph.lib.charts;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eazegraph.lib.models.BarModel;
 import org.eazegraph.lib.models.BaseModel;
 import org.eazegraph.lib.utils.Utils;
 
-public class BarChart extends BaseBarChart {
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by Bernat Borrás Paronella on 15/07/2014.
+ */
+public class VerticalBarChart extends BaseBarChart {
 
     /**
      * Simple constructor to use when creating a view from code.
@@ -38,7 +25,7 @@ public class BarChart extends BaseBarChart {
      * @param context The Context the view is running in, through which it can
      *                access the current theme, resources, etc.
      */
-    public BarChart(Context context) {
+    public VerticalBarChart(Context context) {
         super(context);
         initializeGraph();
     }
@@ -58,7 +45,7 @@ public class BarChart extends BaseBarChart {
      *                access the current theme, resources, etc.
      * @param attrs   The attributes of the XML tag that is inflating the view.
      */
-    public BarChart(Context context, AttributeSet attrs) {
+    public VerticalBarChart(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         initializeGraph();
@@ -95,7 +82,7 @@ public class BarChart extends BaseBarChart {
         super.initializeGraph();
         mData = new ArrayList<BarModel>();
 
-        if(this.isInEditMode()) {
+        if (this.isInEditMode()) {
             addBar(new BarModel(2.3f));
             addBar(new BarModel(2.f));
             addBar(new BarModel(3.3f));
@@ -110,25 +97,53 @@ public class BarChart extends BaseBarChart {
         super.onDataChanged();
     }
 
-    protected void calculateBounds(float _Width, float _Margin) {
-        float maxValue = 0;
-        int   last = mLeftPadding;
+    @Override
+    protected void calculateBarPositions(int dataSize) {
 
-        for (BarModel model : mData) {
-            if(model.getValue() > maxValue) {
-                maxValue = model.getValue();
-            }
+        float barHeight = mBarHeight;
+        float margin = mBarMargin;
+
+        if (!mFixedBarHeight) {
+            // calculate the bar width if the bars should be dynamically displayed
+            barHeight = (mGraphHeight / dataSize) - margin;
+        } else {
+            // calculate margin between bars if the bars have a fixed width
+            float cumulatedBarHeights= barHeight * dataSize;
+            float remainingHeight = mGraphHeight - cumulatedBarHeights;
+            margin = remainingHeight / dataSize;
         }
 
-        float heightMultiplier = mGraphHeight / maxValue;
+        calculateBounds(barHeight, margin);
+    }
+
+    protected void calculateBounds(float height, float margin) {
+        float maxValue = 0;
+        int last = mLeftPadding;
 
         for (BarModel model : mData) {
-            float height = model.getValue() * heightMultiplier;
-            last += _Margin / 2;
-            model.setBarBounds(new RectF(last, mGraphHeight - height + mTopPadding, last + _Width, mGraphHeight + mTopPadding));
-            model.setLegendBounds(new RectF(last, 0, last + _Width, mLegendHeight));
-            last += _Width + (_Margin / 2);
+            maxValue = Math.max(model.getValue(), maxValue);
+        }
 
+        float widthMultiplier = mGraphWidth / maxValue;
+
+        for (BarModel model : mData) {
+            float width = model.getValue() * widthMultiplier;
+            last += margin / 2;
+            RectF barBounds = new RectF(0,
+                    last,
+                    last + width,
+                    last + height);
+
+            Log.i(LOG_TAG, model.getLegendLabel() + ":" + barBounds.toString());
+
+            RectF legendBound = new RectF(last,
+                    + last,
+                    last + height,
+                    mLegendHeight);
+
+            model.setBarBounds(barBounds);
+            model.setLegendBounds(legendBound);
+            last += height + (margin / 2);
         }
 
         Utils.calculateLegendInformation(mData, mLeftPadding, mGraphWidth + mLeftPadding, mLegendPaint);
@@ -162,8 +177,7 @@ public class BarChart extends BaseBarChart {
     // Variables
     //##############################################################################################
 
-    private static final String LOG_TAG = BarChart.class.getSimpleName();
+    private static final String LOG_TAG = VerticalBarChart.class.getSimpleName();
 
-    private List<BarModel>  mData;
-
+    private List<BarModel> mData;
 }

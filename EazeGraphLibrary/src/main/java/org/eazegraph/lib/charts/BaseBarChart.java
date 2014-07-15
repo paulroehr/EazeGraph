@@ -44,12 +44,13 @@ public abstract class BaseBarChart extends BaseChart {
     public BaseBarChart(Context context) {
         super(context);
 
-        mBarOutline         = DEF_BAR_OUTLINE;
-        mBarWidth           = Utils.dpToPx(DEF_BAR_WIDTH);
-        mBarMargin          = Utils.dpToPx(DEF_BAR_MARGIN);
-        mFixedBarWidth      = DEF_FIXED_BAR_WIDTH;
-        mBottomAxisColor    = DEF_BOTTOM_AXIS_COLOR;
-        mBottomAxisStroke   = Utils.dpToPx(DEF_BOTTOM_AXIS_STROKE);
+        mBarOutline = DEF_BAR_OUTLINE;
+        mBarWidth = Utils.dpToPx(DEF_BAR_WIDTH);
+        mBarMargin = Utils.dpToPx(DEF_BAR_MARGIN);
+        mFixedBarWidth = DEF_FIXED_BAR_WIDTH;
+        mFixedBarWidth = DEF_FIXED_BAR_HEIGHT;
+        mBottomAxisColor = DEF_BOTTOM_AXIS_COLOR;
+        mBottomAxisStroke = Utils.dpToPx(DEF_BOTTOM_AXIS_STROKE);
     }
 
     /**
@@ -66,7 +67,6 @@ public abstract class BaseBarChart extends BaseChart {
      * @param context The Context the view is running in, through which it can
      *                access the current theme, resources, etc.
      * @param attrs   The attributes of the XML tag that is inflating the view.
-     * @see #View(android.content.Context, android.util.AttributeSet, int)
      */
     public BaseBarChart(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -79,12 +79,14 @@ public abstract class BaseBarChart extends BaseChart {
 
         try {
 
-            mBarOutline         = a.getBoolean(R.styleable.BaseBarChart_egBarOutline,         DEF_BAR_OUTLINE);
-            mBarWidth           = a.getDimension(R.styleable.BaseBarChart_egBarWidth,         Utils.dpToPx(DEF_BAR_WIDTH));
-            mBarMargin          = a.getDimension(R.styleable.BaseBarChart_egBarMargin,        Utils.dpToPx(DEF_BAR_MARGIN));
-            mFixedBarWidth      = a.getBoolean(R.styleable.BaseBarChart_egFixedBarWidth,      DEF_FIXED_BAR_WIDTH);
-            mBottomAxisColor    = a.getColor(R.styleable.BaseBarChart_egBottomAxisColor,      DEF_BOTTOM_AXIS_COLOR);
-            mBottomAxisStroke   = a.getDimension(R.styleable.BaseBarChart_egBottomAxisStroke, Utils.dpToPx(DEF_BOTTOM_AXIS_STROKE));
+            mBarOutline = a.getBoolean(R.styleable.BaseBarChart_egBarOutline, DEF_BAR_OUTLINE);
+            mBarWidth = a.getDimension(R.styleable.BaseBarChart_egBarWidth, Utils.dpToPx(DEF_BAR_WIDTH));
+            mBarHeight = a.getDimension(R.styleable.BaseBarChart_egBarHeight, Utils.dpToPx(DEF_BAR_HEIGHT));
+            mBarMargin = a.getDimension(R.styleable.BaseBarChart_egBarMargin, Utils.dpToPx(DEF_BAR_MARGIN));
+            mFixedBarWidth = a.getBoolean(R.styleable.BaseBarChart_egFixedBarWidth, DEF_FIXED_BAR_WIDTH);
+            mFixedBarHeight = a.getBoolean(R.styleable.BaseBarChart_egFixedBarHeight, DEF_FIXED_BAR_HEIGHT);
+            mBottomAxisColor = a.getColor(R.styleable.BaseBarChart_egBottomAxisColor, DEF_BOTTOM_AXIS_COLOR);
+            mBottomAxisStroke = a.getDimension(R.styleable.BaseBarChart_egBottomAxisStroke, Utils.dpToPx(DEF_BOTTOM_AXIS_STROKE));
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -175,13 +177,13 @@ public abstract class BaseBarChart extends BaseChart {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mWidth  = w;
+        mWidth = w;
         mHeight = h;
 
         mGraph.layout(0, 0, w, (int) (h - mLegendHeight));
         mLegend.layout(0, (int) (h - mLegendHeight), w, h);
 
-        if(getDataSize() > 0) {
+        if (getDataSize() > 0) {
             onDataChanged();
         }
     }
@@ -241,13 +243,12 @@ public abstract class BaseBarChart extends BaseChart {
     protected void calculateBarPositions(int _DataSize) {
 
         float barWidth = mBarWidth;
-        float margin   = mBarMargin;
+        float margin = mBarMargin;
 
-        if(!mFixedBarWidth) {
+        if (!mFixedBarWidth) {
             // calculate the bar width if the bars should be dynamically displayed
             barWidth = (mGraphWidth / _DataSize) - margin;
-        }
-        else {
+        } else {
             // calculate margin between bars if the bars have a fixed width
             float cumulatedBarWidths = barWidth * _DataSize;
             float remainingWidth = mGraphWidth - cumulatedBarWidths;
@@ -258,8 +259,11 @@ public abstract class BaseBarChart extends BaseChart {
     }
 
     protected abstract void calculateBounds(float _Width, float _Margin);
+
     protected abstract void drawBars(Canvas _Canvas);
+
     protected abstract List<? extends BaseModel> getLegendData();
+
     protected abstract int getDataSize();
 
     //##############################################################################################
@@ -301,7 +305,7 @@ public abstract class BaseBarChart extends BaseChart {
         protected void onSizeChanged(int w, int h, int oldw, int oldh) {
             super.onSizeChanged(w, h, oldw, oldh);
             mGraphHeight = h - mTopPadding;
-            mGraphWidth  = w - mLeftPadding - mRightPadding;
+            mGraphWidth = w - mLeftPadding - mRightPadding;
         }
 
     }
@@ -330,17 +334,22 @@ public abstract class BaseBarChart extends BaseChart {
             super.onDraw(canvas);
 
             for (BaseModel model : getLegendData()) {
-                if(model.canShowLabel()) {
-                    RectF bounds = model.getLegendBounds();
-                    canvas.drawText(model.getLegendLabel(), model.getLegendLabelPosition(), bounds.bottom - mMaxFontHeight, mLegendPaint);
-                    canvas.drawLine(
-                            bounds.centerX(),
-                            bounds.bottom - mMaxFontHeight*2 - mLegendTopPadding,
-                            bounds.centerX(),
-                            mLegendTopPadding, mLegendPaint
-                    );
+                if (model.canShowLabel()) {
+                    drawModelLegend(canvas, model);
                 }
             }
+        }
+
+        private void drawModelLegend(Canvas canvas, BaseModel model) {
+            RectF bounds = model.getLegendBounds();
+            canvas.drawText(model.getLegendLabel(),
+                    model.getLegendLabelPosition(),
+                    bounds.bottom - mMaxFontHeight, mLegendPaint);
+            canvas.drawLine(
+                    bounds.centerX(),
+                    bounds.bottom - mMaxFontHeight * 2 - mLegendTopPadding,
+                    bounds.centerX(),
+                    mLegendTopPadding, mLegendPaint);
         }
 
         /**
@@ -376,24 +385,28 @@ public abstract class BaseBarChart extends BaseChart {
     private static final String LOG_TAG = BaseBarChart.class.getSimpleName();
 
     // All float values are dp values and will be converted into px values in the constructor
-    public static final boolean DEF_BAR_OUTLINE         = false;
-    public static final float   DEF_BAR_WIDTH           = 32.f;
-    public static final boolean DEF_FIXED_BAR_WIDTH     = false;
-    public static final float   DEF_BAR_MARGIN          = 12.f;
-    public static final int     DEF_BOTTOM_AXIS_COLOR   = 0xFF121212;
-    public static final float   DEF_BOTTOM_AXIS_STROKE  = 10.f;
+    public static final boolean DEF_BAR_OUTLINE = false;
+    public static final float DEF_BAR_WIDTH = 32.f;
+    public static final float DEF_BAR_HEIGHT = 32.f;
+    public static final boolean DEF_FIXED_BAR_WIDTH = false;
+    public static final boolean DEF_FIXED_BAR_HEIGHT = false;
+    public static final float DEF_BAR_MARGIN = 12.f;
+    public static final int DEF_BOTTOM_AXIS_COLOR = 0xFF121212;
+    public static final float DEF_BOTTOM_AXIS_STROKE = 10.f;
 
-    protected Graph           mGraph;
-    protected Legend          mLegend;
+    protected Graph mGraph;
+    protected Legend mLegend;
 
-    protected Paint           mGraphPaint;
-    protected Paint           mLegendPaint;
+    protected Paint mGraphPaint;
+    protected Paint mLegendPaint;
 
-    protected boolean         mBarOutline;
-    protected float           mBarWidth;
-    protected boolean         mFixedBarWidth;
-    protected float           mBarMargin;
-    protected int             mBottomAxisColor;
-    protected float           mBottomAxisStroke;
+    protected boolean mBarOutline;
+    protected float mBarWidth;
+    protected float mBarHeight;
+    protected boolean mFixedBarWidth;
+    protected boolean mFixedBarHeight;
+    protected float mBarMargin;
+    protected int mBottomAxisColor;
+    protected float mBottomAxisStroke;
 
 }

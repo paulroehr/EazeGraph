@@ -121,7 +121,7 @@ public abstract class BaseChart extends ViewGroup {
 
     protected float calculateMaxTextHeight(Paint _Paint) {
         Rect height = new Rect();
-        String text = "MgHITasger";
+        String text = "MgHITasgerÍ";
         _Paint.getTextBounds(text, 0, text.length(), height);
         mMaxFontHeight = height.height();
         return height.height();
