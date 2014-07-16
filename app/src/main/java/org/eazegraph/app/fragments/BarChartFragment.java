@@ -21,12 +21,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.eazegraph.app.R;
 import org.eazegraph.lib.charts.BarChart;
+import org.eazegraph.lib.charts.BaseBarChart;
 import org.eazegraph.lib.models.BarModel;
 
-public class BarChartFragment extends ChartFragment {
+public class BarChartFragment extends ChartFragment implements BaseBarChart.BarChartListener<BarModel> {
 
     public BarChartFragment() {
         // Required empty public constructor
@@ -39,8 +41,10 @@ public class BarChartFragment extends ChartFragment {
         View view = inflater.inflate(R.layout.fragment_bar_chart, container, false);
         mBarChart = (BarChart) view.findViewById(R.id.barchart);
         mBarChart.setUseLegend(true);
+        mBarChart.setBarChartListener(this);
         mBarChart2 = (BarChart) view.findViewById(R.id.barchart2);
         mBarChart2.setUseLegend(false);
+        mBarChart2.setBarChartListener(this);
         loadData();
         return view;
     }
@@ -88,4 +92,9 @@ public class BarChartFragment extends ChartFragment {
 
     private BarChart mBarChart;
     private BarChart mBarChart2;
+
+    @Override
+    public void onBarClick(BaseBarChart view, int i, BarModel model) {
+        Toast.makeText(getActivity(), "Bar chart: " + i, Toast.LENGTH_SHORT).show();
+    }
 }

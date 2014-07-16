@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Created by Bernat Borrás Paronella on 15/07/2014.
  */
-public class VerticalBarChart extends BaseBarChart {
+public class VerticalBarChart extends BaseBarChart<BarModel> {
 
     /**
      * Simple constructor to use when creating a view from code.
@@ -27,7 +27,6 @@ public class VerticalBarChart extends BaseBarChart {
      */
     public VerticalBarChart(Context context) {
         super(context);
-        initializeGraph();
     }
 
     /**
@@ -47,54 +46,6 @@ public class VerticalBarChart extends BaseBarChart {
      */
     public VerticalBarChart(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        initializeGraph();
-    }
-
-    public void addBar(BarModel _Bar) {
-        mData.add(_Bar);
-        onDataChanged();
-    }
-
-    public void setData(List<BarModel> _List) {
-        mData = _List;
-        onDataChanged();
-    }
-
-    public List<BarModel> getData() {
-        return mData;
-    }
-
-    public void clearChart() {
-        mData.clear();
-        onDataChanged();
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        boolean result = false;
-
-        return result;
-    }
-
-    @Override
-    protected void initializeGraph() {
-        super.initializeGraph();
-        mData = new ArrayList<BarModel>();
-
-        if (this.isInEditMode()) {
-            addBar(new BarModel(2.3f));
-            addBar(new BarModel(2.f));
-            addBar(new BarModel(3.3f));
-            addBar(new BarModel(1.1f));
-            addBar(new BarModel(2.7f));
-        }
-    }
-
-    @Override
-    protected void onDataChanged() {
-        calculateBarPositions(mData.size());
-        super.onDataChanged();
     }
 
     @Override
@@ -114,6 +65,13 @@ public class VerticalBarChart extends BaseBarChart {
         }
 
         calculateBounds(barHeight, margin);
+    }
+
+    @Override
+    protected void setUpEditMode() {
+        addBar(new BarModel(2.3f, 0xFF123456));
+        addBar(new BarModel(2.f, 0xFF343456));
+        addBar(new BarModel(3.3f, 0xFF563456));
     }
 
     protected void calculateBounds(float height, float margin) {
@@ -161,21 +119,10 @@ public class VerticalBarChart extends BaseBarChart {
         }
     }
 
-    @Override
-    protected List<? extends BaseModel> getLegendData() {
-        return mData;
-    }
-
-    @Override
-    protected int getDataSize() {
-        return mData.size();
-    }
-
     //##############################################################################################
     // Variables
     //##############################################################################################
 
     private static final String LOG_TAG = VerticalBarChart.class.getSimpleName();
 
-    private List<BarModel> mData;
 }
