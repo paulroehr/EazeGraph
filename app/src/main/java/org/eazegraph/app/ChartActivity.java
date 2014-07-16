@@ -102,15 +102,18 @@ public class ChartActivity extends Activity
                 mTitle = getString(R.string.nav_bar_chart);
                 break;
             case 1:
-                mTitle = getString(R.string.nav_stacked_bar_chart);
+                mTitle = getString(R.string.nav_vertical_bar_chart);
                 break;
             case 2:
-                mTitle = getString(R.string.nav_pie_chart);
+                mTitle = getString(R.string.nav_stacked_bar_chart);
                 break;
             case 3:
-                mTitle = getString(R.string.nav_value_line_chart);
+                mTitle = getString(R.string.nav_pie_chart);
                 break;
             case 4:
+                mTitle = getString(R.string.nav_value_line_chart);
+                break;
+            case 5:
                 mTitle = getString(R.string.nav_cubic_value_line_chart);
                 break;
         }
