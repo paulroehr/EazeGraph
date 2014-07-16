@@ -18,7 +18,7 @@ import org.eazegraph.lib.utils.Utils;
 /**
  * Created by Paul Cech on 27/05/14.
  */
-public class StackedBarChart extends BaseBarChart {
+public class StackedBarChart extends BaseBarChart<StackedBarModel> {
     /**
      * Simple constructor to use when creating a view from code.
      *
@@ -27,7 +27,6 @@ public class StackedBarChart extends BaseBarChart {
      */
     public StackedBarChart(Context context) {
         super(context);
-        initializeGraph();
     }
 
     /**
@@ -44,59 +43,26 @@ public class StackedBarChart extends BaseBarChart {
      * @param context The Context the view is running in, through which it can
      *                access the current theme, resources, etc.
      * @param attrs   The attributes of the XML tag that is inflating the view.
-     * @see #View(android.content.Context, android.util.AttributeSet, int)
      */
     public StackedBarChart(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initializeGraph();
-    }
-
-    public void addBar(StackedBarModel _Bar) {
-        mData.add(_Bar);
-        onDataChanged();
-    }
-
-    public void setData(List<StackedBarModel> _List) {
-        mData = _List;
-        onDataChanged();
-    }
-
-    public List<StackedBarModel> getData() {
-        return mData;
-    }
-
-    public void clearChart() {
-        mData.clear();
-        onDataChanged();
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        boolean result = false;
+    protected void setUpEditMode() {
+        StackedBarModel s1 = new StackedBarModel();
 
-        return result;
-    }
+        s1.addBar(new BarModel(2.3f, 0xFF123456));
+        s1.addBar(new BarModel(2.f,  0xFF1EF556));
+        s1.addBar(new BarModel(3.3f, 0xFF1BA4E6));
 
-    @Override
-    protected void initializeGraph() {
-        super.initializeGraph();
-        mData = new ArrayList<StackedBarModel>();
+        StackedBarModel s2 = new StackedBarModel();
+        s2.addBar(new BarModel(1.1f, 0xFF123456));
+        s2.addBar(new BarModel(2.7f, 0xFF1EF556));
+        s2.addBar(new BarModel(0.7f, 0xFF1BA4E6));
 
-        if(this.isInEditMode()) {
-            StackedBarModel s1 = new StackedBarModel();
-
-            s1.addBar(new BarModel(2.3f, 0xFF123456));
-            s1.addBar(new BarModel(2.f,  0xFF1EF556));
-            s1.addBar(new BarModel(3.3f, 0xFF1BA4E6));
-
-            StackedBarModel s2 = new StackedBarModel();
-            s2.addBar(new BarModel(1.1f, 0xFF123456));
-            s2.addBar(new BarModel(2.7f, 0xFF1EF556));
-            s2.addBar(new BarModel(0.7f, 0xFF1BA4E6));
-
-            addBar(s1);
-            addBar(s2);
-        }
+        addBar(s1);
+        addBar(s2);
     }
 
     @Override
@@ -157,11 +123,6 @@ public class StackedBarChart extends BaseBarChart {
     }
 
     @Override
-    protected List<? extends BaseModel> getLegendData() {
-        return mData;
-    }
-
-    @Override
     protected int getDataSize() {
         return mData.size();
     }
@@ -171,7 +132,5 @@ public class StackedBarChart extends BaseBarChart {
     //##############################################################################################
 
     private static final String LOG_TAG = BarChart.class.getSimpleName();
-
-    private List<StackedBarModel>  mData;
 
 }

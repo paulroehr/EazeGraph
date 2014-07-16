@@ -22,18 +22,23 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eazegraph.lib.R;
+import org.eazegraph.lib.models.BarModel;
 import org.eazegraph.lib.models.BaseModel;
+import org.eazegraph.lib.models.StackedBarModel;
 import org.eazegraph.lib.utils.Utils;
 
-public abstract class BaseBarChart extends BaseChart {
+public abstract class BaseBarChart<K extends BaseModel> extends BaseChart {
 
     /**
      * Simple constructor to use when creating a view from code.
@@ -51,6 +56,8 @@ public abstract class BaseBarChart extends BaseChart {
         mFixedBarWidth = DEF_FIXED_BAR_HEIGHT;
         mBottomAxisColor = DEF_BOTTOM_AXIS_COLOR;
         mBottomAxisStroke = Utils.dpToPx(DEF_BOTTOM_AXIS_STROKE);
+
+        initializeGraph();
     }
 
     /**
@@ -93,6 +100,7 @@ public abstract class BaseBarChart extends BaseChart {
             a.recycle();
         }
 
+        initializeGraph();
     }
 
     public boolean isBarOutline() {
@@ -149,16 +157,6 @@ public abstract class BaseBarChart extends BaseChart {
         invalidate();
     }
 
-    /**
-     * Implement this to do your drawing.
-     *
-     * @param canvas the canvas on which the background will be drawn
-     */
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-    }
-
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
 
@@ -190,6 +188,11 @@ public abstract class BaseBarChart extends BaseChart {
 
     @Override
     protected void initializeGraph() {
+
+        mData = new ArrayList<K>();
+
+        setUpEditMode();
+
         mGraphPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mGraphPaint.setStyle(Paint.Style.FILL);
 
@@ -240,6 +243,8 @@ public abstract class BaseBarChart extends BaseChart {
 
     }
 
+    protected abstract void setUpEditMode();
+
     protected void calculateBarPositions(int _DataSize) {
 
         float barWidth = mBarWidth;
@@ -262,14 +267,55 @@ public abstract class BaseBarChart extends BaseChart {
 
     protected abstract void drawBars(Canvas _Canvas);
 
-    protected abstract List<? extends BaseModel> getLegendData();
+    public void clearChart() {
+        mData.clear();
+        onDataChanged();
+    }
 
-    protected abstract int getDataSize();
+    public void addBar(K _Bar) {
+        mData.add(_Bar);
+        onDataChanged();
+    }
+
+    public void setData(List<K> _List) {
+        mData = _List;
+        onDataChanged();
+    }
+
+    public List<K> getData() {
+        return mData;
+    }
+
+    protected List<K> getLegendData() {
+        return mData;
+    }
+
+    protected int getDataSize() {
+        return mData.size();
+    }
+
+    @Override
+    protected void onDataChanged() {
+        calculateBarPositions(mData.size());
+        super.onDataChanged();
+    }
+
+    public BarChartListener getBarChartListener() {
+        return barChartListener;
+    }
+
+    public void setBarChartListener(BarChartListener barChartListener) {
+        this.barChartListener = barChartListener;
+    }
 
     //##############################################################################################
     // Graph
     //##############################################################################################
     protected class Graph extends View {
+
+        private float oldX;
+        private float oldY;
+
         /**
          * Simple constructor to use when creating a view from code.
          *
@@ -308,6 +354,48 @@ public abstract class BaseBarChart extends BaseChart {
             mGraphWidth = w - mLeftPadding - mRightPadding;
         }
 
+
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            if (event != null && event.getAction() == MotionEvent.ACTION_UP) {
+                oldX = event.getX();
+                oldY = event.getY();
+
+                boolean result = false;
+                K item = null;
+                for (K k : mData) {
+                    RectF r;
+                    if (k instanceof BarModel) {
+                        r = ((BarModel) k).getBarBounds();
+                        result = checkRectAndPoint(r, oldX, oldY);
+                    } else if (k instanceof StackedBarModel) {
+                        r = ((StackedBarModel) k).getBounds();
+                        result = checkRectAndPoint(r, oldX, oldY);
+                    }
+
+                    if (result) {
+                        item = k;
+                        break;
+                    }
+                }
+
+                if (result && barChartListener != null) {
+                    barChartListener.onBarClick(BaseBarChart.this, mData.indexOf(item), item);
+                }
+
+                invalidate();
+            }
+
+            return true;
+        }
+
+        private boolean checkRectAndPoint(RectF r, float oldX, float oldY) {
+            if (r == null) {
+                return false;
+            } else {
+                return r.contains(oldX, oldY);
+            }
+        }
     }
 
     //##############################################################################################
@@ -384,6 +472,10 @@ public abstract class BaseBarChart extends BaseChart {
 
     private static final String LOG_TAG = BaseBarChart.class.getSimpleName();
 
+    public interface BarChartListener<K> {
+        void onBarClick(BaseBarChart view, int position, K model);
+    }
+
     // All float values are dp values and will be converted into px values in the constructor
     public static final boolean DEF_BAR_OUTLINE = false;
     public static final float DEF_BAR_WIDTH = 32.f;
@@ -408,5 +500,6 @@ public abstract class BaseBarChart extends BaseChart {
     protected float mBarMargin;
     protected int mBottomAxisColor;
     protected float mBottomAxisStroke;
-
+    protected List<K> mData;
+    private BarChartListener barChartListener;
 }

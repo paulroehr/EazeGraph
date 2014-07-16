@@ -39,9 +39,9 @@ public abstract class BaseChart extends ViewGroup {
     protected BaseChart(Context context) {
         super(context);
 
-        mLegendHeight   = Utils.dpToPx(DEF_LEGEND_HEIGHT);
+        mLegendHeight = Utils.dpToPx(DEF_LEGEND_HEIGHT);
         mLegendTextSize = Utils.dpToPx(DEF_LEGEND_TEXT_SIZE);
-        mAnimationTime  = DEF_ANIMATION_TIME;
+        mAnimationTime = DEF_ANIMATION_TIME;
     }
 
     /**
@@ -58,7 +58,6 @@ public abstract class BaseChart extends ViewGroup {
      * @param context The Context the view is running in, through which it can
      *                access the current theme, resources, etc.
      * @param attrs   The attributes of the XML tag that is inflating the view.
-     * @see #View(android.content.Context, android.util.AttributeSet, int)
      */
     public BaseChart(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -71,9 +70,9 @@ public abstract class BaseChart extends ViewGroup {
 
         try {
 
-            mLegendHeight       = a.getDimension(R.styleable.BaseChart_egLegendHeight,     Utils.dpToPx(DEF_LEGEND_HEIGHT));
-            mLegendTextSize     = a.getDimension(R.styleable.BaseChart_egLegendTextSize,   Utils.dpToPx(DEF_LEGEND_TEXT_SIZE));
-            mAnimationTime      = a.getInt(R.styleable.BaseChart_egAnimationTime,          DEF_ANIMATION_TIME);
+            mLegendHeight = a.getDimension(R.styleable.BaseChart_egLegendHeight, Utils.dpToPx(DEF_LEGEND_HEIGHT));
+            mLegendTextSize = a.getDimension(R.styleable.BaseChart_egLegendTextSize, Utils.dpToPx(DEF_LEGEND_TEXT_SIZE));
+            mAnimationTime = a.getInt(R.styleable.BaseChart_egAnimationTime, DEF_ANIMATION_TIME);
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -113,10 +112,10 @@ public abstract class BaseChart extends ViewGroup {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mLeftPadding    = getPaddingLeft();
-        mTopPadding     = getPaddingTop();
-        mRightPadding   = getPaddingRight();
-        mBottomPadding  = getPaddingBottom();
+        mLeftPadding = getPaddingLeft();
+        mTopPadding = getPaddingTop();
+        mRightPadding = getPaddingRight();
+        mBottomPadding = getPaddingBottom();
     }
 
     protected float calculateMaxTextHeight(Paint _Paint) {
@@ -128,12 +127,14 @@ public abstract class BaseChart extends ViewGroup {
     }
 
     public void startAnimation() {
-        if(mRevealAnimator != null) {
+        if (mRevealAnimator != null) {
             mStartedAnimation = true;
             mRevealAnimator.setDuration(mAnimationTime).start();
         }
     }
+
     protected abstract void initializeGraph();
+
     protected void onDataChanged() {
         invalidate();
     }
@@ -143,33 +144,33 @@ public abstract class BaseChart extends ViewGroup {
     //##############################################################################################
 
 
-    public static final float   DEF_LEGEND_HEIGHT       = 58.f;
-    public static final int     DEF_LEGEND_COLOR        = 0xFF898989;
+    public static final float DEF_LEGEND_HEIGHT = 58.f;
+    public static final int DEF_LEGEND_COLOR = 0xFF898989;
     // will be interpreted as sp value
-    public static final float   DEF_LEGEND_TEXT_SIZE    = 12.f;
-    public static final int     DEF_ANIMATION_TIME      = 2000;
+    public static final float DEF_LEGEND_TEXT_SIZE = 12.f;
+    public static final int DEF_ANIMATION_TIME = 2000;
 
-    protected int               mHeight;
-    protected int               mWidth;
+    protected int mHeight;
+    protected int mWidth;
 
-    protected int               mGraphWidth;
-    protected int               mGraphHeight;
+    protected int mGraphWidth;
+    protected int mGraphHeight;
 
-    protected float             mLegendWidth;
-    protected float             mLegendHeight;
-    protected float             mLegendTextSize;
+    protected float mLegendWidth;
+    protected float mLegendHeight;
+    protected float mLegendTextSize;
 
-    protected int               mLeftPadding;
-    protected int               mTopPadding;
-    protected int               mRightPadding;
-    protected int               mBottomPadding;
+    protected int mLeftPadding;
+    protected int mTopPadding;
+    protected int mRightPadding;
+    protected int mBottomPadding;
 
-    protected float             mMaxFontHeight;
-    protected float             mLegendTopPadding = Utils.dpToPx(4.f);
+    protected float mMaxFontHeight;
+    protected float mLegendTopPadding = Utils.dpToPx(4.f);
 
-    protected ValueAnimator     mRevealAnimator     = null;
-    protected float             mRevealValue        = 1.0f;
-    protected int               mAnimationTime      = 1000;
-    protected boolean           mStartedAnimation   = false;
-    protected boolean           mUseLegend          = true;
+    protected ValueAnimator mRevealAnimator = null;
+    protected float mRevealValue = 1.0f;
+    protected int mAnimationTime = 1000;
+    protected boolean mStartedAnimation = false;
+    protected boolean mUseLegend = true;
 }

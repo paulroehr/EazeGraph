@@ -85,8 +85,10 @@ public class Utils {
                 Rect textBounds = new Rect();
                 RectF legendBounds = model.getLegendBounds();
 
-                _Paint.getTextBounds(model.getLegendLabel(), 0, model.getLegendLabel().length(), textBounds);
-                model.setTextBounds(textBounds);
+                if (_Paint != null) {
+                    _Paint.getTextBounds(model.getLegendLabel(), 0, model.getLegendLabel().length(), textBounds);
+                    model.setTextBounds(textBounds);
+                }
 
                 float centerX           = legendBounds.centerX();
                 float centeredTextPos   = centerX - (textBounds.width() / 2);
