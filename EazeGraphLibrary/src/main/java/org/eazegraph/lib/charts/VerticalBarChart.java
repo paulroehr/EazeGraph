@@ -130,11 +130,9 @@ public class VerticalBarChart extends BaseBarChart {
             float width = model.getValue() * widthMultiplier;
             last += margin / 2;
             RectF barBounds = new RectF(0,
-                    last,
+                    last + 10,
                     last + width,
-                    last + height);
-
-            Log.i(LOG_TAG, model.getLegendLabel() + ":" + barBounds.toString());
+                    last + (height - 10));
 
             RectF legendBound = new RectF(last,
                     + last,
@@ -157,8 +155,8 @@ public class VerticalBarChart extends BaseBarChart {
 
             canvas.drawRect(
                     bounds.left,
-                    bounds.bottom - (bounds.height() * mRevealValue),
-                    bounds.right,
+                    bounds.top,
+                    bounds.left  + (bounds.width() * mRevealValue),
                     bounds.bottom, mGraphPaint);
         }
     }
