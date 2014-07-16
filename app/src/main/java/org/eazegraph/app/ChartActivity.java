@@ -31,6 +31,8 @@ import org.eazegraph.app.fragments.CubicValueLineChartFragment;
 import org.eazegraph.app.fragments.PieChartFragment;
 import org.eazegraph.app.fragments.StackedBarChartFragment;
 import org.eazegraph.app.fragments.ValueLineChartFragment;
+import org.eazegraph.app.fragments.VerticalBarChartFragment;
+import org.eazegraph.lib.charts.VerticalBarChart;
 
 public class ChartActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -69,15 +71,18 @@ public class ChartActivity extends Activity
                 mCurrentFragment = new BarChartFragment();
                 break;
             case 1:
-                mCurrentFragment = new StackedBarChartFragment();
+                mCurrentFragment = new VerticalBarChartFragment();
                 break;
             case 2:
-                mCurrentFragment = new PieChartFragment();
+                mCurrentFragment = new StackedBarChartFragment();
                 break;
             case 3:
-                mCurrentFragment = new ValueLineChartFragment();
+                mCurrentFragment = new PieChartFragment();
                 break;
             case 4:
+                mCurrentFragment = new ValueLineChartFragment();
+                break;
+            case 5:
                 mCurrentFragment = new CubicValueLineChartFragment();
                 break;
             default:
