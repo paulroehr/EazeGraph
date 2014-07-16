@@ -191,7 +191,9 @@ public abstract class BaseBarChart<K extends BaseModel> extends BaseChart {
 
         mData = new ArrayList<K>();
 
-        setUpEditMode();
+        if (isInEditMode()) {
+            setUpEditMode();
+        }
 
         mGraphPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mGraphPaint.setStyle(Paint.Style.FILL);
@@ -296,7 +298,15 @@ public abstract class BaseBarChart<K extends BaseModel> extends BaseChart {
 
     @Override
     protected void onDataChanged() {
-        calculateBarPositions(mData.size());
+        int size = 0;
+
+        for (K k : mData) {
+            if (!k.isIgnore()) {
+                size++;
+            }
+        }
+
+        calculateBarPositions(size);
         super.onDataChanged();
     }
 

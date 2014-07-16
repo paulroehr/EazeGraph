@@ -83,6 +83,6 @@ public class VerticalBarChartFragment extends ChartFragment implements BaseBarCh
 
     @Override
     public void onBarClick(BaseBarChart view, int i, BarModel model) {
-        Toast.makeText(getActivity(), "Vertical Bar chart 1: " + i, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Vertical Bar chart: " + ChartData.values.get(i).value, Toast.LENGTH_SHORT).show();
     }
 }

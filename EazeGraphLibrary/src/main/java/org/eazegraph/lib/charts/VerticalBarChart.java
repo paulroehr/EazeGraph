@@ -59,8 +59,8 @@ public class VerticalBarChart extends BaseBarChart<BarModel> {
             barHeight = (mGraphHeight / dataSize) - margin;
         } else {
             // calculate margin between bars if the bars have a fixed width
-            float cumulatedBarHeights= barHeight * dataSize;
-            float remainingHeight = mGraphHeight - cumulatedBarHeights;
+            float accumulatedBarHeights = barHeight * dataSize;
+            float remainingHeight = mGraphHeight - accumulatedBarHeights;
             margin = remainingHeight / dataSize;
         }
 
@@ -85,21 +85,23 @@ public class VerticalBarChart extends BaseBarChart<BarModel> {
         float widthMultiplier = mGraphWidth / maxValue;
 
         for (BarModel model : mData) {
-            float width = model.getValue() * widthMultiplier;
-            last += margin / 2;
-            RectF barBounds = new RectF(0,
-                    last + 10,
-                    last + width,
-                    last + (height - 10));
+            if (!model.isIgnore()) {
+                float width = model.getValue() * widthMultiplier;
+                last += margin / 2;
+                RectF barBounds = new RectF(0,
+                        last + 10,
+                        width,
+                        last + (height - 10));
 
-            RectF legendBound = new RectF(last,
-                    + last,
-                    last + height,
-                    mLegendHeight);
+                RectF legendBound = new RectF(last,
+                        +last,
+                        last + height,
+                        mLegendHeight);
 
-            model.setBarBounds(barBounds);
-            model.setLegendBounds(legendBound);
-            last += height + (margin / 2);
+                model.setBarBounds(barBounds);
+                model.setLegendBounds(legendBound);
+                last += height + (margin / 2);
+            }
         }
 
         Utils.calculateLegendInformation(mData, mLeftPadding, mGraphWidth + mLeftPadding, mLegendPaint);
@@ -111,11 +113,13 @@ public class VerticalBarChart extends BaseBarChart<BarModel> {
             RectF bounds = model.getBarBounds();
             mGraphPaint.setColor(model.getColor());
 
-            canvas.drawRect(
-                    bounds.left,
-                    bounds.top,
-                    bounds.left  + (bounds.width() * mRevealValue),
-                    bounds.bottom, mGraphPaint);
+            if (bounds != null) {
+                canvas.drawRect(
+                        bounds.left,
+                        bounds.top,
+                        bounds.left + (bounds.width() * mRevealValue),
+                        bounds.bottom, mGraphPaint);
+            }
         }
     }
 
