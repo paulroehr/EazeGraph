@@ -21,13 +21,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.eazegraph.app.R;
+import org.eazegraph.lib.charts.BaseBarChart;
 import org.eazegraph.lib.charts.StackedBarChart;
 import org.eazegraph.lib.models.BarModel;
 import org.eazegraph.lib.models.StackedBarModel;
 
-public class StackedBarChartFragment extends ChartFragment {
+public class StackedBarChartFragment extends ChartFragment implements BaseBarChart.BarChartListener<StackedBarModel> {
 
     public StackedBarChartFragment() {
         // Required empty public constructor
@@ -39,6 +41,10 @@ public class StackedBarChartFragment extends ChartFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_stacked_bar_chart, container, false);
         mStackedBarChart = (StackedBarChart) view.findViewById(R.id.stackedbarchart);
+        mStackedBarChart.setUseLegend(true);
+        mStackedBarChart.setBarChartListener(this);
+        mStackedBarChart2 = (StackedBarChart) view.findViewById(R.id.stackedbarchart2);
+        mStackedBarChart2.setUseLegend(false);
         loadData();
         return view;
     }
@@ -47,11 +53,13 @@ public class StackedBarChartFragment extends ChartFragment {
     public void onResume() {
         super.onResume();
         mStackedBarChart.startAnimation();
+        mStackedBarChart2.startAnimation();
     }
 
     @Override
     public void restartAnimation() {
         mStackedBarChart.startAnimation();
+        mStackedBarChart2.startAnimation();
     }
 
     private void loadData() {
@@ -107,7 +115,21 @@ public class StackedBarChartFragment extends ChartFragment {
         mStackedBarChart.addBar(s6);
         mStackedBarChart.addBar(s7);
         mStackedBarChart.addBar(s8);
+        mStackedBarChart2.addBar(s1);
+        mStackedBarChart2.addBar(s2);
+        mStackedBarChart2.addBar(s3);
+        mStackedBarChart2.addBar(s4);
+        mStackedBarChart2.addBar(s5);
+        mStackedBarChart2.addBar(s6);
+        mStackedBarChart2.addBar(s7);
+        mStackedBarChart2.addBar(s8);
     }
 
     private StackedBarChart mStackedBarChart;
+    private StackedBarChart mStackedBarChart2;
+
+    @Override
+    public void onBarClick(BaseBarChart view, int position, StackedBarModel model) {
+        Toast.makeText(getActivity(), "Stacked Bar chart 1: " + position, Toast.LENGTH_SHORT).show();
+    }
 }

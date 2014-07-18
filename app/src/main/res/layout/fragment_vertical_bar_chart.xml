@@ -6,23 +6,23 @@
     android:orientation="vertical"
     tools:context="de.eazegraph.app.fragments.BarChartFragment">
 
-    <org.eazegraph.lib.charts.BarChart
-        android:id="@+id/barchart"
+    <org.eazegraph.lib.charts.VerticalBarChart
+        android:id="@+id/verticalbarchart"
         android:layout_width="match_parent"
         android:layout_height="256dp"
         android:padding="10dp"
-        app:egFixedBarWidth="true"
-        app:egBarWidth="20dp"
+        app:egFixedBarHeight="true"
+        app:egBarHeight="20dp"
         app:egLegendHeight="40dp"
         android:layout_marginBottom="16dp" />
 
-    <org.eazegraph.lib.charts.BarChart
-        android:id="@+id/barchart2"
+    <org.eazegraph.lib.charts.VerticalBarChart
+        android:id="@+id/verticalbarchart2"
         android:layout_width="match_parent"
         android:layout_height="256dp"
         android:padding="10dp"
-        app:egFixedBarWidth="true"
-        app:egBarWidth="20dp"
+        app:egFixedBarHeight="true"
+        app:egBarHeight="20dp"
         app:egLegendHeight="40dp" />
 
 

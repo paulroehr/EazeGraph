@@ -15,6 +15,16 @@
         app:egUseOverlapFill="false"
         app:egCurveSmoothness="0.4"
         app:egIndicatorColor="#FE6DA8"
+        app:egLegendHeight="40dp"
+        android:layout_marginBottom="16dp" />
+    <org.eazegraph.lib.charts.ValueLineChart
+        android:id="@+id/linechart2"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:egUseCubic="false"
+        app:egUseOverlapFill="false"
+        app:egCurveSmoothness="0.4"
+        app:egIndicatorColor="#FE6DA8"
         app:egLegendHeight="40dp"/>
 
 </LinearLayout>

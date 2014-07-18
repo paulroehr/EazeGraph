@@ -102,6 +102,7 @@ public class NavigationDrawerFragment extends Fragment {
                 android.R.id.text1,
                 new String[]{
                         getString(R.string.nav_bar_chart),
+                        getString(R.string.nav_vertical_bar_chart),
                         getString(R.string.nav_stacked_bar_chart),
                         getString(R.string.nav_pie_chart),
                         getString(R.string.nav_value_line_chart),

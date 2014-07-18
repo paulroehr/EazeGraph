@@ -43,6 +43,9 @@ public class CubicValueLineChartFragment extends ChartFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cubic_value_line_chart, container, false);
         mCubicValueLineChart = (ValueLineChart) view.findViewById(R.id.cubiclinechart);
+        mCubicValueLineChart.setUseLegend(true);
+        mCubicValueLineChart2 = (ValueLineChart) view.findViewById(R.id.cubiclinechart2);
+        mCubicValueLineChart2.setUseLegend(false);
         loadData();
         return view;
     }
@@ -52,11 +55,13 @@ public class CubicValueLineChartFragment extends ChartFragment {
     public void onResume() {
         super.onResume();
         mCubicValueLineChart.startAnimation();
+        mCubicValueLineChart2.startAnimation();
     }
 
     @Override
     public void restartAnimation() {
         mCubicValueLineChart.startAnimation();
+        mCubicValueLineChart2.startAnimation();
     }
 
     private void loadData() {
@@ -115,8 +120,18 @@ public class CubicValueLineChartFragment extends ChartFragment {
                 Log.d("Test", "Pos: " + _PointPos);
             }
         });
+//        mCubicValueLineChart.addSeries(series1);
+        mCubicValueLineChart2.addSeries(series);
+        mCubicValueLineChart2.addStandardValue(2.3f);
+        mCubicValueLineChart2.setOnPointFocusedListener(new IOnPointFocusedListener() {
+            @Override
+            public void onPointFocused(int _PointPos) {
+                Log.d("Test", "Pos: " + _PointPos);
+            }
+        });
 
     }
 
     private ValueLineChart mCubicValueLineChart;
+    private ValueLineChart mCubicValueLineChart2;
 }
