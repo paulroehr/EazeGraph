@@ -75,36 +75,36 @@ public class VerticalBarChart extends BaseBarChart<BarModel> {
     }
 
     protected void calculateBounds(float height, float margin) {
-        float maxValue = 0;
-        int last = mLeftPadding;
+        if (getDataSize() > 0) {
+            int usableHeight = mGraphHeight - mBottomPadding -  mTopPadding;
 
-        for (BarModel model : mData) {
-            maxValue = Math.max(model.getValue(), maxValue);
-        }
+            float maxValue = 0;
 
-        float widthMultiplier = mGraphWidth / maxValue;
+            for (BarModel model : mData) {
+                maxValue = Math.max(model.getValue(), maxValue);
+            }
 
-        for (BarModel model : mData) {
-            if (!model.isIgnore()) {
-                float width = model.getValue() * widthMultiplier;
-                last += margin / 2;
-                RectF barBounds = new RectF(0,
-                        last + 10,
-                        width,
-                        last + (height - 10));
+            float widthMultiplier = mGraphWidth / maxValue;
+            float heightMultipier = usableHeight / (getDataSize() * 2);
 
-                RectF legendBound = new RectF(last,
-                        +last,
-                        last + height,
-                        mLegendHeight);
+            float top = mTopPadding + heightMultipier;
 
-                model.setBarBounds(barBounds);
-                model.setLegendBounds(legendBound);
-                last += height + (margin / 2);
+            for (BarModel model : mData) {
+                if (!model.isIgnore() && mGraphWidth > 0) {
+                    float width = model.getValue() * widthMultiplier;
+                    float bottom = top + heightMultipier;
+
+                    RectF barBounds = new RectF(0,
+                            top,
+                            width,
+                            bottom);
+
+                    top = bottom + heightMultipier;
+
+                    model.setBarBounds(barBounds);
+                }
             }
         }
-
-        Utils.calculateLegendInformation(mData, mLeftPadding, mGraphWidth + mLeftPadding, mLegendPaint);
     }
 
     protected void drawBars(Canvas canvas) {
@@ -118,7 +118,7 @@ public class VerticalBarChart extends BaseBarChart<BarModel> {
                         bounds.left,
                         bounds.top,
                         bounds.left + (bounds.width() * mRevealValue),
-                        bounds.bottom, mGraphPaint);
+                        bounds.top + bounds.height(), mGraphPaint);
             }
         }
     }
@@ -129,4 +129,7 @@ public class VerticalBarChart extends BaseBarChart<BarModel> {
 
     private static final String LOG_TAG = VerticalBarChart.class.getSimpleName();
 
+    public void notifyOnDataChanged() {
+        onDataChanged();
+    }
 }

@@ -106,6 +106,9 @@ public abstract class BaseChart extends ViewGroup {
     }
 
     public void setUseLegend(boolean useLegend) {
+        if (!useLegend) {
+            setLegendHeight(0);
+        }
         this.mUseLegend = useLegend;
     }
 

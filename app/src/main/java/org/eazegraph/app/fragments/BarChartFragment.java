@@ -64,30 +64,12 @@ public class BarChartFragment extends ChartFragment implements BaseBarChart.BarC
 
     private void loadData() {
         mBarChart.addBar(new BarModel(2.3f, 0xFF123456));
-        mBarChart.addBar(new BarModel(2.f,  0xFF343456));
+        mBarChart.addBar(new BarModel(2.f, 0xFF343456));
         mBarChart.addBar(new BarModel(3.3f, 0xFF563456));
-        mBarChart.addBar(new BarModel(1.1f, 0xFF873F56));
-        mBarChart.addBar(new BarModel(2.7f, 0xFF56B7F1));
-        mBarChart.addBar(new BarModel(2.f,  0xFF343456));
-        mBarChart.addBar(new BarModel(0.4f, 0xFF1FF4AC));
-        mBarChart.addBar(new BarModel(4.f,  0xFF1BA4E6));
-        mBarChart.addBar(new BarModel(2.7f, 0xFF56B7F1));
-        mBarChart.addBar(new BarModel(2.f,  0xFF343456));
-        mBarChart.addBar(new BarModel(0.4f, 0xFF1FF4AC));
-        mBarChart.addBar(new BarModel(4.f,  0xFF1BA4E6));
 
         mBarChart2.addBar(new BarModel(2.3f, 0xFF123456));
-        mBarChart2.addBar(new BarModel(2.f,  0xFF343456));
+        mBarChart2.addBar(new BarModel(2.f, 0xFF343456));
         mBarChart2.addBar(new BarModel(3.3f, 0xFF563456));
-        mBarChart2.addBar(new BarModel(1.1f, 0xFF873F56));
-        mBarChart2.addBar(new BarModel(2.7f, 0xFF56B7F1));
-        mBarChart2.addBar(new BarModel(2.f,  0xFF343456));
-        mBarChart2.addBar(new BarModel(0.4f, 0xFF1FF4AC));
-        mBarChart2.addBar(new BarModel(4.f,  0xFF1BA4E6));
-        mBarChart2.addBar(new BarModel(2.7f, 0xFF56B7F1));
-        mBarChart2.addBar(new BarModel(2.f,  0xFF343456));
-        mBarChart2.addBar(new BarModel(0.4f, 0xFF1FF4AC));
-        mBarChart2.addBar(new BarModel(4.f,  0xFF1BA4E6));
     }
 
     private BarChart mBarChart;

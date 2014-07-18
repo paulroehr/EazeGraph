@@ -20,6 +20,8 @@ package org.eazegraph.lib.models;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
+import java.util.Comparator;
+
 public abstract class BaseModel {
 
     protected BaseModel(String _legendLabel) {
@@ -38,7 +40,7 @@ public abstract class BaseModel {
     }
 
     public boolean canShowLabel() {
-        return mShowLabel;
+        return mShowLabel && mLegendBounds != null;
     }
 
     public void setShowLabel(boolean _showLabel) {

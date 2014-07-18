@@ -66,16 +66,10 @@ public class VerticalBarChartFragment extends ChartFragment implements BaseBarCh
         mVerticalBarChart.addBar(new BarModel(2.3f, 0xFF123456));
         mVerticalBarChart.addBar(new BarModel(2.f, 0xFF343456));
         mVerticalBarChart.addBar(new BarModel(3.3f, 0xFF563456));
-        mVerticalBarChart.addBar(new BarModel(1.1f, 0xFF873F56));
-        mVerticalBarChart.addBar(new BarModel(0.4f, 0xFF1FF4AC));
-        mVerticalBarChart.addBar(new BarModel(4.f, 0xFF1BA4E6));
 
         mVerticalBarChart2.addBar(new BarModel(2.3f, 0xFF123456));
         mVerticalBarChart2.addBar(new BarModel(2.f, 0xFF343456));
         mVerticalBarChart2.addBar(new BarModel(3.3f, 0xFF563456));
-        mVerticalBarChart2.addBar(new BarModel(1.1f, 0xFF873F56));
-        mVerticalBarChart2.addBar(new BarModel(2.7f, 0xFF56B7F1));
-        mVerticalBarChart2.addBar(new BarModel(2.f, 0xFF343456));
     }
 
     private VerticalBarChart mVerticalBarChart;
@@ -83,6 +77,6 @@ public class VerticalBarChartFragment extends ChartFragment implements BaseBarCh
 
     @Override
     public void onBarClick(BaseBarChart view, int i, BarModel model) {
-        Toast.makeText(getActivity(), "Vertical Bar chart: " + ChartData.values.get(i).value, Toast.LENGTH_SHORT).show();
+
     }
 }

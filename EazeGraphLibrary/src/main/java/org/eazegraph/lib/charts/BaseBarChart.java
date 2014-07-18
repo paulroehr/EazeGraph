@@ -130,6 +130,13 @@ public abstract class BaseBarChart<K extends BaseModel> extends BaseChart {
         onDataChanged();
     }
 
+
+    public void setmFixedBarHeight(boolean _fixedBarHeight) {
+        mFixedBarHeight = _fixedBarHeight;
+        onDataChanged();
+    }
+
+
     public float getBarMargin() {
         return mBarMargin;
     }
@@ -277,6 +284,12 @@ public abstract class BaseBarChart<K extends BaseModel> extends BaseChart {
     public void addBar(K _Bar) {
         mData.add(_Bar);
         onDataChanged();
+    }
+    public void addBar(K _Bar, boolean notify) {
+        mData.add(_Bar);
+        if (notify) {
+            onDataChanged();
+        }
     }
 
     public void setData(List<K> _List) {

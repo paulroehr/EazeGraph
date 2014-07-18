@@ -30,11 +30,11 @@ import org.eazegraph.lib.models.BaseModel;
 public class Utils {
 
     //dpToPx----------------------------------------------------------------------------------------
+
     /**
      * Converts density-independent pixel (dp) to pixel (px)
      *
      * @param _Dp the dp value to convert in pixel
-     *
      * @return the converted value in pixels
      */
     public static float dpToPx(float _Dp) {
@@ -67,9 +67,10 @@ public class Utils {
 
     /**
      * Calculates the legend positions and which legend title should be displayed or not.
-     *
+     * <p/>
      * Important: the LegendBounds in the _Models should be set and correctly calculated before this
      * function is called!
+     *
      * @param _Models The graph data which should have the BaseModel class as parent class.
      * @param _StartX Left starting point on the screen. Should be the absolute pixel value!
      * @param _Paint  The correctly set Paint which will be used for the text painting in the later process
@@ -81,7 +82,7 @@ public class Utils {
         // calculate the legend label positions and check if there is enough space to display the label,
         // if not the label will not be shown
         for (BaseModel model : _Models) {
-            if (!model.isIgnore()) {
+            if (!model.isIgnore() && model.canShowLabel()) {
                 Rect textBounds = new Rect();
                 RectF legendBounds = model.getLegendBounds();
 
@@ -90,9 +91,9 @@ public class Utils {
                     model.setTextBounds(textBounds);
                 }
 
-                float centerX           = legendBounds.centerX();
-                float centeredTextPos   = centerX - (textBounds.width() / 2);
-                float textStartPos      = centeredTextPos - textMargin;
+                float centerX = legendBounds.centerX();
+                float centeredTextPos = centerX - (textBounds.width() / 2);
+                float textStartPos = centeredTextPos - textMargin;
 
                 if (lastX == _StartX) {
                     model.setShowLabel(true);
@@ -108,10 +109,9 @@ public class Utils {
                     }
                 }
                 // check if the text is too big to fit on the screen
-                else if(centeredTextPos + textBounds.width() > _EndX) {
+                else if (centeredTextPos + textBounds.width() > _EndX) {
                     model.setShowLabel(false);
-                }
-                else {
+                } else {
                     // check if the current legend label overrides the label before
                     // if the label overrides the label before, the current label will not be shown.
                     // If not the label will be shown and the label position is calculated
@@ -123,8 +123,7 @@ public class Utils {
                         } else {
                             model.setShowLabel(false);
                         }
-                    }
-                    else {
+                    } else {
                         model.setShowLabel(true);
                         model.setLegendLabelPosition((int) centeredTextPos);
                         lastX = centerX + (textBounds.width() / 2);
@@ -132,20 +131,19 @@ public class Utils {
                 }
             }
         }
-
     }
 
     /**
      * Returns an string with or without the decimal places.
+     *
      * @param _value
      * @param _showDecimal
      * @return
      */
     public static String getFloatString(float _value, boolean _showDecimal) {
         if (_showDecimal) {
-            return _value+"";
-        }
-        else {
+            return _value + "";
+        } else {
             return ((int) _value) + "";
         }
     }
