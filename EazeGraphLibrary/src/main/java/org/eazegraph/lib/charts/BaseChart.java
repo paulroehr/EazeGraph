@@ -133,6 +133,7 @@ public abstract class BaseChart extends ViewGroup {
     protected void onDataChanged() {
         invalidate();
     }
+    protected abstract int getDataSize();
 
     //##############################################################################################
     // Variables
