@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "org.eazegraph.lib"
-        minSdkVersion 14
+        minSdkVersion 9
         targetSdkVersion 20
         versionCode 1
         versionName "1.0.0"
@@ -21,6 +21,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.nineoldandroids:library:2.4.0'
 }
 
 apply from: 'gradle_mvn_push.gradle'

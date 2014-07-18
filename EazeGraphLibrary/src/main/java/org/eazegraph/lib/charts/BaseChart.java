@@ -17,7 +17,7 @@
 
 package org.eazegraph.lib.charts;
 
-import android.animation.ValueAnimator;
+import com.nineoldandroids.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Paint;

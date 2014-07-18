@@ -16,7 +16,7 @@ If you want such functionality either you use one of the libraries I named befor
 
 Currently BarCharts only support positive values. I will provide this functionality later.
 
-<b>Your Android application should at least use Android API Level 14 in order to use this library!!!</b>
+<b>Your Android application should use Android API Level 9 or higher in order to use this library!!!</b>
 
 Chart types
 ===========
@@ -73,7 +73,7 @@ Insert in your root project's 'build.gradle' under repositories:
 and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
-        compile 'com.github.blackfizz:eazegraph:1.0.14-SNAPSHOT@aar'
+        compile 'com.github.blackfizz:eazegraph:1.1.0-SNAPSHOT@aar'
     }
 
 That's it. now you are ready to use the library!
@@ -232,6 +232,9 @@ Wiki
 
 Changelog
 =========
+**1.1.0**
+* added support for Android API Level 9 and higher
+
 **1.0.14**
 * fixed Issue #7
 * fixed bug in ValueLineChart (NegativeOffset wasn't updated

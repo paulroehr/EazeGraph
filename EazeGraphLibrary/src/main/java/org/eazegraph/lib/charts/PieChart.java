@@ -49,20 +49,21 @@
 
 package org.eazegraph.lib.charts;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -352,6 +353,15 @@ public class PieChart extends BaseChart {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        // If the API level is less than 11, we can't rely on the view animation system to
+        // do the scrolling animation. Need to tick it here and call postInvalidate() until the scrolling is done.
+        if (Build.VERSION.SDK_INT < 11) {
+            tickScrollAnimation();
+            if (!mScroller.isFinished()) {
+                postInvalidate();
+            }
+        }
     }
 
     @Override
@@ -388,6 +398,8 @@ public class PieChart extends BaseChart {
 
     @Override
     protected void initializeGraph() {
+        setLayerToSW(this);
+
         mPieData = new ArrayList<PieModel>();
 
         mTotalValue = 0;
@@ -447,21 +459,46 @@ public class PieChart extends BaseChart {
         if(mUsePieRotation) {
             // Set up an animator to animate the PieRotation property. This is used to
             // correct the pie's orientation after the user lets go of it.
-            mAutoCenterAnimator = ObjectAnimator.ofInt(PieChart.this, "PieRotation", 0);
+            if (Build.VERSION.SDK_INT >= 11) {
+                mAutoCenterAnimator = ObjectAnimator.ofInt(PieChart.this, "PieRotation", 0);
+                // Add a listener to hook the onAnimationEnd event so that we can do
+                // some cleanup when the pie stops moving.
+                mAutoCenterAnimator.addListener(new Animator.AnimatorListener() {
+                    public void onAnimationStart(Animator animator) {
+                    }
+
+                    public void onAnimationEnd(Animator animator) {
+                        mGraph.decelerate();
+                    }
+
+                    public void onAnimationCancel(Animator animator) {
+                    }
+
+                    public void onAnimationRepeat(Animator animator) {
+                    }
+                });
+            }
 
             // Create a Scroller to handle the fling gesture.
-            mScroller = new Scroller(getContext(), null, true);
+            // Create a Scroller to handle the fling gesture.
+            if (Build.VERSION.SDK_INT < 11) {
+                mScroller = new Scroller(getContext());
+            } else {
+                mScroller = new Scroller(getContext(), null, true);
+            }
 
             // The scroller doesn't have any built-in animation functions--it just supplies
             // values when we ask it to. So we have to have a way to call it every frame
             // until the fling ends. This code (ab)uses a ValueAnimator object to generate
             // a callback on every animation frame. We don't use the animated value at all.
-            mScrollAnimator = ValueAnimator.ofFloat(0, 1);
-            mScrollAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                    tickScrollAnimation();
-                }
-            });
+            if (Build.VERSION.SDK_INT >= 11) {
+                mScrollAnimator = ValueAnimator.ofFloat(0, 1);
+                mScrollAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                        tickScrollAnimation();
+                    }
+                });
+            }
 
             // Create a gesture detector to handle onTouch messages
             mDetector = new GestureDetector(PieChart.this.getContext(), new GestureListener());
@@ -546,19 +583,21 @@ public class PieChart extends BaseChart {
             mScroller.computeScrollOffset();
             setPieRotation(mScroller.getCurrY());
         } else {
-            mScrollAnimator.cancel();
+            if (Build.VERSION.SDK_INT >= 11) {
+                mScrollAnimator.cancel();
+            }
             onScrollFinished();
         }
     }
 
     private void setLayerToSW(View v) {
-        if (!v.isInEditMode()) {
+        if (!v.isInEditMode() && Build.VERSION.SDK_INT >= 11) {
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
     }
 
     private void setLayerToHW(View v) {
-        if (!v.isInEditMode()) {
+        if (!v.isInEditMode() && Build.VERSION.SDK_INT >= 11) {
             setLayerType(View.LAYER_TYPE_HARDWARE, null);
         }
     }
@@ -568,7 +607,9 @@ public class PieChart extends BaseChart {
      */
     private void stopScrolling() {
         mScroller.forceFinished(true);
-        mAutoCenterAnimator.cancel();
+        if (Build.VERSION.SDK_INT >= 11) {
+            mAutoCenterAnimator.cancel();
+        }
 
         onScrollFinished();
     }
@@ -579,6 +620,8 @@ public class PieChart extends BaseChart {
     private void onScrollFinished() {
         if (mAutoCenterInSlice) {
             centerOnCurrentItem();
+        } else {
+            mGraph.decelerate();
         }
     }
 
@@ -601,8 +644,14 @@ public class PieChart extends BaseChart {
                 if (targetAngle > 270 && mPieRotation < 90) targetAngle -= 360;
             }
 
-            mAutoCenterAnimator.setIntValues(targetAngle);
-            mAutoCenterAnimator.setDuration(AUTOCENTER_ANIM_DURATION).start();
+            if (Build.VERSION.SDK_INT >= 11) {
+                // Fancy animated version
+                mAutoCenterAnimator.setIntValues(targetAngle);
+                mAutoCenterAnimator.setDuration(AUTOCENTER_ANIM_DURATION).start();
+            } else {
+                // Dull non-animated version
+                //mPieView.rotateTo(targetAngle);
+            }
         }
     }
 
@@ -630,6 +679,20 @@ public class PieChart extends BaseChart {
         }
 
         /**
+         * Enable hardware acceleration (consumes memory)
+         */
+        public void accelerate() {
+            setLayerToHW(this);
+        }
+
+        /**
+         * Disable hardware acceleration (releases memory)
+         */
+        public void decelerate() {
+            setLayerToSW(this);
+        }
+
+        /**
          * Implement this to do your drawing.
          *
          * @param canvas the canvas on which the background will be drawn
@@ -639,6 +702,13 @@ public class PieChart extends BaseChart {
             super.onDraw(canvas);
 
             if (!mPieData.isEmpty()) {
+
+                if (Build.VERSION.SDK_INT < 11) {
+                    mTransform.set(canvas.getMatrix());
+                    mTransform.preRotate(mRotation, mPivot.x, mPivot.y);
+                    canvas.setMatrix(mTransform);
+                }
+
                 for (PieModel model : mPieData) {
                     mGraphPaint.setColor(model.getColor());
 
@@ -744,18 +814,27 @@ public class PieChart extends BaseChart {
 
         public void rotateTo(float pieRotation) {
             mRotation = pieRotation;
-            setRotation(pieRotation);
+            if (Build.VERSION.SDK_INT >= 11) {
+                setRotation(pieRotation);
+            } else {
+                invalidate();
+            }
         }
 
         public void setPivot(float x, float y) {
             mPivot.x = x;
             mPivot.y = y;
-            setPivotX(x);
-            setPivotY(y);
+            if (Build.VERSION.SDK_INT >= 11) {
+                setPivotX(x);
+                setPivotY(y);
+            } else {
+                invalidate();
+            }
         }
 
-        private float   mRotation = 0;
-        private PointF  mPivot    = new PointF();
+        private float   mRotation  = 0;
+        private Matrix  mTransform = new Matrix();
+        private PointF  mPivot     = new PointF();
     }
 
     private class InnerValueView extends View {
@@ -936,8 +1015,10 @@ public class PieChart extends BaseChart {
                     Integer.MAX_VALUE);
 
             // Start the animator and tell it to animate for the expected duration of the fling.
-            mScrollAnimator.setDuration(mScroller.getDuration());
-            mScrollAnimator.start();
+            if (Build.VERSION.SDK_INT >= 11) {
+                mScrollAnimator.setDuration(mScroller.getDuration());
+                mScrollAnimator.start();
+            }
             return true;
         }
 
@@ -953,7 +1034,7 @@ public class PieChart extends BaseChart {
     }
 
     private boolean isAnimationRunning() {
-        return !mScroller.isFinished() || mAutoCenterAnimator.isRunning();
+        return !mScroller.isFinished() || (Build.VERSION.SDK_INT >= 11 && mAutoCenterAnimator.isRunning());
     }
 
 

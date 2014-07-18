@@ -1,0 +1,62 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 20
+    buildToolsVersion "19.1.0"
+
+    signingConfigs {
+        release {
+            storeFile file(STORE_FILE)
+            storePassword STORE_PASSWORD
+            keyAlias KEY_ALIAS
+            keyPassword KEY_PASSWORD
+        }
+    }
+
+    defaultConfig {
+        applicationId "org.eazegraph.app"
+        minSdkVersion 9
+        targetSdkVersion 20
+        versionCode 1
+        versionName "1.0"
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            signingConfig signingConfigs.release
+
+            // this is used to alter output directory and file name. If you don't need it
+            // you can safely comment it out.
+            applicationVariants.all { variant ->
+                def file = variant.outputFile
+
+                String parent = file.parent
+                if( project.hasProperty('OUTPUT_DIR') && new File( (String)OUTPUT_DIR ).exists() )
+                    parent = OUTPUT_DIR
+
+                variant.outputFile = new File(
+                        parent,
+                        (String) file.name.replace(
+                                ".apk",
+
+                                // alter this string to change output file name
+                                "-" + defaultConfig.versionName + "-build" + defaultConfig.versionCode + ".apk"
+                        )
+                )
+            }
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':EazeGraphLibrary')
+    compile 'com.android.support:appcompat-v7:19.+'
+}

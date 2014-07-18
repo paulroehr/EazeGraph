@@ -1,2 +1,2 @@
-include ':app', ':EazeGraphLibrary'
+include ':EazeGraphLibrary', ':showcase'
 
