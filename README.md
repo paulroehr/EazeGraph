@@ -232,6 +232,10 @@ Wiki
 
 Changelog
 =========
+**1.0.14**
+* fixed Issue #7
+* fixed bug in ValueLineChart (NegativeOffset wasn't updated
+
 **1.0.10**
 * fixed bug in PieChart's current item calculation and autocenter
 
