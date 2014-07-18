@@ -260,7 +260,6 @@ public abstract class BaseBarChart extends BaseChart {
     protected abstract void calculateBounds(float _Width, float _Margin);
     protected abstract void drawBars(Canvas _Canvas);
     protected abstract List<? extends BaseModel> getLegendData();
-    protected abstract int getDataSize();
 
     //##############################################################################################
     // Graph
