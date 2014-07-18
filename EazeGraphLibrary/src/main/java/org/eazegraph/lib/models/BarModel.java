@@ -63,6 +63,11 @@ public class BarModel extends BaseModel {
         mBarBounds = _bounds;
     }
 
+    @Override
+    public boolean isIgnore() {
+        return super.isIgnore() || mValue <= 0;
+    }
+
     private float mValue;
     private int   mColor;
     private RectF mBarBounds;

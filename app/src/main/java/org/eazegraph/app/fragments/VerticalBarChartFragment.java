@@ -24,13 +24,13 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import org.eazegraph.app.R;
-import org.eazegraph.lib.charts.BarChart;
 import org.eazegraph.lib.charts.BaseBarChart;
+import org.eazegraph.lib.charts.VerticalBarChart;
 import org.eazegraph.lib.models.BarModel;
 
-public class BarChartFragment extends ChartFragment implements BaseBarChart.BarChartListener<BarModel> {
+public class VerticalBarChartFragment extends ChartFragment implements BaseBarChart.BarChartListener<BarModel> {
 
-    public BarChartFragment() {
+    public VerticalBarChartFragment() {
         // Required empty public constructor
     }
 
@@ -38,13 +38,13 @@ public class BarChartFragment extends ChartFragment implements BaseBarChart.BarC
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_bar_chart, container, false);
-        mBarChart = (BarChart) view.findViewById(R.id.barchart);
-        mBarChart.setUseLegend(true);
-        mBarChart.setBarChartListener(this);
-        mBarChart2 = (BarChart) view.findViewById(R.id.barchart2);
-        mBarChart2.setUseLegend(false);
-        mBarChart2.setBarChartListener(this);
+        View view = inflater.inflate(R.layout.fragment_vertical_bar_chart, container, false);
+        mVerticalBarChart = (VerticalBarChart) view.findViewById(R.id.verticalbarchart);
+        mVerticalBarChart.setUseLegend(true);
+        mVerticalBarChart.setBarChartListener(this);
+        mVerticalBarChart2 = (VerticalBarChart) view.findViewById(R.id.verticalbarchart2);
+        mVerticalBarChart2.setUseLegend(false);
+        mVerticalBarChart2.setBarChartListener(this);
         loadData();
         return view;
     }
@@ -52,31 +52,31 @@ public class BarChartFragment extends ChartFragment implements BaseBarChart.BarC
     @Override
     public void onResume() {
         super.onResume();
-        mBarChart.startAnimation();
-        mBarChart2.startAnimation();
+        mVerticalBarChart.startAnimation();
+        mVerticalBarChart2.startAnimation();
     }
 
     @Override
     public void restartAnimation() {
-        mBarChart.startAnimation();
-        mBarChart2.startAnimation();
+        mVerticalBarChart.startAnimation();
+        mVerticalBarChart2.startAnimation();
     }
 
     private void loadData() {
-        mBarChart.addBar(new BarModel(2.3f, 0xFF123456));
-        mBarChart.addBar(new BarModel(2.f, 0xFF343456));
-        mBarChart.addBar(new BarModel(3.3f, 0xFF563456));
+        mVerticalBarChart.addBar(new BarModel(2.3f, 0xFF123456));
+        mVerticalBarChart.addBar(new BarModel(2.f, 0xFF343456));
+        mVerticalBarChart.addBar(new BarModel(3.3f, 0xFF563456));
 
-        mBarChart2.addBar(new BarModel(2.3f, 0xFF123456));
-        mBarChart2.addBar(new BarModel(2.f, 0xFF343456));
-        mBarChart2.addBar(new BarModel(3.3f, 0xFF563456));
+        mVerticalBarChart2.addBar(new BarModel(2.3f, 0xFF123456));
+        mVerticalBarChart2.addBar(new BarModel(2.f, 0xFF343456));
+        mVerticalBarChart2.addBar(new BarModel(3.3f, 0xFF563456));
     }
 
-    private BarChart mBarChart;
-    private BarChart mBarChart2;
+    private VerticalBarChart mVerticalBarChart;
+    private VerticalBarChart mVerticalBarChart2;
 
     @Override
     public void onBarClick(BaseBarChart view, int i, BarModel model) {
-        Toast.makeText(getActivity(), "Bar chart: " + i, Toast.LENGTH_SHORT).show();
+
     }
 }

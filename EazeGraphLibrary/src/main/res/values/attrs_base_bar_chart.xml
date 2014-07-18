@@ -4,8 +4,10 @@
     <declare-styleable name="BaseBarChart">
         <attr name="egBarOutline"         format="boolean"/>
         <attr name="egBarWidth"           format="dimension" />
+        <attr name="egBarHeight"           format="dimension" />
         <attr name="egBarMargin"          format="dimension" />
         <attr name="egFixedBarWidth"      format="boolean"/>
+        <attr name="egFixedBarHeight"      format="boolean"/>
         <attr name="egBottomAxisColor"    format="color" />
         <attr name="egBottomAxisStroke"   format="dimension" />
     </declare-styleable>

@@ -21,13 +21,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.eazegraph.app.R;
+import org.eazegraph.lib.charts.BaseBarChart;
 import org.eazegraph.lib.charts.StackedBarChart;
 import org.eazegraph.lib.models.BarModel;
 import org.eazegraph.lib.models.StackedBarModel;
 
-public class StackedBarChartFragment extends ChartFragment {
+public class StackedBarChartFragment extends ChartFragment implements BaseBarChart.BarChartListener<StackedBarModel> {
 
     public StackedBarChartFragment() {
         // Required empty public constructor
@@ -40,6 +42,7 @@ public class StackedBarChartFragment extends ChartFragment {
         View view = inflater.inflate(R.layout.fragment_stacked_bar_chart, container, false);
         mStackedBarChart = (StackedBarChart) view.findViewById(R.id.stackedbarchart);
         mStackedBarChart.setUseLegend(true);
+        mStackedBarChart.setBarChartListener(this);
         mStackedBarChart2 = (StackedBarChart) view.findViewById(R.id.stackedbarchart2);
         mStackedBarChart2.setUseLegend(false);
         loadData();
@@ -124,4 +127,9 @@ public class StackedBarChartFragment extends ChartFragment {
 
     private StackedBarChart mStackedBarChart;
     private StackedBarChart mStackedBarChart2;
+
+    @Override
+    public void onBarClick(BaseBarChart view, int position, StackedBarModel model) {
+        Toast.makeText(getActivity(), "Stacked Bar chart 1: " + position, Toast.LENGTH_SHORT).show();
+    }
 }

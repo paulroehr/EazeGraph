@@ -60,12 +60,14 @@ public class StackedBarModel extends BaseModel {
         RectF bounds = new RectF();
         if(!mBars.isEmpty()) {
             // get bounds from complete StackedBar
-            bounds.set(
-                    mBars.get(0).getLegendBounds().left,
-                    mBars.get(0).getLegendBounds().top,
-                    mBars.get(mBars.size() - 1).getLegendBounds().right,
-                    mBars.get(mBars.size() - 1).getLegendBounds().bottom
-            );
+            if (mBars.get(0).getLegendBounds() != null) {
+                bounds.set(
+                        mBars.get(0).getLegendBounds().left,
+                        mBars.get(0).getLegendBounds().top,
+                        mBars.get(mBars.size() - 1).getLegendBounds().right,
+                        mBars.get(mBars.size() - 1).getLegendBounds().bottom
+                );
+            }
         }
         return bounds;
     }
