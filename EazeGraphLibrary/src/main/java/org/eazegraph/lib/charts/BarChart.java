@@ -70,18 +70,17 @@ public class BarChart extends BaseBarChart {
         onDataChanged();
     }
 
-    public void setData(List<BarModel> _List) {
+    public void addBarList(List<BarModel> _List) {
         mData = _List;
         onDataChanged();
     }
 
-    public List<BarModel> getData() {
+    public List<BarModel> getBarList() {
         return mData;
     }
 
     public void clearChart() {
         mData.clear();
-        onDataChanged();
     }
 
     @Override

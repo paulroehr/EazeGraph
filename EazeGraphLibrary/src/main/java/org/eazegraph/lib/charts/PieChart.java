@@ -150,6 +150,8 @@ public class PieChart extends BaseChart {
         initializeGraph();
     }
 
+
+
     public void setOnItemFocusChangedListener(IOnItemFocusChangedListener _listener) {
         mListener = _listener;
     }
@@ -315,7 +317,6 @@ public class PieChart extends BaseChart {
     public void clearChart() {
         mPieData.clear();
         mTotalValue = 0;
-        onDataChanged();
     }
 
     @Override

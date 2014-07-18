@@ -56,18 +56,17 @@ public class StackedBarChart extends BaseBarChart {
         onDataChanged();
     }
 
-    public void setData(List<StackedBarModel> _List) {
+    public void addBarList(List<StackedBarModel> _List) {
         mData = _List;
         onDataChanged();
     }
 
-    public List<StackedBarModel> getData() {
+    public List<StackedBarModel> getBarList() {
         return mData;
     }
 
     public void clearChart() {
         mData.clear();
-        onDataChanged();
     }
 
     @Override

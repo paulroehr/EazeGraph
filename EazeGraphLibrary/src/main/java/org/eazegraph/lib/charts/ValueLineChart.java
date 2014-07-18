@@ -133,7 +133,6 @@ public class ValueLineChart extends BaseChart {
 
     public void clearSeries() {
         mSeries.clear();
-        onDataChanged();
     }
 
     public void addLegend(List<LegendModel> _Legend) {
@@ -393,8 +392,11 @@ public class ValueLineChart extends BaseChart {
     protected void onDataChanged() {
 
         if(!mSeries.isEmpty()) {
-            int   seriesCount = mSeries.size();
-            float maxValue    = 0;
+            int   seriesCount  = mSeries.size();
+            float maxValue     = 0.f;
+            mNegativeValue     = 0.f;
+            mNegativeOffset    = 0.f;
+            mHasNegativeValues = false;
 
             // calculate the maximum value present in data
             for (ValueLineSeries series : mSeries) {
@@ -417,11 +419,6 @@ public class ValueLineChart extends BaseChart {
             if(mNegativeValue < 0) {
                 mHasNegativeValues = true;
                 maxValue += (mNegativeValue * -1);
-            }
-            else {
-                mHasNegativeValues  = false;
-                mNegativeValue      = 0.f;
-                mNegativeOffset     = 0.f;
             }
 
             float heightMultiplier  = mUseableGraphHeight / maxValue;

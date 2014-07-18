@@ -253,6 +253,8 @@ public abstract class BaseBarChart extends BaseChart {
         }
 
         calculateBounds(barWidth, margin);
+        mLegend.invalidate();
+        mGraph.invalidate();
     }
 
     protected abstract void calculateBounds(float _Width, float _Margin);
