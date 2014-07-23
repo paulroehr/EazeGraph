@@ -235,7 +235,7 @@ Wiki
 Changelog
 =========
 **1.1.0**
-* added support for Android API Level 9 and higher
+* added support for Android API Level 9 and higher (added nineoldandroids library to support animations on older devices)
 
 **1.0.14**
 * fixed Issue #7
