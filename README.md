@@ -74,8 +74,10 @@ and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
         compile 'com.github.blackfizz:eazegraph:1.1.0-SNAPSHOT@aar'
+        compile 'com.nineoldandroids:library:2.4.0'
     }
 
+The library uses the `nineoldandroids` support library to support the animations on older devices.
 That's it. now you are ready to use the library!
 
 Usage
@@ -237,7 +239,7 @@ Changelog
 * refactored the code and fixed some minor bugs
 
 **1.1.0**
-* added support for Android API Level 9 and higher
+* added support for Android API Level 9 and higher (added nineoldandroids library to support animations on older devices)
 
 **1.0.14**
 * fixed Issue #7
