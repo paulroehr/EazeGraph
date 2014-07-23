@@ -17,17 +17,20 @@
 
 package org.eazegraph.lib.charts;
 
-import com.nineoldandroids.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
+
+import com.nineoldandroids.animation.ValueAnimator;
 
 import org.eazegraph.lib.R;
 import org.eazegraph.lib.utils.Utils;
 
+/**
+ * This is the main chart class and should be inherited by every graph. This class provides some general
+ * methods and variables, which are needed and used by every type of chart.
+ */
 public abstract class BaseChart extends ViewGroup {
 
     /**
@@ -82,30 +85,67 @@ public abstract class BaseChart extends ViewGroup {
 
     }
 
+    /**
+     * Returns the current height of the legend view
+     * @return Legend view height
+     */
     public float getLegendHeight() {
         return mLegendHeight;
     }
 
+    /**
+     * Sets and updates the height of the legend view.
+     * @param _legendHeight The new legend view height.
+     */
     public void setLegendHeight(float _legendHeight) {
         mLegendHeight = Utils.dpToPx(_legendHeight);
+
+        if(getDataSize() > 0)
+            onDataChanged();
     }
 
+    /**
+     * Returns the text size which is used by the legend.
+     * @return Size of the legend text.
+     */
     public float getLegendTextSize() {
         return mLegendTextSize;
     }
 
+    /**
+     * Sets the size of the text which is displayed in the legend. (Interpreted as sp value)
+     * @param _legendTextSize Size of the legend text.
+     */
     public void setLegendTextSize(float _legendTextSize) {
         mLegendTextSize = Utils.dpToPx(_legendTextSize);
     }
 
+    /**
+     * Returns the animation time in milliseconds.
+     * @return Animation time.
+     */
     public int getAnimationTime() {
         return mAnimationTime;
     }
 
+    /**
+     * Sets the animation time in milliseconds.
+     * @param _animationTime Animation time in milliseconds.
+     */
     public void setAnimationTime(int _animationTime) {
         mAnimationTime = _animationTime;
     }
 
+    /**
+     * This is called during layout when the size of this view has changed. If
+     * you were just added to the view hierarchy, you're called with the old
+     * values of 0.
+     *
+     * @param w    Current width of this view.
+     * @param h    Current height of this view.
+     * @param oldw Old width of this view.
+     * @param oldh Old height of this view.
+     */
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -115,25 +155,40 @@ public abstract class BaseChart extends ViewGroup {
         mBottomPadding  = getPaddingBottom();
     }
 
-    protected float calculateMaxTextHeight(Paint _Paint) {
-        Rect height = new Rect();
-        String text = "MgHITasger";
-        _Paint.getTextBounds(text, 0, text.length(), height);
-        mMaxFontHeight = height.height();
-        return height.height();
-    }
-
+    /**
+     * Starts the chart animation.
+     */
     public void startAnimation() {
         if(mRevealAnimator != null) {
             mStartedAnimation = true;
             mRevealAnimator.setDuration(mAnimationTime).start();
         }
     }
+
+    /**
+     * This is the main entry point after the graph has been inflated. Used to initialize the graph
+     * and its corresponding members.
+     */
     protected abstract void initializeGraph();
+
+    /**
+     * Should be called after new data is inserted. Will be automatically called, when the view dimensions
+     * has changed.
+     */
     protected void onDataChanged() {
         invalidate();
     }
+
+    /**
+     * Returns the amount of datasets which are currently inserted.
+     * @return Amount of datasets.
+     */
     protected abstract int getDataSize();
+
+    /**
+     * Resets and clears the data object.
+     */
+    public abstract void clearChart();
 
     //##############################################################################################
     // Variables

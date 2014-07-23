@@ -49,9 +49,7 @@
 
 package org.eazegraph.lib.charts;
 
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.ObjectAnimator;
-import com.nineoldandroids.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -69,14 +67,22 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Scroller;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.animation.ValueAnimator;
 
 import org.eazegraph.lib.R;
 import org.eazegraph.lib.communication.IOnItemFocusChangedListener;
 import org.eazegraph.lib.models.PieModel;
 import org.eazegraph.lib.utils.Utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * A customizable PieChart which can be rotated to select a Pie Slice. It is possible to show a normal Pie Chart or
+ * a Doughnut Pie Chart depending on the InnerPadding attributes.
+ */
 public class PieChart extends BaseChart {
 
 
@@ -151,43 +157,86 @@ public class PieChart extends BaseChart {
         initializeGraph();
     }
 
-
-
+    /**
+     * Sets the onItemFocusChangedListener.
+     *
+     * @param _listener The instance of the IOnItemFocusChangedListener interface.
+     */
     public void setOnItemFocusChangedListener(IOnItemFocusChangedListener _listener) {
         mListener = _listener;
     }
 
+    /**
+     * Checks if the InnerPadding is set or not. If it's set, a Doughnut Pie Chart is displayed.
+     *
+     * @return True if InnerPadding should be used.
+     */
     public boolean isUseInnerPadding() {
         return mUseInnerPadding;
     }
 
+    /**
+     * Sets the InnerPadding. If the InnerPadding should be used, a complete recalculation is initiated.
+     *
+     * @param _useInnerPadding Indicates whether to use InnerPadding or not.
+     */
     public void setUseInnerPadding(boolean _useInnerPadding) {
         mUseInnerPadding = _useInnerPadding;
         onDataChanged();
     }
 
+    /**
+     * Returns the InnerPadding's value.
+     *
+     * @return The InnerPadding's value in percent (between 0 - 100)
+     */
     public float getInnerPadding() {
         return mInnerPadding;
     }
 
+    /**
+     * Sets the InnerPadding's value. After setting a recalculation is initiated.
+     *
+     * @param _innerPadding The InnerPadding's value in percent (between 0 - 100)
+     */
     public void setInnerPadding(float _innerPadding) {
         mInnerPadding = _innerPadding;
         onDataChanged();
     }
 
+    /**
+     * Returns the size of the InnerPaddingOutline (which is the highlighted part).
+     *
+     * @return The outline size in percent (between 0 - 100) dependent on the normal InnerPadding.
+     */
     public float getInnerPaddingOutline() {
         return mInnerPaddingOutline;
     }
 
+    /**
+     * Sets the outline size of the InnerPadding.
+     *
+     * @param _innerPaddingOutline The outline size in percent (between 0 - 100) dependent on the normal InnerPadding.
+     */
     public void setInnerPaddingOutline(float _innerPaddingOutline) {
         mInnerPaddingOutline = _innerPaddingOutline;
         onDataChanged();
     }
 
+    /**
+     * Returns the highlight strength for the InnerPaddingOutline.
+     *
+     * @return The highlighting value for the outline.
+     */
     public float getHighlightStrength() {
         return mHighlightStrength;
     }
 
+    /**
+     * Sets the highlight strength for the InnerPaddingOutline.
+     *
+     * @param _highlightStrength The highlighting value for the outline.
+     */
     public void setHighlightStrength(float _highlightStrength) {
         mHighlightStrength = _highlightStrength;
         for (PieModel model : mPieData) {
@@ -196,46 +245,155 @@ public class PieChart extends BaseChart {
         invalidate();
     }
 
+    /**
+     * Checks if the AutoCenter is activated or not.
+     * AutoCenter is only available for API Level 11 and higher.
+     *
+     * @return True if AutoCenter is activated.
+     */
     public boolean isAutoCenterInSlice() {
         return mAutoCenterInSlice;
     }
 
+    /**
+     * Sets the AutoCenter property.
+     * AutoCenter is only available for API Level 11 and higher.
+     *
+     * @param _autoCenterInSlice True when AutoCenter should be used.
+     */
     public void setAutoCenterInSlice(boolean _autoCenterInSlice) {
         mAutoCenterInSlice = _autoCenterInSlice;
     }
 
+    /**
+     * Checks if the PieRotation is enabled or not.
+     *
+     * @return True if rotation is enabled.
+     */
     public boolean isUsePieRotation() {
         return mUsePieRotation;
     }
 
+    /**
+     * Sets the PieRotation property to activate or deactivate the rotation.
+     *
+     * @param _usePieRotation True if rotation should be enabled.
+     */
     public void setUsePieRotation(boolean _usePieRotation) {
         mUsePieRotation = _usePieRotation;
     }
 
+    /**
+     * Checks if the currently selected PieSlice's value should be drawn in the center.
+     *
+     * @return True if the value is drawn in the center.
+     */
     public boolean isDrawValueInPie() {
         return mDrawValueInPie;
     }
 
+    /**
+     * Sets the property which indicates whether the currently selected PieSlice's value should be
+     * drawn in the center or not.
+     *
+     * @param _drawValueInPie True if the value should be drawn in the center.
+     */
     public void setDrawValueInPie(boolean _drawValueInPie) {
         mDrawValueInPie = _drawValueInPie;
         invalidate();
     }
 
+    /**
+     * Returns the text size of the value which is drawn in the center of the PieChart.
+     *
+     * @return The value's text size.
+     */
     public float getValueTextSize() {
         return mValueTextSize;
     }
 
+    /**
+     * Sets the text size of the value which is drawn in the center of the PieChart.
+     *
+     * @param _valueTextSize The value's text size in sp.
+     */
     public void setValueTextSize(float _valueTextSize) {
         mValueTextSize = Utils.dpToPx(_valueTextSize);
         invalidate();
     }
 
+    /**
+     * Returns the color of the text which is drawn in the center of the PieChart.
+     *
+     * @return Color value of the text.
+     */
     public int getValueTextColor() {
         return mValueTextColor;
     }
 
+    /**
+     * Sets the color of the text which is drawn in the center of the PieChart.
+     *
+     * @param _valueTextColor Color value of the text.
+     */
     public void setValueTextColor(int _valueTextColor) {
         mValueTextColor = _valueTextColor;
+    }
+
+    /**
+     * Returns the custom String which is displayed in the center of the PieChart.
+     *
+     * @return Value of String.
+     */
+    public String getInnerValueString() {
+        return mInnerValueString;
+    }
+
+    /**
+     * Sets the custom String which is displayed in the center of the PieChart.
+     *
+     * @param _innerValueString Custom String.
+     */
+    public void setInnerValueString(String _innerValueString) {
+        mInnerValueString = _innerValueString;
+        mValueView.invalidate();
+    }
+
+    /**
+     * Checks if a custom inner value should be displayed or not.
+     *
+     * @return True if a custom inner value is shown.
+     */
+    public boolean isUseCustomInnerValue() {
+        return mUseCustomInnerValue;
+    }
+
+    /**
+     * Sets the indication whether a custom inner value should be drawn or not. If it's true, no
+     * value of the currently selected PieSlcie is shown in the center of the PieChart.
+     *
+     * @param _useCustomInnerValue True if a custom inner value should be used.
+     */
+    public void setUseCustomInnerValue(boolean _useCustomInnerValue) {
+        mUseCustomInnerValue = _useCustomInnerValue;
+    }
+
+    /**
+     * Checks if the animation should open clockwise or counter-clockwise.
+     *
+     * @return True for clockwise.
+     */
+    public boolean isOpenClockwise() {
+        return mOpenClockwise;
+    }
+
+    /**
+     * Sets if the starting animation should be opened clockwise or counter-clockwise.
+     *
+     * @param _openClockwise True for a clockwise aniamtion.
+     */
+    public void setOpenClockwise(boolean _openClockwise) {
+        mOpenClockwise = _openClockwise;
     }
 
     /**
@@ -299,6 +457,12 @@ public class PieChart extends BaseChart {
         calcCurrentItem();
     }
 
+    /**
+     * Adds a new Pie Slice to the PieChart. After inserting and calculation of the highlighting color
+     * a complete recalculation is initiated.
+     *
+     * @param _Slice The newly added PieSlice.
+     */
     public void addPieSlice(PieModel _Slice) {
         highlightSlice(_Slice);
         mPieData.add(_Slice);
@@ -306,15 +470,10 @@ public class PieChart extends BaseChart {
         onDataChanged();
     }
 
-    public String getInnerValueString() {
-        return mInnerValueString;
-    }
-
-    public void setInnerValueString(String _innerValueString) {
-        mInnerValueString = _innerValueString;
-        mValueView.invalidate();
-    }
-
+    /**
+     * Resets and clears the data object.
+     */
+    @Override
     public void clearChart() {
         mPieData.clear();
         mTotalValue = 0;
@@ -365,7 +524,7 @@ public class PieChart extends BaseChart {
     }
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    protected void onLayout(boolean b, int i, int i2, int i3, int i4) {
 
     }
 
@@ -396,6 +555,10 @@ public class PieChart extends BaseChart {
         onDataChanged();
     }
 
+    /**
+     * This is the main entry point after the graph has been inflated. Used to initialize the graph
+     * and its corresponding members.
+     */
     @Override
     protected void initializeGraph() {
         setLayerToSW(this);
@@ -510,13 +673,19 @@ public class PieChart extends BaseChart {
         }
 
         if(this.isInEditMode()) {
-            addPieSlice(new PieModel("Frühstück", 15, Color.parseColor("#FE6DA8")));
-            addPieSlice(new PieModel("Mittagessen", 25, Color.parseColor("#56B7F1")));
-            addPieSlice(new PieModel("Abendessen", 35, Color.parseColor("#CDA67F")));
+            addPieSlice(new PieModel("Breakfast", 15, Color.parseColor("#FE6DA8")));
+            addPieSlice(new PieModel("Lunch", 25, Color.parseColor("#56B7F1")));
+            addPieSlice(new PieModel("Dinner", 35, Color.parseColor("#CDA67F")));
             addPieSlice(new PieModel("Snack", 25, Color.parseColor("#FED70E")));
         }
     }
 
+    /**
+     * Should be called after new data is inserted. Will be automatically called, when the view dimensions
+     * has changed.
+     *
+     * Calculates the start- and end-angles for every PieSlice.
+     */
     @Override
     protected void onDataChanged() {
         super.onDataChanged();
@@ -540,9 +709,14 @@ public class PieChart extends BaseChart {
         onScrollFinished();
     }
 
+    /**
+     * Calculate the highlight color. Saturate at 0xff to make sure that high values
+     * don't result in aliasing.
+     *
+     * @param _Slice The Slice which will be highlighted.
+     */
     private void highlightSlice(PieModel _Slice) {
-        // Calculate the highlight color. Saturate at 0xff to make sure that high values
-        // don't result in aliasing.
+
         int color = _Slice.getColor();
         _Slice.setHighlightedColor(Color.argb(
                 0xff,
@@ -590,12 +764,14 @@ public class PieChart extends BaseChart {
         }
     }
 
+    @SuppressLint("NewApi")
     private void setLayerToSW(View v) {
         if (!v.isInEditMode() && Build.VERSION.SDK_INT >= 11) {
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
     }
 
+    @SuppressLint("NewApi")
     private void setLayerToHW(View v) {
         if (!v.isInEditMode() && Build.VERSION.SDK_INT >= 11) {
             setLayerType(View.LAYER_TYPE_HARDWARE, null);
@@ -655,10 +831,18 @@ public class PieChart extends BaseChart {
         }
     }
 
+    /**
+     * Returns the graph boundaries.
+     * @return Graph bounds.
+     */
     private RectF getGraphBounds() {
         return mGraphBounds;
     }
 
+    /**
+     * Returns the amount of datasets which are currently inserted.
+     * @return Amount of datasets.
+     */
     @Override
     protected int getDataSize() {
         return mPieData.size();
@@ -861,8 +1045,6 @@ public class PieChart extends BaseChart {
             if(!mPieData.isEmpty() && mDrawValueInPie) {
                 PieModel model = mPieData.get(mCurrentItem);
 
-                // center text in view
-                // TODO: put boundary calculation out of the onDraw method
                 if(!mUseCustomInnerValue) {
                     mInnerValueString = model.getValue()+"";
                 }
@@ -922,13 +1104,14 @@ public class PieChart extends BaseChart {
 
             canvas.drawPath(mTriangle, mLegendPaint);
 
+            float height = mMaxFontHeight = Utils.calculateMaxTextHeight(mLegendPaint);
+
             if(!mPieData.isEmpty()) {
                 PieModel model = mPieData.get(mCurrentItem);
 
                 // center text in view
                 // TODO: move the boundary calculation out of onDraw
                 mLegendPaint.getTextBounds(model.getLegendLabel(), 0, model.getLegendLabel().length(), mTextBounds);
-                float height = calculateMaxTextHeight(mLegendPaint);
                 canvas.drawText(
                         model.getLegendLabel(),
                         (mLegendWidth / 2) - (mTextBounds.width() / 2),
@@ -939,7 +1122,6 @@ public class PieChart extends BaseChart {
             else {
                 String str = "No Data available";
                 mLegendPaint.getTextBounds(str, 0, str.length(), mTextBounds);
-                float height = calculateMaxTextHeight(mLegendPaint);
                 canvas.drawText(
                         str,
                         (mLegendWidth / 2) - (mTextBounds.width() / 2),
@@ -1033,6 +1215,10 @@ public class PieChart extends BaseChart {
         }
     }
 
+    /**
+     * Checks if the animation is currently running.
+     * @return True if animation is running.
+     */
     private boolean isAnimationRunning() {
         return !mScroller.isFinished() || (Build.VERSION.SDK_INT >= 11 && mAutoCenterAnimator.isRunning());
     }

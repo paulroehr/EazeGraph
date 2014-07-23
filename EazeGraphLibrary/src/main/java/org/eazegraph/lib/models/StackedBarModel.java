@@ -22,6 +22,10 @@ import android.graphics.RectF;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Model for the {@link org.eazegraph.lib.charts.StackedBarChart}.
+ * This is a simple Wrapper class for various {@link org.eazegraph.lib.models.BarModel}
+ */
 public class StackedBarModel extends BaseModel {
 
     public StackedBarModel() {
@@ -70,6 +74,8 @@ public class StackedBarModel extends BaseModel {
         return bounds;
     }
 
+    /**
+     * Bars which are in the StackedBar.
+     */
     List<BarModel> mBars;
-
 }

@@ -22,6 +22,9 @@ import android.graphics.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Model for the {@link org.eazegraph.lib.charts.ValueLineChart}
+ */
 public class ValueLineSeries {
 
     public ValueLineSeries(List<ValueLinePoint> _series) {
@@ -70,8 +73,23 @@ public class ValueLineSeries {
         mWidthOffset = _widthOffset;
     }
 
+    /**
+     * The list of points, which will be concatenated as a Path.
+     */
     private List<ValueLinePoint>    mSeries;
+
+    /**
+     * The generated Path based on the mSeries points.
+     */
     private Path                    mPath;
+
+    /**
+     * The color of the path.
+     */
     private int                     mColor;
+
+    /**
+     * Indicates the offset between each point in the series. This is calculated dynamically.
+     */
     private float                   mWidthOffset;
 }

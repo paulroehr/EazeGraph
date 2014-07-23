@@ -23,13 +23,16 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eazegraph.lib.models.BarModel;
 import org.eazegraph.lib.models.BaseModel;
 import org.eazegraph.lib.utils.Utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * A simple Bar Chart where the bar heights are dependent on each other.
+ */
 public class BarChart extends BaseBarChart {
 
     /**
@@ -65,20 +68,36 @@ public class BarChart extends BaseBarChart {
         initializeGraph();
     }
 
+    /**
+     * Adds a new {@link org.eazegraph.lib.models.BarModel} to the BarChart.
+     * @param _Bar The BarModel which will be added to the chart.
+     */
     public void addBar(BarModel _Bar) {
         mData.add(_Bar);
         onDataChanged();
     }
 
+    /**
+     * Adds a new list of {@link org.eazegraph.lib.models.BarModel} to the BarChart.
+     * @param _List The BarModel list which will be added to the chart.
+     */
     public void addBarList(List<BarModel> _List) {
         mData = _List;
         onDataChanged();
     }
 
+    /**
+     * Returns the data which is currently present in the chart.
+     * @return The currently used data.
+     */
     public List<BarModel> getBarList() {
         return mData;
     }
 
+    /**
+     * Resets and clears the data object.
+     */
+    @Override
     public void clearChart() {
         mData.clear();
     }
@@ -90,6 +109,10 @@ public class BarChart extends BaseBarChart {
         return result;
     }
 
+    /**
+     * This is the main entry point after the graph has been inflated. Used to initialize the graph
+     * and its corresponding members.
+     */
     @Override
     protected void initializeGraph() {
         super.initializeGraph();
@@ -104,12 +127,21 @@ public class BarChart extends BaseBarChart {
         }
     }
 
+    /**
+     * Should be called after new data is inserted. Will be automatically called, when the view dimensions
+     * has changed.
+     */
     @Override
     protected void onDataChanged() {
         calculateBarPositions(mData.size());
         super.onDataChanged();
     }
 
+    /**
+     * Calculates the bar boundaries based on the bar width and bar margin.
+     * @param _Width    Calculated bar width
+     * @param _Margin   Calculated bar margin
+     */
     protected void calculateBounds(float _Width, float _Margin) {
         float maxValue = 0;
         int   last = mLeftPadding;
@@ -134,13 +166,17 @@ public class BarChart extends BaseBarChart {
         Utils.calculateLegendInformation(mData, mLeftPadding, mGraphWidth + mLeftPadding, mLegendPaint);
     }
 
-    protected void drawBars(Canvas canvas) {
+    /**
+     * Callback method for drawing the bars in the child classes.
+     * @param _Canvas The canvas object of the graph view.
+     */
+    protected void drawBars(Canvas _Canvas) {
 
         for (BarModel model : mData) {
             RectF bounds = model.getBarBounds();
             mGraphPaint.setColor(model.getColor());
 
-            canvas.drawRect(
+            _Canvas.drawRect(
                     bounds.left,
                     bounds.bottom - (bounds.height() * mRevealValue),
                     bounds.right,
@@ -148,11 +184,19 @@ public class BarChart extends BaseBarChart {
         }
     }
 
+    /**
+     * Returns the list of data sets which hold the information about the legend boundaries and text.
+     * @return List of BaseModel data sets.
+     */
     @Override
     protected List<? extends BaseModel> getLegendData() {
         return mData;
     }
 
+    /**
+     * Returns the amount of datasets which are currently inserted.
+     * @return Amount of datasets.
+     */
     @Override
     protected int getDataSize() {
         return mData.size();

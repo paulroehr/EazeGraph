@@ -17,6 +17,9 @@
 
 package org.eazegraph.lib.models;
 
+/**
+ * Model for the {@link org.eazegraph.lib.models.ValueLineSeries}.
+ */
 public class ValueLinePoint extends BaseModel {
 
     public ValueLinePoint(float _value) {
@@ -45,6 +48,13 @@ public class ValueLinePoint extends BaseModel {
         mCoordinates = _coordinates;
     }
 
+    /**
+     * Value of the Point.
+     */
     private float   mValue;
+
+    /**
+     * The coordinates for the chart. These are calculated dynamically.
+     */
     private Point2D mCoordinates;
 }

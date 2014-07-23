@@ -17,8 +17,6 @@
 
 package org.eazegraph.lib.charts;
 
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -27,12 +25,18 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
-import java.util.List;
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.ValueAnimator;
 
 import org.eazegraph.lib.R;
 import org.eazegraph.lib.models.BaseModel;
 import org.eazegraph.lib.utils.Utils;
 
+import java.util.List;
+
+/**
+ * The abstract class for every type of bar chart, which handles the general calculation for the bars.
+ */
 public abstract class BaseBarChart extends BaseChart {
 
     /**
@@ -44,12 +48,9 @@ public abstract class BaseBarChart extends BaseChart {
     public BaseBarChart(Context context) {
         super(context);
 
-        mBarOutline         = DEF_BAR_OUTLINE;
         mBarWidth           = Utils.dpToPx(DEF_BAR_WIDTH);
         mBarMargin          = Utils.dpToPx(DEF_BAR_MARGIN);
         mFixedBarWidth      = DEF_FIXED_BAR_WIDTH;
-        mBottomAxisColor    = DEF_BOTTOM_AXIS_COLOR;
-        mBottomAxisStroke   = Utils.dpToPx(DEF_BOTTOM_AXIS_STROKE);
     }
 
     /**
@@ -79,12 +80,9 @@ public abstract class BaseBarChart extends BaseChart {
 
         try {
 
-            mBarOutline         = a.getBoolean(R.styleable.BaseBarChart_egBarOutline,         DEF_BAR_OUTLINE);
             mBarWidth           = a.getDimension(R.styleable.BaseBarChart_egBarWidth,         Utils.dpToPx(DEF_BAR_WIDTH));
             mBarMargin          = a.getDimension(R.styleable.BaseBarChart_egBarMargin,        Utils.dpToPx(DEF_BAR_MARGIN));
             mFixedBarWidth      = a.getBoolean(R.styleable.BaseBarChart_egFixedBarWidth,      DEF_FIXED_BAR_WIDTH);
-            mBottomAxisColor    = a.getColor(R.styleable.BaseBarChart_egBottomAxisColor,      DEF_BOTTOM_AXIS_COLOR);
-            mBottomAxisStroke   = a.getDimension(R.styleable.BaseBarChart_egBottomAxisStroke, Utils.dpToPx(DEF_BOTTOM_AXIS_STROKE));
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -93,58 +91,55 @@ public abstract class BaseBarChart extends BaseChart {
 
     }
 
-    public boolean isBarOutline() {
-        return mBarOutline;
-    }
-
-    public void setBarOutline(boolean _barOutline) {
-        mBarOutline = _barOutline;
-        invalidate();
-    }
-
+    /**
+     * Returns the width of a bar.
+     * @return
+     */
     public float getBarWidth() {
         return mBarWidth;
     }
 
+    /**
+     * Sets the width of bars.
+     * @param _barWidth Width of bars
+     */
     public void setBarWidth(float _barWidth) {
         mBarWidth = _barWidth;
         onDataChanged();
     }
 
+    /**
+     * Checks if the bars have a fixed width or is dynamically calculated.
+     * @return
+     */
     public boolean isFixedBarWidth() {
         return mFixedBarWidth;
     }
 
+    /**
+     * Sets if the bar width should be fixed or dynamically caluclated
+     * @param _fixedBarWidth True if it should be a fixed width.
+     */
     public void setFixedBarWidth(boolean _fixedBarWidth) {
         mFixedBarWidth = _fixedBarWidth;
         onDataChanged();
     }
 
+    /**
+     * Returns the bar margin, which is set by user if the bar widths are calculated dynamically.
+     * @return
+     */
     public float getBarMargin() {
         return mBarMargin;
     }
 
+    /**
+     * Sets the bar margin.
+     * @param _barMargin Bar margin
+     */
     public void setBarMargin(float _barMargin) {
         mBarMargin = _barMargin;
         onDataChanged();
-    }
-
-    public int getBottomAxisColor() {
-        return mBottomAxisColor;
-    }
-
-    public void setBottomAxisColor(int _bottomAxisColor) {
-        mBottomAxisColor = _bottomAxisColor;
-        invalidate();
-    }
-
-    public float getBottomAxisStroke() {
-        return mBottomAxisStroke;
-    }
-
-    public void setBottomAxisStroke(float _bottomAxisStroke) {
-        mBottomAxisStroke = _bottomAxisStroke;
-        invalidate();
     }
 
     /**
@@ -186,6 +181,10 @@ public abstract class BaseBarChart extends BaseChart {
         }
     }
 
+    /**
+     * This is the main entry point after the graph has been inflated. Used to initialize the graph
+     * and its corresponding members.
+     */
     @Override
     protected void initializeGraph() {
         mGraphPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -197,7 +196,7 @@ public abstract class BaseBarChart extends BaseChart {
         mLegendPaint.setStrokeWidth(2);
         mLegendPaint.setStyle(Paint.Style.FILL);
 
-        calculateMaxTextHeight(mLegendPaint);
+        mMaxFontHeight = Utils.calculateMaxTextHeight(mLegendPaint);
 
         mGraph = new Graph(getContext());
         addView(mGraph);
@@ -236,6 +235,11 @@ public abstract class BaseBarChart extends BaseChart {
 
     }
 
+    /**
+     * Calculates the bar width and bar margin based on the _DataSize and settings and starts the boundary
+     * calculation in child classes.
+     * @param _DataSize Amount of data sets
+     */
     protected void calculateBarPositions(int _DataSize) {
 
         float barWidth = mBarWidth;
@@ -257,8 +261,23 @@ public abstract class BaseBarChart extends BaseChart {
         mGraph.invalidate();
     }
 
+    /**
+     * Calculates the bar boundaries based on the bar width and bar margin.
+     * @param _Width    Calculated bar width
+     * @param _Margin   Calculated bar margin
+     */
     protected abstract void calculateBounds(float _Width, float _Margin);
+
+    /**
+     * Callback method for drawing the bars in the child classes.
+     * @param _Canvas The canvas object of the graph view.
+     */
     protected abstract void drawBars(Canvas _Canvas);
+
+    /**
+     * Returns the list of data sets which hold the information about the legend boundaries and text.
+     * @return List of BaseModel data sets.
+     */
     protected abstract List<? extends BaseModel> getLegendData();
 
     //##############################################################################################
@@ -366,12 +385,9 @@ public abstract class BaseBarChart extends BaseChart {
     private static final String LOG_TAG = BaseBarChart.class.getSimpleName();
 
     // All float values are dp values and will be converted into px values in the constructor
-    public static final boolean DEF_BAR_OUTLINE         = false;
     public static final float   DEF_BAR_WIDTH           = 32.f;
     public static final boolean DEF_FIXED_BAR_WIDTH     = false;
     public static final float   DEF_BAR_MARGIN          = 12.f;
-    public static final int     DEF_BOTTOM_AXIS_COLOR   = 0xFF121212;
-    public static final float   DEF_BOTTOM_AXIS_STROKE  = 10.f;
 
     protected Graph           mGraph;
     protected Legend          mLegend;
@@ -379,11 +395,8 @@ public abstract class BaseBarChart extends BaseChart {
     protected Paint           mGraphPaint;
     protected Paint           mLegendPaint;
 
-    protected boolean         mBarOutline;
     protected float           mBarWidth;
     protected boolean         mFixedBarWidth;
     protected float           mBarMargin;
-    protected int             mBottomAxisColor;
-    protected float           mBottomAxisStroke;
 
 }

@@ -20,6 +20,10 @@ package org.eazegraph.lib.models;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
+/**
+ * The BaseModel is the parent model of every chart model. It basically only holds the information
+ * about the legend labels of the childs value.
+ */
 public abstract class BaseModel {
 
     protected BaseModel(String _legendLabel) {
@@ -77,11 +81,33 @@ public abstract class BaseModel {
         mIgnore = _ignore;
     }
 
+    /**
+     * Label value
+     */
     protected String    mLegendLabel;
+
+    /**
+     * Indicates whether the label should be shown or not.
+     */
     protected boolean   mShowLabel;
 
+    /**
+     * X-coordinate of the label.
+     */
     private int     mLegendLabelPosition;
+
+    /**
+     * Boundaries of the label
+     */
     private RectF   mLegendBounds;
+
+    /**
+     * Boundaries of the legend labels value
+     */
     private Rect    mTextBounds;
+
+    /**
+     * Indicates if the label should be ignored, when the boundaries are calculated.
+     */
     private boolean mIgnore = false;
 }

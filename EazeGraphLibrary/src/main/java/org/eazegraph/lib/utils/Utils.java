@@ -21,15 +21,16 @@ import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.util.Log;
-
-import java.util.List;
 
 import org.eazegraph.lib.models.BaseModel;
 
+import java.util.List;
+
+/**
+ * A helper class which consists of static helper methods.
+ */
 public class Utils {
 
-    //dpToPx----------------------------------------------------------------------------------------
     /**
      * Converts density-independent pixel (dp) to pixel (px)
      *
@@ -135,9 +136,9 @@ public class Utils {
 
     /**
      * Returns an string with or without the decimal places.
-     * @param _value
-     * @param _showDecimal
-     * @return
+     * @param _value        The value which should be converted
+     * @param _showDecimal  Indicates whether the decimal numbers should be shown or not
+     * @return              A generated string of the value.
      */
     public static String getFloatString(float _value, boolean _showDecimal) {
         if (_showDecimal) {
@@ -146,6 +147,18 @@ public class Utils {
         else {
             return ((int) _value) + "";
         }
+    }
+
+    /**
+     * Calculates the maximum text height which is possible based on the used Paint and its settings.
+     * @param _Paint Paint object which will be used to display a text.
+     * @return Maximum text height in px.
+     */
+    public static float calculateMaxTextHeight(Paint _Paint) {
+        Rect height = new Rect();
+        String text = "MgHITasger";
+        _Paint.getTextBounds(text, 0, text.length(), height);
+        return height.height();
     }
 
     private static final String LOG_TAG = Utils.class.getSimpleName();

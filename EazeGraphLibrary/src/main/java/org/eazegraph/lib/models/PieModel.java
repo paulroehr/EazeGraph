@@ -17,6 +17,9 @@
 
 package org.eazegraph.lib.models;
 
+/**
+ * Model for the {@link org.eazegraph.lib.charts.PieChart}
+ */
 public class PieModel extends BaseModel {
 
     public PieModel(String _legendLabel, float _value, int _color) {
@@ -74,11 +77,29 @@ public class PieModel extends BaseModel {
         mEndAngle = _EndAngle;
     }
 
+    /**
+     * Value of the Pie Slice
+     */
     private float mValue;
+
+    /**
+     * The color in which the pie slice will be drawn.
+     */
     private int   mColor;
+
+    /**
+     * The highlighted mColor value.
+     */
     private int   mHighlightedColor;
 
+    /**
+     * Start angle in the PieChart
+     */
     private int   mStartAngle;
+
+    /**
+     * End angle in the PieChart
+     */
     private int   mEndAngle;
 
 }

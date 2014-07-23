@@ -232,6 +232,10 @@ Wiki
 
 Changelog
 =========
+**1.1.1**
+* documented complete sourcecode
+* refactored the code and fixed some minor bugs
+
 **1.1.0**
 * added support for Android API Level 9 and higher
 

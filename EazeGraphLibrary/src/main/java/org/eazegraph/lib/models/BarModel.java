@@ -19,6 +19,9 @@ package org.eazegraph.lib.models;
 
 import android.graphics.RectF;
 
+/**
+ * Model for the {@link org.eazegraph.lib.charts.BarChart}
+ */
 public class BarModel extends BaseModel {
 
     public BarModel(String _legendLabel, float _value, int _color) {
@@ -63,8 +66,19 @@ public class BarModel extends BaseModel {
         mBarBounds = _bounds;
     }
 
+    /**
+     * Value of the bar.
+     */
     private float mValue;
+
+    /**
+     * Color in which the bar will be drawn.
+     */
     private int   mColor;
+
+    /**
+     * Bar boundaries.
+     */
     private RectF mBarBounds;
 
 }

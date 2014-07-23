@@ -17,8 +17,6 @@
 
 package org.eazegraph.lib.charts;
 
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -32,8 +30,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.ValueAnimator;
 
 import org.eazegraph.lib.R;
 import org.eazegraph.lib.communication.IOnPointFocusedListener;
@@ -44,6 +42,13 @@ import org.eazegraph.lib.models.ValueLinePoint;
 import org.eazegraph.lib.models.ValueLineSeries;
 import org.eazegraph.lib.utils.Utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * A LineChart which displays various line series with one value and the remaining information is
+ * calculated dynamically. It is possible to draw normal and cubic lines.
+ */
 public class ValueLineChart extends BaseChart {
 
     /**
@@ -126,133 +131,269 @@ public class ValueLineChart extends BaseChart {
         initializeGraph();
     }
 
+    /**
+     * Adds a new series to the graph.
+     * @param _Series The series which should be added.
+     */
     public void addSeries(ValueLineSeries _Series) {
         mSeries.add(_Series);
         onDataChanged();
     }
 
-    public void clearSeries() {
+    /**
+     * Resets and clears the data object.
+     */
+    @Override
+    public void clearChart() {
         mSeries.clear();
     }
 
+    /**
+     * Adds a custom legend which should be displayed instead of the dynamic legend.
+     * @param _Legend A list of LegendModels which will be displayed.
+     */
     public void addLegend(List<LegendModel> _Legend) {
         mLegendList.addAll(_Legend);
         mUseCustomLegend = true;
         onLegendDataChanged();
     }
 
+    /**
+     * Adds a standard value to the graph. The standard value is a horizontal line as an overlay
+     * dependent on the loaded data set.
+     * @param _standardValue The value which will be interpreted as a y-coordinate dependent
+     *                       on the maximum value of the data set.
+     */
     public void addStandardValue(float _standardValue) {
         mStandardValue = _standardValue;
         onDataChanged();
     }
 
+    /**
+     * Sets the onPointFocusedListener.
+     * @param _listener An instance of the IOnPointFocusedListener interface.
+     */
     public void setOnPointFocusedListener(IOnPointFocusedListener _listener) {
         mListener = _listener;
     }
 
+    /**
+     * Checks if the graph is a cubic graph.
+     * @return True if it's a cubic graph.
+     */
     public boolean isUseCubic() {
         return mUseCubic;
     }
 
+    /**
+     * Sets the option if the graph should use a cubic spline interpolation or not.
+     * @param _useCubic True if the graph should use cubic spline interpolation.
+     */
     public void setUseCubic(boolean _useCubic) {
         mUseCubic = _useCubic;
+        onDataChanged();
     }
 
+    /**
+     * Checks if the graph uses an overlap fill. An overlap fill occurs whether the user set it explicitly
+     * through the attributes or if only one data set is present.
+     * @return True if overlap fill is activated.
+     */
     public boolean isUseOverlapFill() {
         return mUseOverlapFill;
     }
 
+    /**
+     * Sets the overlap fill attribute.
+     * @param _useOverlapFill True if an overlap fill should be used.
+     */
     public void setUseOverlapFill(boolean _useOverlapFill) {
         mUseOverlapFill = _useOverlapFill;
+        onDataChanged();
     }
 
+    /**
+     * Returns the size of the line stroke for every series.
+     * @return Line stroke in px.
+     */
     public float getLineStroke() {
         return mLineStroke;
     }
 
+    /**
+     * Sets the line stroke for every series.
+     * @param _lineStroke Line stroke as a dp value.
+     */
     public void setLineStroke(float _lineStroke) {
-        mLineStroke = _lineStroke;
+        mLineStroke = Utils.dpToPx(_lineStroke);
+        invalidate();
     }
 
+    /**
+     * Checks if the indicator should be shown or not.
+     * @return True if the indicator is shown.
+     */
     public boolean isShowIndicator() {
         return mShowIndicator;
     }
 
+    /**
+     * Sets if the indicator should be shown or not.
+     * @param _showIndicator True if the indicator should be shown.
+     */
     public void setShowIndicator(boolean _showIndicator) {
         mShowIndicator = _showIndicator;
+        invalidate();
     }
 
+    /**
+     * Returns the indicator line width (stroke).
+     * @return Indicator line width in px.
+     */
     public float getIndicatorWidth() {
         return mIndicatorWidth;
     }
 
+    /**
+     * Sets the indicator line width (stroke)
+     * @param _indicatorWidth Indicator width as a dp value.
+     */
     public void setIndicatorWidth(float _indicatorWidth) {
-        mIndicatorWidth = _indicatorWidth;
+        mIndicatorWidth = Utils.dpToPx(_indicatorWidth);
+        invalidate();
     }
 
+    /**
+     * Returns the color of the indicator line.
+     * @return Color value.
+     */
     public int getIndicatorColor() {
         return mIndicatorColor;
     }
 
+    /**
+     * Sets the indicator line color.
+     * @param _indicatorColor Indicator line color value
+     */
     public void setIndicatorColor(int _indicatorColor) {
         mIndicatorColor = _indicatorColor;
+        invalidate();
     }
 
+    /**
+     * Returns the indicators value text size.
+     * @return Indicator text size.
+     */
     public float getIndicatorTextSize() {
         return mIndicatorTextSize;
     }
 
+    /**
+     * Sets the indicators value text size.
+     * @param _indicatorTextSize Indicator text size in sp.
+     */
     public void setIndicatorTextSize(float _indicatorTextSize) {
-        mIndicatorTextSize = _indicatorTextSize;
+        mIndicatorTextSize = Utils.dpToPx(_indicatorTextSize);
+        invalidate();
     }
 
+    /**
+     * Returns the left padding for the indicator text.
+     * @return Indicator text left padding in px
+     */
     public float getIndicatorLeftPadding() {
         return mIndicatorLeftPadding;
     }
 
+    /**
+     * Sets the left padding for the indicator text.
+     * @param _indicatorLeftPadding Indicator text left padding in dp
+     */
     public void setIndicatorLeftPadding(float _indicatorLeftPadding) {
-        mIndicatorLeftPadding = _indicatorLeftPadding;
+        mIndicatorLeftPadding = Utils.dpToPx(_indicatorLeftPadding);
+        invalidate();
     }
 
+    /**
+     * Returns the top padding for the indicator text.
+     * @return Indicator text top padding in px
+     */
     public float getIndicatorTopPadding() {
         return mIndicatorTopPadding;
     }
 
+    /**
+     * Sets the top padding for the indicator text.
+     * @param _indicatorTopPadding Indicator text top padding in dp
+     */
     public void setIndicatorTopPadding(float _indicatorTopPadding) {
-        mIndicatorTopPadding = _indicatorTopPadding;
+        mIndicatorTopPadding = Utils.dpToPx(_indicatorTopPadding);
+        invalidate();
     }
 
+    /**
+     * Checks if the standard value line should be shown or not.
+     * @return True if the standard value line should be shown.
+     */
     public boolean isShowStandardValue() {
         return mShowStandardValue;
     }
 
+    /**
+     * Sets if the standard value should be shown or not.
+     * @param _showStandardValue True if the standard value line should be shown.
+     */
     public void setShowStandardValue(boolean _showStandardValue) {
         mShowStandardValue = _showStandardValue;
-        invalidate();
+        onDataChanged();
     }
 
+    /**
+     * Returns the stroke size of the standard value line.
+     * @return Stroke size of standard value line.
+     */
     public float getStandardValueIndicatorStroke() {
         return mStandardValueIndicatorStroke;
     }
 
+    /**
+     * Sets the standard value line stroke.
+     * @param _standardValueIndicatorStroke Stroke size of standard value line in dp.
+     */
     public void setStandardValueIndicatorStroke(float _standardValueIndicatorStroke) {
         mStandardValueIndicatorStroke = Utils.dpToPx(_standardValueIndicatorStroke);
         invalidate();
     }
 
+    /**
+     * Returns the color of the standard value line.
+     * @return Color of the standard value line.
+     */
     public int getStandardValueColor() {
         return mStandardValueColor;
     }
 
+    /**
+     * Sets the color for the standard value line.
+     * @param _standardValueColor Color value for the standard value line.
+     */
     public void setStandardValueColor(int _standardValueColor) {
         mStandardValueColor = _standardValueColor;
         invalidate();
     }
 
+    /**
+     * Returns the stroke size of the X-axis.
+     * @return Stroke size in px.
+     */
     public float getXAxisStroke() {
         return mXAxisStroke;
     }
 
+    /**
+     * Sets the stroke size of the X-axis.
+     * @param _XAxisStroke Stroke size in dp.
+     */
     public void setXAxisStroke(float _XAxisStroke) {
         mXAxisStroke = Utils.dpToPx(_XAxisStroke);
         invalidate();
@@ -298,6 +439,10 @@ public class ValueLineChart extends BaseChart {
         }
     }
 
+    /**
+     * This is the main entry point after the graph has been inflated. Used to initialize the graph
+     * and its corresponding members.
+     */
     @Override
     protected void initializeGraph() {
         mSeries     = new ArrayList<ValueLineSeries>();
@@ -312,7 +457,7 @@ public class ValueLineChart extends BaseChart {
         mLegendPaint.setStrokeWidth(2);
         mLegendPaint.setStyle(Paint.Style.FILL);
 
-        calculateMaxTextHeight(mLegendPaint);
+        mMaxFontHeight = Utils.calculateMaxTextHeight(mLegendPaint);
 
         mIndicatorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mIndicatorPaint.setColor(mIndicatorColor);
@@ -388,6 +533,13 @@ public class ValueLineChart extends BaseChart {
         }
     }
 
+    /**
+     * Should be called after new data is inserted. Will be automatically called, when the view dimensions
+     * has changed.
+     *
+     * Calculates various offsets and positions for different overlay features based on the graph settings.
+     * After the calculation the Path is generated as a normal path or cubic path (Based on 'egUseCubic' attribute).
+     */
     @Override
     protected void onDataChanged() {
 
@@ -584,6 +736,9 @@ public class ValueLineChart extends BaseChart {
         mGraphOverlay.invalidate();
     }
 
+    /**
+     * Calculates the legend bounds for a custom list of legends.
+     */
     protected void onLegendDataChanged() {
 
         int   legendCount = mLegendList.size();
@@ -601,6 +756,14 @@ public class ValueLineChart extends BaseChart {
         invalidate();
     }
 
+    /**
+     * Calculates the middle point between two points and multiplies its coordinates with the given
+     * smoothness _Mulitplier.
+     * @param _P1           First point
+     * @param _P2           Second point
+     * @param _Result       Resulting point
+     * @param _Multiplier   Smoothness multiplier
+     */
     private void calculatePointDiff(Point2D _P1, Point2D _P2, Point2D _Result, float _Multiplier) {
         float diffX = _P2.getX() - _P1.getX();
         float diffY = _P2.getY() - _P1.getY();
@@ -608,6 +771,9 @@ public class ValueLineChart extends BaseChart {
         _Result.setY(_P1.getY() + (diffY * _Multiplier));
     }
 
+    /**
+     * Calculates the text height for the indicator value and sets its x-coordinate.
+     */
     private void calculateValueTextHeight() {
         Rect rect = new Rect();
         String str = Utils.getFloatString(mFocusedPoint.getValue(), mShowDecimal);
@@ -622,6 +788,10 @@ public class ValueLineChart extends BaseChart {
         }
     }
 
+    /**
+     * Returns the amount of datasets which are currently inserted.
+     * @return Amount of datasets.
+     */
     @Override
     protected int getDataSize() { return mSeries.size(); }
 
@@ -1014,6 +1184,10 @@ public class ValueLineChart extends BaseChart {
     private float                   mValueTextHeight;
 
     private boolean                 mUseCubic;
+
+    /**
+     * Indicates to fill the bottom area of a series with its given color.
+     */
     private boolean                 mUseOverlapFill;
     private float                   mLineStroke;
     private boolean                 mShowIndicator;

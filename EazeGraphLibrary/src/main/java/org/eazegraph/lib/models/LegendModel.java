@@ -17,6 +17,9 @@
 
 package org.eazegraph.lib.models;
 
+/**
+ * A wrapper class for legend labels if only labels are needed and no further information.
+ */
 public class LegendModel extends BaseModel {
 
     public LegendModel(String _legendLabel) {

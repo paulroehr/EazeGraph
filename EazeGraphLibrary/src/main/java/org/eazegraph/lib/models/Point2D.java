@@ -17,6 +17,9 @@
 
 package org.eazegraph.lib.models;
 
+/**
+ * A simple wrapper class for the representation of coordinates.
+ */
 public class Point2D {
 
     public Point2D(float _x, float _y) {
