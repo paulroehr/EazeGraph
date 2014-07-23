@@ -73,11 +73,12 @@ Insert in your root project's 'build.gradle' under repositories:
 and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
-        compile 'com.github.blackfizz:eazegraph:1.1.0-SNAPSHOT@aar'
+        compile 'com.github.blackfizz:eazegraph:1.1.1-SNAPSHOT@aar'
         compile 'com.nineoldandroids:library:2.4.0'
     }
 
-The library uses the `nineoldandroids` support library to support the animations on older devices.
+The library uses the `nineoldandroids` support library to support the animations on older devices. 
+If you already use this library, you don't have to include it.
 That's it. now you are ready to use the library!
 
 Usage
@@ -243,7 +244,7 @@ Changelog
 
 **1.0.14**
 * fixed Issue #7
-* fixed bug in ValueLineChart (NegativeOffset wasn't updated
+* fixed bug in ValueLineChart (NegativeOffset wasn't updated)
 
 **1.0.10**
 * fixed bug in PieChart's current item calculation and autocenter
