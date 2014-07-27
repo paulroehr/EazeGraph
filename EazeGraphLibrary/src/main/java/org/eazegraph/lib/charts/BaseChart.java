@@ -139,7 +139,14 @@ public abstract class BaseChart extends ViewGroup {
         mAnimationTime = _animationTime;
     }
 
-<<<<<<< HEAD:EazeGraphLibrary/src/main/java/org/eazegraph/lib/charts/BaseChart.java
+    /**
+     * Determines if the values of each data should be shown in the graph.
+     * @param _showValues true to show values in the graph.
+     */
+    public void setShowValues(boolean _showValues) {
+        mShowValues = _showValues;
+    }
+
     /**
      * This is called during layout when the size of this view has changed. If
      * you were just added to the view hierarchy, you're called with the old
@@ -150,12 +157,6 @@ public abstract class BaseChart extends ViewGroup {
      * @param oldw Old width of this view.
      * @param oldh Old height of this view.
      */
-=======
-    public void setShowValues(boolean _showValues) {
-        mShowValues = _showValues;
-    }
-
->>>>>>> 872f1ef... added "show values" to bar chart:src/main/java/org/eazegraph/lib/charts/BaseChart.java
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
