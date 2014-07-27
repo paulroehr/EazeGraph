@@ -90,7 +90,8 @@ public class BarChart extends BaseBarChart {
      * Returns the data which is currently present in the chart.
      * @return The currently used data.
      */
-    public List<BarModel> getBarList() {
+    @Override
+    public List<BarModel> getData() {
         return mData;
     }
 
@@ -191,15 +192,6 @@ public class BarChart extends BaseBarChart {
     @Override
     protected List<? extends BaseModel> getLegendData() {
         return mData;
-    }
-
-    /**
-     * Returns the amount of datasets which are currently inserted.
-     * @return Amount of datasets.
-     */
-    @Override
-    protected int getDataSize() {
-        return mData.size();
     }
 
     //##############################################################################################

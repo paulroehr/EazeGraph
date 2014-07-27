@@ -74,7 +74,8 @@ public class StackedBarChart extends BaseBarChart {
      * Returns the data which is currently present in the chart.
      * @return The currently used data.
      */
-    public List<StackedBarModel> getBarList() {
+    @Override
+    public List<StackedBarModel> getData() {
         return mData;
     }
 
@@ -196,15 +197,6 @@ public class StackedBarChart extends BaseBarChart {
     @Override
     protected List<? extends BaseModel> getLegendData() {
         return mData;
-    }
-
-    /**
-     * Returns the amount of datasets which are currently inserted.
-     * @return Amount of datasets.
-     */
-    @Override
-    protected int getDataSize() {
-        return mData.size();
     }
 
     //##############################################################################################
