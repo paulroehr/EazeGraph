@@ -497,7 +497,7 @@ public class PieChart extends BaseChart {
                     result = true;
                 }
             }
-        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
             performClick();
             result = true;
         }

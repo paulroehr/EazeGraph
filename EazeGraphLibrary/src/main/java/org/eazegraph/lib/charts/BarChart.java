@@ -104,7 +104,7 @@ public class BarChart extends BaseBarChart {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_UP) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
             performClick();
             return true;
         } else {
