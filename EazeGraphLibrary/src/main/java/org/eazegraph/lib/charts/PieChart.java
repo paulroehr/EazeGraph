@@ -497,8 +497,10 @@ public class PieChart extends BaseChart {
                     result = true;
                 }
             }
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+            performClick();
+            result = true;
         }
-
 
         return result;
     }
@@ -1211,6 +1213,12 @@ public class PieChart extends BaseChart {
             if (isAnimationRunning()) {
                 stopScrolling();
             }
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            performClick();
             return true;
         }
     }
