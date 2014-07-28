@@ -19,6 +19,7 @@ package org.eazegraph.lib.charts;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -172,6 +173,9 @@ public class BarChart extends BaseBarChart {
      */
     protected void drawBars(Canvas _Canvas) {
 
+        Paint mValuePaint = new Paint(mLegendPaint);
+        mValuePaint.setTextAlign(Paint.Align.CENTER);
+
         for (BarModel model : mData) {
             RectF bounds = model.getBarBounds();
             mGraphPaint.setColor(model.getColor());
@@ -181,6 +185,11 @@ public class BarChart extends BaseBarChart {
                     bounds.bottom - (bounds.height() * mRevealValue),
                     bounds.right,
                     bounds.bottom, mGraphPaint);
+
+            if (mShowValues) {
+                _Canvas.drawText(mFormatter.format(model.getValue()), model.getLegendBounds().centerX(),
+                        Math.max(mValuePaint.getTextSize(), bounds.top - 10), mValuePaint);
+            }
         }
     }
 
