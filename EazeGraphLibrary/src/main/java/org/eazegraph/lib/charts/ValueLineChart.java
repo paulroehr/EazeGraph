@@ -954,7 +954,7 @@ public class ValueLineChart extends BaseChart {
             super.onSizeChanged(w, h, oldw, oldh);
             mGraphWidth = w;
             mGraphHeight = h;
-            mUseableGraphHeight = (int) (mGraphHeight - mTopPadding);
+            mUseableGraphHeight = mGraphHeight - mTopPadding;
         }
 
         /**

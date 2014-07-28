@@ -369,9 +369,7 @@ public abstract class BaseBarChart extends BaseChart {
                         }
                     }
                     counter++;
-
                 }
-
             }
 
             return result;

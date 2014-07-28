@@ -1,9 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="de.eazegraph.app.ChartActivity" >
+
     <item android:id="@+id/action_restart"
         android:title="@string/action_restart"
         android:icon="@drawable/ic_action_refresh"
-        android:showAsAction="always" />
+        app:showAsAction="always" />
 
 </menu>
