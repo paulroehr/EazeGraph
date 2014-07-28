@@ -25,8 +25,10 @@ import android.view.ViewGroup;
 import com.nineoldandroids.animation.ValueAnimator;
 
 import org.eazegraph.lib.R;
+import org.eazegraph.lib.models.BaseModel;
 import org.eazegraph.lib.utils.Utils;
 
+import java.util.List;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -103,7 +105,7 @@ public abstract class BaseChart extends ViewGroup {
     public void setLegendHeight(float _legendHeight) {
         mLegendHeight = Utils.dpToPx(_legendHeight);
 
-        if(getDataSize() > 0)
+        if(getData().size() > 0)
             onDataChanged();
     }
 
@@ -191,10 +193,10 @@ public abstract class BaseChart extends ViewGroup {
     }
 
     /**
-     * Returns the amount of datasets which are currently inserted.
-     * @return Amount of datasets.
+     * Returns the datasets which are currently inserted.
+     * @return the datasets
      */
-    protected abstract int getDataSize();
+    public abstract List<? extends BaseModel> getData();
 
     /**
      * Resets and clears the data object.
