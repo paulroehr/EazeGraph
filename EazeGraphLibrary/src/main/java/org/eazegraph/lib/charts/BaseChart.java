@@ -25,10 +25,13 @@ import android.view.ViewGroup;
 import com.nineoldandroids.animation.ValueAnimator;
 
 import org.eazegraph.lib.R;
+import org.eazegraph.lib.models.BaseModel;
 import org.eazegraph.lib.utils.Utils;
 
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.List;
+
 
 /**
  * This is the main chart class and should be inherited by every graph. This class provides some general
@@ -103,7 +106,7 @@ public abstract class BaseChart extends ViewGroup {
     public void setLegendHeight(float _legendHeight) {
         mLegendHeight = Utils.dpToPx(_legendHeight);
 
-        if(getDataSize() > 0)
+        if(getData().size() > 0)
             onDataChanged();
     }
 
@@ -137,14 +140,6 @@ public abstract class BaseChart extends ViewGroup {
      */
     public void setAnimationTime(int _animationTime) {
         mAnimationTime = _animationTime;
-    }
-
-    /**
-     * Determines if the values of each data should be shown in the graph.
-     * @param _showValues true to show values in the graph.
-     */
-    public void setShowValues(boolean _showValues) {
-        mShowValues = _showValues;
     }
 
     /**
@@ -191,10 +186,10 @@ public abstract class BaseChart extends ViewGroup {
     }
 
     /**
-     * Returns the amount of datasets which are currently inserted.
-     * @return Amount of datasets.
+     * Returns the datasets which are currently inserted.
+     * @return the datasets
      */
-    protected abstract int getDataSize();
+    public abstract List<? extends BaseModel> getData();
 
     /**
      * Resets and clears the data object.
@@ -244,5 +239,4 @@ public abstract class BaseChart extends ViewGroup {
     protected int               mAnimationTime      = 1000;
     protected boolean           mStartedAnimation   = false;
 
-    protected boolean           mShowValues         = true;
 }

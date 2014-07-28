@@ -176,9 +176,17 @@ public abstract class BaseBarChart extends BaseChart {
         mGraph.layout(0, 0, w, (int) (h - mLegendHeight));
         mLegend.layout(0, (int) (h - mLegendHeight), w, h);
 
-        if(getDataSize() > 0) {
+        if(getData().size() > 0) {
             onDataChanged();
         }
+    }
+
+    /**
+     * Invalidates graph and legend and forces them to be redrawn.
+     */
+    protected void invalidateGraphs() {
+        mGraph.invalidate();
+        mLegend.invalidate();
     }
 
     /**

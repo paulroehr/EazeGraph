@@ -789,11 +789,17 @@ public class ValueLineChart extends BaseChart {
     }
 
     /**
-     * Returns the amount of datasets which are currently inserted.
-     * @return Amount of datasets.
+     * Returns the first series.
+     * @return The first series.
      */
     @Override
-    protected int getDataSize() { return mSeries.size(); }
+    public List<ValueLinePoint> getData() { return mSeries.get(0).getSeries(); }
+
+    /**
+     * Returns all series which are currently inserted.
+     * @return Inserted series.
+     */
+    public List<ValueLineSeries> getDataSeries() { return mSeries; }
 
     //##############################################################################################
     // Graph

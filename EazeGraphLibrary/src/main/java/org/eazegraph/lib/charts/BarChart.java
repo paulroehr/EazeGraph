@@ -18,12 +18,14 @@
 package org.eazegraph.lib.charts;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import org.eazegraph.lib.R;
 import org.eazegraph.lib.models.BarModel;
 import org.eazegraph.lib.models.BaseModel;
 import org.eazegraph.lib.utils.Utils;
@@ -44,6 +46,9 @@ public class BarChart extends BaseBarChart {
      */
     public BarChart(Context context) {
         super(context);
+
+        mShowValues = DEF_SHOW_VALUES;
+
         initializeGraph();
     }
 
@@ -65,6 +70,21 @@ public class BarChart extends BaseBarChart {
      */
     public BarChart(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        TypedArray a = context.getTheme().obtainStyledAttributes(
+                attrs,
+                R.styleable.BarChart,
+                0, 0
+        );
+
+        try {
+
+            mShowValues = a.getBoolean(R.styleable.BarChart_egShowValues, DEF_SHOW_VALUES);
+
+        } finally {
+            // release the TypedArray so that it can be reused.
+            a.recycle();
+        }
 
         initializeGraph();
     }
@@ -91,8 +111,26 @@ public class BarChart extends BaseBarChart {
      * Returns the data which is currently present in the chart.
      * @return The currently used data.
      */
-    public List<BarModel> getBarList() {
+    @Override
+    public List<BarModel> getData() {
         return mData;
+    }
+
+    /**
+     * Determines if the values of each data should be shown in the graph.
+     * @param _showValues true to show values in the graph.
+     */
+    public void setShowValues(boolean _showValues) {
+        mShowValues = _showValues;
+        invalidateGraphs();
+    }
+
+    /**
+     * Returns if the values are drawn on top of the bars.
+     * @return True if they are drawn.
+     */
+    public boolean isShowValues() {
+        return mShowValues;
     }
 
     /**
@@ -205,21 +243,15 @@ public class BarChart extends BaseBarChart {
         return mData;
     }
 
-    /**
-     * Returns the amount of datasets which are currently inserted.
-     * @return Amount of datasets.
-     */
-    @Override
-    protected int getDataSize() {
-        return mData.size();
-    }
-
     //##############################################################################################
     // Variables
     //##############################################################################################
 
     private static final String LOG_TAG = BarChart.class.getSimpleName();
 
+    public static final boolean DEF_SHOW_VALUES = true;
+
     private List<BarModel>  mData;
 
+    protected boolean       mShowValues;
 }
