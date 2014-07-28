@@ -474,6 +474,18 @@ public class PieChart extends BaseChart {
      * Resets and clears the data object.
      */
     @Override
+    public void update() {
+        mTotalValue = 0;
+        for (PieModel slice : mPieData) {
+            mTotalValue += slice.getValue();
+        }
+        onDataChanged();
+    }
+
+    /**
+     * Resets and clears the data object.
+     */
+    @Override
     public void clearChart() {
         mPieData.clear();
         mTotalValue = 0;
@@ -497,8 +509,10 @@ public class PieChart extends BaseChart {
                     result = true;
                 }
             }
+        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            performClick();
+            result = true;
         }
-
 
         return result;
     }
@@ -1209,6 +1223,12 @@ public class PieChart extends BaseChart {
             if (isAnimationRunning()) {
                 stopScrolling();
             }
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            performClick();
             return true;
         }
     }

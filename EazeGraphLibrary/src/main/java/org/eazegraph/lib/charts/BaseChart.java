@@ -29,6 +29,8 @@ import org.eazegraph.lib.models.BaseModel;
 import org.eazegraph.lib.utils.Utils;
 
 import java.util.List;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  * This is the main chart class and should be inherited by every graph. This class provides some general
@@ -140,6 +142,14 @@ public abstract class BaseChart extends ViewGroup {
     }
 
     /**
+     * Determines if the values of each data should be shown in the graph.
+     * @param _showValues true to show values in the graph.
+     */
+    public void setShowValues(boolean _showValues) {
+        mShowValues = _showValues;
+    }
+
+    /**
      * This is called during layout when the size of this view has changed. If
      * you were just added to the view hierarchy, you're called with the old
      * values of 0.
@@ -193,10 +203,19 @@ public abstract class BaseChart extends ViewGroup {
      */
     public abstract void clearChart();
 
+    /**
+     * Should be called when the dataset changed and the graph should update and redraw.
+     * Graph implementations might overwrite this method to do more work than just call onDataChanged()
+     */
+    public void update() {
+        onDataChanged();
+    }
+
     //##############################################################################################
     // Variables
     //##############################################################################################
 
+    protected final static NumberFormat mFormatter = NumberFormat.getInstance(Locale.getDefault());
 
     public static final float   DEF_LEGEND_HEIGHT       = 58.f;
     public static final int     DEF_LEGEND_COLOR        = 0xFF898989;
@@ -226,4 +245,6 @@ public abstract class BaseChart extends ViewGroup {
     protected float             mRevealValue        = 1.0f;
     protected int               mAnimationTime      = 1000;
     protected boolean           mStartedAnimation   = false;
+
+    protected boolean           mShowValues         = true;
 }
