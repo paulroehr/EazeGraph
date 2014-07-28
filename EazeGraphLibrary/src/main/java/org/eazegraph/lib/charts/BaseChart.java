@@ -201,6 +201,14 @@ public abstract class BaseChart extends ViewGroup {
      */
     public abstract void clearChart();
 
+    /**
+     * Should be called when the dataset changed and the graph should update and redraw.
+     * Graph implementations might overwrite this method to do more work than just call onDataChanged()
+     */
+    public void update() {
+        onDataChanged();
+    }
+
     //##############################################################################################
     // Variables
     //##############################################################################################

@@ -474,6 +474,18 @@ public class PieChart extends BaseChart {
      * Resets and clears the data object.
      */
     @Override
+    public void update() {
+        mTotalValue = 0;
+        for (PieModel slice : mPieData) {
+            mTotalValue += slice.getValue();
+        }
+        onDataChanged();
+    }
+
+    /**
+     * Resets and clears the data object.
+     */
+    @Override
     public void clearChart() {
         mPieData.clear();
         mTotalValue = 0;
