@@ -18,11 +18,13 @@
 package org.eazegraph.showcase.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.eazegraph.lib.charts.StackedBarChart;
+import org.eazegraph.lib.communication.IOnBarClickedListener;
 import org.eazegraph.lib.models.BarModel;
 import org.eazegraph.lib.models.StackedBarModel;
 import org.eazegraph.showcase.R;
@@ -39,6 +41,14 @@ public class StackedBarChartFragment extends ChartFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_stacked_bar_chart, container, false);
         mStackedBarChart = (StackedBarChart) view.findViewById(R.id.stackedbarchart);
+
+        mStackedBarChart.setOnBarClickedListener(new IOnBarClickedListener() {
+            @Override
+            public void onBarClicked(int _Position) {
+                Log.d("StackedBarChart", "Position: " + _Position);
+            }
+        });
+
         loadData();
         return view;
     }

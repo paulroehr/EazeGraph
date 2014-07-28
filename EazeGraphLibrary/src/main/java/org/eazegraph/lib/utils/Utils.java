@@ -161,5 +161,16 @@ public class Utils {
         return height.height();
     }
 
+    /**
+     * Checks if a point is in the given rectangle.
+     * @param _Rect rectangle which is checked
+     * @param _X    x-coordinate of the point
+     * @param _Y    y-coordinate of the point
+     * @return True if the points intersects with the rectangle.
+     */
+    public static boolean intersectsPointWithRectF(RectF _Rect, float _X, float _Y) {
+        return _X > _Rect.left && _X < _Rect.right && _Y > _Rect.top && _Y < _Rect.bottom;
+    }
+
     private static final String LOG_TAG = Utils.class.getSimpleName();
 }

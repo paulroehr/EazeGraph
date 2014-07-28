@@ -160,6 +160,10 @@ public class BarChart extends BaseBarChart {
         super.initializeGraph();
         mData = new ArrayList<BarModel>();
 
+
+        mValuePaint = new Paint(mLegendPaint);
+        mValuePaint.setTextAlign(Paint.Align.CENTER);
+
         if(this.isInEditMode()) {
             addBar(new BarModel(2.3f));
             addBar(new BarModel(2.f));
@@ -214,9 +218,6 @@ public class BarChart extends BaseBarChart {
      */
     protected void drawBars(Canvas _Canvas) {
 
-        Paint mValuePaint = new Paint(mLegendPaint);
-        mValuePaint.setTextAlign(Paint.Align.CENTER);
-
         for (BarModel model : mData) {
             RectF bounds = model.getBarBounds();
             mGraphPaint.setColor(model.getColor());
@@ -228,8 +229,14 @@ public class BarChart extends BaseBarChart {
                     bounds.bottom, mGraphPaint);
 
             if (mShowValues) {
+                int calculatedDistance = -mValueDistance;
+
+                if(model.getBarBounds().top - model.getTextBounds().height() < mTopPadding) {
+                    calculatedDistance = model.getTextBounds().height() + mValueDistance;
+                }
+
                 _Canvas.drawText(mFormatter.format(model.getValue()), model.getLegendBounds().centerX(),
-                        Math.max(mValuePaint.getTextSize(), bounds.top - 10), mValuePaint);
+                        Math.max(mValuePaint.getTextSize(), bounds.bottom - (bounds.height() * mRevealValue)) + calculatedDistance, mValuePaint);
             }
         }
     }
@@ -243,6 +250,15 @@ public class BarChart extends BaseBarChart {
         return mData;
     }
 
+    @Override
+    protected List<RectF> getBarBounds() {
+        ArrayList<RectF> bounds = new ArrayList<RectF>();
+        for (BarModel model : mData) {
+            bounds.add(model.getBarBounds());
+        }
+        return bounds;
+    }
+
     //##############################################################################################
     // Variables
     //##############################################################################################
@@ -253,5 +269,7 @@ public class BarChart extends BaseBarChart {
 
     private List<BarModel>  mData;
 
+    private Paint           mValuePaint;
     protected boolean       mShowValues;
+    private int             mValueDistance = (int) Utils.dpToPx(3);
 }

@@ -235,6 +235,11 @@ Wiki
 
 Changelog
 =========
+**1.1.2**
+* Added "showValues" for BarChart
+* fixed issue #2 and made BarCharts clickable
+* little adjustments and fixes
+
 **1.1.1**
 * documented complete sourcecode
 * refactored the code and fixed some minor bugs

@@ -23,12 +23,14 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ValueAnimator;
 
 import org.eazegraph.lib.R;
+import org.eazegraph.lib.communication.IOnBarClickedListener;
 import org.eazegraph.lib.models.BaseModel;
 import org.eazegraph.lib.utils.Utils;
 
@@ -89,6 +91,22 @@ public abstract class BaseBarChart extends BaseChart {
             a.recycle();
         }
 
+    }
+
+    /**
+     * Returns the onBarClickedListener.
+     * @return
+     */
+    public IOnBarClickedListener getOnBarClickedListener() {
+        return mListener;
+    }
+
+    /**
+     * Sets the onBarClickedListener
+     * @param _listener The listener which will be set.
+     */
+    public void setOnBarClickedListener(IOnBarClickedListener _listener) {
+        mListener = _listener;
     }
 
     /**
@@ -288,6 +306,8 @@ public abstract class BaseBarChart extends BaseChart {
      */
     protected abstract List<? extends BaseModel> getLegendData();
 
+    protected abstract List<RectF> getBarBounds();
+
     //##############################################################################################
     // Graph
     //##############################################################################################
@@ -328,6 +348,38 @@ public abstract class BaseBarChart extends BaseChart {
             super.onSizeChanged(w, h, oldw, oldh);
             mGraphHeight = h - mTopPadding;
             mGraphWidth  = w - mLeftPadding - mRightPadding;
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            boolean result = false;
+
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                performClick();
+                result = true;
+
+                float newX = event.getX();
+                float newY = event.getY();
+                int   counter = 0;
+
+                for (RectF rectF : getBarBounds()) {
+                    if (Utils.intersectsPointWithRectF(rectF, newX, newY)) {
+                        if (mListener != null) {
+                            mListener.onBarClicked(counter);
+                        }
+                    }
+                    counter++;
+
+                }
+
+            }
+
+            return result;
+        }
+
+        @Override
+        public boolean performClick() {
+            return super.performClick();
         }
 
     }
@@ -396,6 +448,8 @@ public abstract class BaseBarChart extends BaseChart {
     public static final float   DEF_BAR_WIDTH           = 32.f;
     public static final boolean DEF_FIXED_BAR_WIDTH     = false;
     public static final float   DEF_BAR_MARGIN          = 12.f;
+
+    protected IOnBarClickedListener mListener = null;
 
     protected Graph           mGraph;
     protected Legend          mLegend;

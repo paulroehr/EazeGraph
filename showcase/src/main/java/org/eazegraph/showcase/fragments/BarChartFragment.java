@@ -18,11 +18,13 @@
 package org.eazegraph.showcase.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.eazegraph.lib.charts.BarChart;
+import org.eazegraph.lib.communication.IOnBarClickedListener;
 import org.eazegraph.lib.models.BarModel;
 import org.eazegraph.showcase.R;
 
@@ -38,6 +40,14 @@ public class BarChartFragment extends ChartFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_bar_chart, container, false);
         mBarChart = (BarChart) view.findViewById(R.id.barchart);
+
+        mBarChart.setOnBarClickedListener(new IOnBarClickedListener() {
+            @Override
+            public void onBarClicked(int _Position) {
+                Log.d("BarChart", "Position: " + _Position);
+            }
+        });
+
         loadData();
         return view;
     }

@@ -65,10 +65,10 @@ public class StackedBarModel extends BaseModel {
         if(!mBars.isEmpty()) {
             // get bounds from complete StackedBar
             bounds.set(
-                    mBars.get(0).getLegendBounds().left,
-                    mBars.get(0).getLegendBounds().top,
-                    mBars.get(mBars.size() - 1).getLegendBounds().right,
-                    mBars.get(mBars.size() - 1).getLegendBounds().bottom
+                    mBars.get(0).getBarBounds().left,
+                    mBars.get(0).getBarBounds().top,
+                    mBars.get(mBars.size() - 1).getBarBounds().right,
+                    mBars.get(mBars.size() - 1).getBarBounds().bottom
             );
         }
         return bounds;

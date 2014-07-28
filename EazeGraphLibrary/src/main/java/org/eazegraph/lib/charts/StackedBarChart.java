@@ -202,6 +202,15 @@ public class StackedBarChart extends BaseBarChart {
         return mData;
     }
 
+    @Override
+    protected List<RectF> getBarBounds() {
+        ArrayList<RectF> bounds = new ArrayList<RectF>();
+        for (StackedBarModel model : mData) {
+            bounds.add(model.getBounds());
+        }
+        return bounds;
+    }
+
     //##############################################################################################
     // Variables
     //##############################################################################################
