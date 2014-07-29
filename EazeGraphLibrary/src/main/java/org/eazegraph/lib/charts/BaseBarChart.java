@@ -358,17 +358,21 @@ public abstract class BaseBarChart extends BaseChart {
                 performClick();
                 result = true;
 
-                float newX = event.getX();
-                float newY = event.getY();
-                int   counter = 0;
+                if (mListener == null) {
+                    // we're not interested in clicks on individual bars here
+                    BaseBarChart.this.onTouchEvent(event);
+                } else {
+                    float newX = event.getX();
+                    float newY = event.getY();
+                    int   counter = 0;
 
-                for (RectF rectF : getBarBounds()) {
-                    if (Utils.intersectsPointWithRectF(rectF, newX, newY)) {
-                        if (mListener != null) {
+                    for (RectF rectF : getBarBounds()) {
+                        if (Utils.intersectsPointWithRectF(rectF, newX, newY)) {
                             mListener.onBarClicked(counter);
+                            break; // no need to check other bars
                         }
+                        counter++;
                     }
-                    counter++;
                 }
             }
 
