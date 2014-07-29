@@ -58,6 +58,8 @@ Examples
 
 Examples on how to correctly use these charts are either below or you can view the source of the sample app I provided.
 
+If you want to see the library in action, just download the sample app from the PlayStore:
+https://play.google.com/store/apps/details?id=org.eazegraph.app
 
 Including in your project
 =========================
