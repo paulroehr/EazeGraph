@@ -73,7 +73,7 @@ Insert in your root project's 'build.gradle' under repositories:
 and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
-        compile 'com.github.blackfizz:eazegraph:1.1.2-SNAPSHOT@aar'
+        compile 'com.github.blackfizz:eazegraph:1.1.3-SNAPSHOT@aar'
         compile 'com.nineoldandroids:library:2.4.0'
     }
 
@@ -235,6 +235,9 @@ Wiki
 
 Changelog
 =========
+**1.1.3**
+* fixed onCLick Listener for BarChart
+
 **1.1.2**
 * Added "showValues" for BarChart
 * fixed issue #2 and made BarCharts clickable
