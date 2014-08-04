@@ -198,7 +198,9 @@ public class BarChart extends BaseBarChart {
             }
         }
 
-        float heightMultiplier = mGraphHeight / maxValue;
+        int valuePadding = mShowValues ? (int) mValuePaint.getTextSize() + mValueDistance : 0;
+
+        float heightMultiplier = (mGraphHeight - valuePadding) / maxValue;
 
         for (BarModel model : mData) {
             float height = model.getValue() * heightMultiplier;
@@ -229,14 +231,8 @@ public class BarChart extends BaseBarChart {
                     bounds.bottom, mGraphPaint);
 
             if (mShowValues) {
-                int calculatedDistance = -mValueDistance;
-
-                if(model.getBarBounds().top - model.getTextBounds().height() < mTopPadding) {
-                    calculatedDistance = model.getTextBounds().height() + mValueDistance;
-                }
-
                 _Canvas.drawText(mFormatter.format(model.getValue()), model.getLegendBounds().centerX(),
-                        Math.max(mValuePaint.getTextSize(), bounds.bottom - (bounds.height() * mRevealValue)) + calculatedDistance, mValuePaint);
+                        bounds.bottom - (bounds.height() * mRevealValue) - mValueDistance, mValuePaint);
             }
         }
     }
