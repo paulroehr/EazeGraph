@@ -205,6 +205,22 @@ public class PieChart extends BaseChart {
     }
 
     /**
+     * Sets the InnerPadding's color. After setting a recalculation is initiated.
+     * @param color the new InnerPadding's color
+     */
+    public void setInnerPaddingColor(int color) {
+        mInnerPaddingColor = color;
+        onDataChanged();
+    }
+
+    /**
+     * Returns the color of the InnerPadding.
+     *
+     * @return the color of the InnerPadding
+     */
+    public int getInnerPaddingColor() { return mInnerPaddingColor; }
+
+    /**
      * Returns the size of the InnerPaddingOutline (which is the highlighted part).
      *
      * @return The outline size in percent (between 0 - 100) dependent on the normal InnerPadding.
@@ -936,7 +952,7 @@ public class PieChart extends BaseChart {
 
                 // Draw inner white circle
                 if (mUseInnerPadding) {
-                    mGraphPaint.setColor(0xFFFFFFFF);
+                    mGraphPaint.setColor(mInnerPaddingColor);
 
                     if(mOpenClockwise) {
                         canvas.drawArc(mInnerOutlineBounds,
@@ -1289,6 +1305,7 @@ public class PieChart extends BaseChart {
     private boolean             mUseInnerPadding;
     private float               mInnerPadding;
     private float               mInnerPaddingOutline;
+    private int                 mInnerPaddingColor = Color.parseColor("#fff3f3f3"); // Holo light background
     private float               mHighlightStrength;
     private boolean             mAutoCenterInSlice;
     private boolean             mUsePieRotation;
