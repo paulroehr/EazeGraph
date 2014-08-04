@@ -145,6 +145,15 @@ public abstract class BaseChart extends ViewGroup {
         mAnimationTime = _animationTime;
     }
 
+    public boolean isShowDecimal() {
+        return mShowDecimal;
+    }
+
+    public void setShowDecimal(boolean _showDecimal) {
+        mShowDecimal = _showDecimal;
+        invalidate();
+    }
+
     /**
      * This is called during layout when the size of this view has changed. If
      * you were just added to the view hierarchy, you're called with the old
