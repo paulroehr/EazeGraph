@@ -51,6 +51,7 @@ public abstract class BaseChart extends ViewGroup {
         mLegendHeight   = Utils.dpToPx(DEF_LEGEND_HEIGHT);
         mLegendTextSize = Utils.dpToPx(DEF_LEGEND_TEXT_SIZE);
         mAnimationTime  = DEF_ANIMATION_TIME;
+        mShowDecimal    = DEF_SHOW_DECIMAL;
     }
 
     /**
@@ -83,6 +84,8 @@ public abstract class BaseChart extends ViewGroup {
             mLegendHeight       = a.getDimension(R.styleable.BaseChart_egLegendHeight,     Utils.dpToPx(DEF_LEGEND_HEIGHT));
             mLegendTextSize     = a.getDimension(R.styleable.BaseChart_egLegendTextSize,   Utils.dpToPx(DEF_LEGEND_TEXT_SIZE));
             mAnimationTime      = a.getInt(R.styleable.BaseChart_egAnimationTime,          DEF_ANIMATION_TIME);
+            mShowDecimal        = a.getBoolean(R.styleable.BaseChart_egShowDecimal,        DEF_SHOW_DECIMAL);
+
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -215,6 +218,7 @@ public abstract class BaseChart extends ViewGroup {
     // will be interpreted as sp value
     public static final float   DEF_LEGEND_TEXT_SIZE    = 12.f;
     public static final int     DEF_ANIMATION_TIME      = 2000;
+    public static final boolean DEF_SHOW_DECIMAL        = false;
 
     protected int               mHeight;
     protected int               mWidth;
@@ -233,6 +237,8 @@ public abstract class BaseChart extends ViewGroup {
 
     protected float             mMaxFontHeight;
     protected float             mLegendTopPadding = Utils.dpToPx(4.f);
+
+    protected boolean           mShowDecimal;
 
     protected ValueAnimator     mRevealAnimator     = null;
     protected float             mRevealValue        = 1.0f;

@@ -59,7 +59,6 @@ public class ValueLineChart extends BaseChart {
      */
     public ValueLineChart(Context context) {
         super(context);
-        initializeGraph();
 
         mUseCubic                     = DEF_USE_CUBIC;
         mUseOverlapFill               = DEF_USE_OVERLAP_FILL;
@@ -76,7 +75,8 @@ public class ValueLineChart extends BaseChart {
         mStandardValueIndicatorStroke = Utils.dpToPx(DEF_STANDARD_VALUE_INDICATOR_STROKE);
         mStandardValueColor           = DEF_STANDARD_VALUE_COLOR;
         mXAxisStroke                  = Utils.dpToPx(DEF_X_AXIS_STROKE);
-        mShowDecimal                  = DEF_SHOW_DECIMAL;
+
+        initializeGraph();
     }
 
     /**
@@ -121,7 +121,6 @@ public class ValueLineChart extends BaseChart {
             mStandardValueIndicatorStroke = a.getDimension(R.styleable.ValueLineChart_egStandardValueIndicatorStroke,   Utils.dpToPx(DEF_STANDARD_VALUE_INDICATOR_STROKE));
             mStandardValueColor           = a.getColor(R.styleable.ValueLineChart_egStandardValueColor,                 DEF_STANDARD_VALUE_COLOR);
             mXAxisStroke                  = a.getDimension(R.styleable.ValueLineChart_egXAxisStroke,                    Utils.dpToPx(DEF_X_AXIS_STROKE));
-            mShowDecimal                  = a.getBoolean(R.styleable.ValueLineChart_egShowDecimal,                      DEF_SHOW_DECIMAL);
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -1158,7 +1157,6 @@ public class ValueLineChart extends BaseChart {
     public static final int     DEF_STANDARD_VALUE_COLOR            = 0xFF00FF00;
     public static final float   DEF_X_AXIS_STROKE                   = 2f;
     public static final float   DEF_LEGEND_STROKE                   = 2f;
-    public static final boolean DEF_SHOW_DECIMAL                    = true;
 
     private int                     mUseableGraphHeight;
 
@@ -1206,7 +1204,6 @@ public class ValueLineChart extends BaseChart {
     private float                   mStandardValueIndicatorStroke;
     private int                     mStandardValueColor;
     private float                   mXAxisStroke;
-    private boolean                 mShowDecimal;
 
     protected Matrix                mScale = new Matrix();
 }

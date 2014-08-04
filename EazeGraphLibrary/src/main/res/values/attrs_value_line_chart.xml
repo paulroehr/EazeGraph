@@ -16,7 +16,6 @@
         <attr name="egStandardValueIndicatorStroke" format="dimension"/>
         <attr name="egStandardValueColor"           format="color"/>
         <attr name="egXAxisStroke"                  format="dimension"/>
-        <attr name="egShowDecimal"                  format="boolean"/>
     </declare-styleable>
 
 </resources>

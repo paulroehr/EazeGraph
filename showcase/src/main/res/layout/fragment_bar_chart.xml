@@ -13,7 +13,8 @@
         app:egFixedBarWidth="true"
         app:egBarWidth="20dp"
         app:egLegendHeight="0dp"
-        app:egShowValues="true"/>
+        app:egShowValues="true"
+        app:egShowDecimal="true"/>
 
 
 </FrameLayout>

@@ -75,7 +75,7 @@ Insert in your root project's 'build.gradle' under repositories:
 and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
-        compile 'com.github.blackfizz:eazegraph:1.1.4-SNAPSHOT@aar'
+        compile 'com.github.blackfizz:eazegraph:1.1.5-SNAPSHOT@aar'
         compile 'com.nineoldandroids:library:2.4.0'
     }
 
@@ -237,6 +237,9 @@ Wiki
 
 Changelog
 =========
+**1.1.5**
+* made egShowDecimal attribute available for every chart
+
 **1.1.4**
 * Values in bar chart are now always above the bar
 * Added InnerPaddingColor attribute

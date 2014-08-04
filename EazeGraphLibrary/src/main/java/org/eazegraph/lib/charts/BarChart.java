@@ -231,7 +231,7 @@ public class BarChart extends BaseBarChart {
                     bounds.bottom, mGraphPaint);
 
             if (mShowValues) {
-                _Canvas.drawText(mFormatter.format(model.getValue()), model.getLegendBounds().centerX(),
+                _Canvas.drawText(Utils.getFloatString(model.getValue(), mShowDecimal), model.getLegendBounds().centerX(),
                         bounds.bottom - (bounds.height() * mRevealValue) - mValueDistance, mValuePaint);
             }
         }

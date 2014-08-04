@@ -5,6 +5,7 @@
         <attr name="egAnimationTime"  format="integer"/>
         <attr name="egLegendHeight"   format="dimension" />
         <attr name="egLegendTextSize" format="dimension"/>
+        <attr name="egShowDecimal"    format="boolean"/>
     </declare-styleable>
 
 </resources>

@@ -858,7 +858,7 @@ public class PieChart extends BaseChart {
                 mAutoCenterAnimator.setDuration(AUTOCENTER_ANIM_DURATION).start();
             } else {
                 // Dull non-animated version
-                //mPieView.rotateTo(targetAngle);
+                mGraph.rotateTo(targetAngle);
             }
         }
     }
@@ -1076,7 +1076,7 @@ public class PieChart extends BaseChart {
                 PieModel model = mPieData.get(mCurrentItem);
 
                 if(!mUseCustomInnerValue) {
-                    mInnerValueString = model.getValue()+"";
+                    mInnerValueString = Utils.getFloatString(model.getValue(), mShowDecimal);
                 }
 
                 mValuePaint.getTextBounds(mInnerValueString, 0, mInnerValueString.length(), mValueTextBounds);
@@ -1105,7 +1105,7 @@ public class PieChart extends BaseChart {
 
         }
 
-        private Rect    mValueTextBounds = new Rect();
+        private Rect mValueTextBounds = new Rect();
 
     }
 
