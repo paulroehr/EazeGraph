@@ -8,14 +8,20 @@
         <attr name="egLineStroke"                   format="dimension"/>
         <attr name="egShowValueIndicator"           format="boolean"/>
         <attr name="egIndicatorWidth"               format="dimension"/>
-        <attr name="egIndicatorColor"               format="color"/>
+        <attr name="egIndicatorLineColor"           format="color"/>
+        <attr name="egIndicatorTextColor"           format="color"/>
         <attr name="egIndicatorTextSize"            format="dimension"/>
         <attr name="egIndicatorLeftPadding"         format="dimension"/>
         <attr name="egIndicatorTopPadding"          format="dimension"/>
+        <attr name="egActivateIndicatorShadow"      format="boolean"/>
+        <attr name="egIndicatorShadowStrength"      format="dimension"/>
+        <attr name="egIndicatorShadowColor"         format="color"/>
+        <attr name="egIndicatorTextUnit"            format="string"/>
         <attr name="egShowStandardValue"            format="boolean"/>
         <attr name="egStandardValueIndicatorStroke" format="dimension"/>
         <attr name="egStandardValueColor"           format="color"/>
         <attr name="egXAxisStroke"                  format="dimension"/>
+
     </declare-styleable>
 
 </resources>

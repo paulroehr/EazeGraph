@@ -14,6 +14,7 @@
         <attr name="egUseCustomInnerValue"    format="boolean"/>
         <attr name="egOpenClockwise"          format="boolean"/>
         <attr name="egInnerPaddingColor"      format="color"/>
+        <attr name="egInnerValueUnit"         format="string"/>
 
     </declare-styleable>
 

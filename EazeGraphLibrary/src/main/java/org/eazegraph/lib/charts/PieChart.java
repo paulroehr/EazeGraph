@@ -107,6 +107,7 @@ public class PieChart extends BaseChart {
         mUseCustomInnerValue = DEF_USE_CUSTOM_INNER_VALUE;
         mOpenClockwise       = DEF_OPEN_CLOCKWISE;
         mInnerPaddingColor   = DEF_INNER_PADDING_COLOR;
+        mInnerValueUnit      = DEF_INNER_VALUE_UNIT;
 
         initializeGraph();
     }
@@ -150,6 +151,7 @@ public class PieChart extends BaseChart {
             mUseCustomInnerValue = a.getBoolean(R.styleable.PieChart_egUseCustomInnerValue, DEF_USE_CUSTOM_INNER_VALUE);
             mOpenClockwise       = a.getBoolean(R.styleable.PieChart_egOpenClockwise,       DEF_OPEN_CLOCKWISE);
             mInnerPaddingColor   = a.getColor(R.styleable.PieChart_egInnerPaddingColor,     DEF_INNER_PADDING_COLOR);
+            mInnerValueUnit      = a.getString(R.styleable.PieChart_egInnerValueUnit);
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -412,6 +414,23 @@ public class PieChart extends BaseChart {
      */
     public void setOpenClockwise(boolean _openClockwise) {
         mOpenClockwise = _openClockwise;
+    }
+
+    /**
+     *
+     * @return The unit which is displayed after the value in the center of the PieChart.
+     */
+    public String getInnerValueUnit() {
+        return mInnerValueUnit;
+    }
+
+    /**
+     * Sets the unit which will be displayed after the value in the center of the PieChart.
+     *
+     * @param _innerValueUnit The unit appendix
+     */
+    public void setInnerValueUnit(String _innerValueUnit) {
+        mInnerValueUnit = _innerValueUnit;
     }
 
     /**
@@ -1077,6 +1096,9 @@ public class PieChart extends BaseChart {
 
                 if(!mUseCustomInnerValue) {
                     mInnerValueString = Utils.getFloatString(model.getValue(), mShowDecimal);
+                    if (mInnerValueUnit != null && mInnerValueUnit.length() > 0) {
+                        mInnerValueString += " " + mInnerValueUnit;
+                    }
                 }
 
                 mValuePaint.getTextBounds(mInnerValueString, 0, mInnerValueString.length(), mValueTextBounds);
@@ -1278,6 +1300,7 @@ public class PieChart extends BaseChart {
     public static final boolean DEF_USE_CUSTOM_INNER_VALUE  = false;
     public static final boolean DEF_OPEN_CLOCKWISE          = true;
     public static final int     DEF_INNER_PADDING_COLOR     = 0xFFF3F3F3; // Holo light background
+    public static final String  DEF_INNER_VALUE_UNIT        = "";
 
     /**
      * The initial fling velocity is divided by this amount.
@@ -1305,6 +1328,7 @@ public class PieChart extends BaseChart {
     private float               mTotalValue;
     private String              mInnerValueString = "";
 
+    // Attributes -----------------------------------------------------
     private boolean             mUseInnerPadding;
     private float               mInnerPadding;
     private float               mInnerPaddingOutline;
@@ -1317,6 +1341,8 @@ public class PieChart extends BaseChart {
     private int                 mValueTextColor;
     private boolean             mUseCustomInnerValue;
     private boolean             mOpenClockwise;
+    private String              mInnerValueUnit;
+    // END - Attributes -----------------------------------------------
 
     private float               mCalculatedInnerPadding;
     private float               mCalculatedInnerPaddingOutline;

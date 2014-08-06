@@ -14,7 +14,9 @@
         app:egUseCubic="false"
         app:egUseOverlapFill="false"
         app:egCurveSmoothness="0.4"
-        app:egIndicatorColor="#FE6DA8"
-        app:egLegendHeight="40dp"/>
+        app:egIndicatorLineColor="#FE6DA8"
+        app:egLegendHeight="40dp"
+        app:egIndicatorTextUnit="g"
+        app:egIndicatorTextColor="#FE6DA8"/>
 
 </LinearLayout>

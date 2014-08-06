@@ -14,6 +14,7 @@
         app:egUsePieRotation="true"
         app:egValueTextSize="36sp"
         app:egAutoCenter="true"
-        app:egOpenClockwise="false"/>
+        app:egOpenClockwise="false"
+        app:egInnerValueUnit="%"/>
 
 </FrameLayout>
