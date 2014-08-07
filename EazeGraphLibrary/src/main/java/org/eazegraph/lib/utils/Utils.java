@@ -76,8 +76,8 @@ public class Utils {
      * @param _Paint  The correctly set Paint which will be used for the text painting in the later process
      */
     public static void calculateLegendInformation(List<? extends BaseModel> _Models, float _StartX, float _EndX, Paint _Paint) {
-        float lastX = _StartX;
         float textMargin = Utils.dpToPx(10.f);
+        float lastX = _StartX;
 
         // calculate the legend label positions and check if there is enough space to display the label,
         // if not the label will not be shown

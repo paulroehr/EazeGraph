@@ -13,14 +13,15 @@
         <attr name="egIndicatorTextSize"            format="dimension"/>
         <attr name="egIndicatorLeftPadding"         format="dimension"/>
         <attr name="egIndicatorTopPadding"          format="dimension"/>
-        <attr name="egActivateIndicatorShadow"      format="boolean"/>
-        <attr name="egIndicatorShadowStrength"      format="dimension"/>
-        <attr name="egIndicatorShadowColor"         format="color"/>
-        <attr name="egIndicatorTextUnit"            format="string"/>
         <attr name="egShowStandardValue"            format="boolean"/>
         <attr name="egStandardValueIndicatorStroke" format="dimension"/>
         <attr name="egStandardValueColor"           format="color"/>
         <attr name="egXAxisStroke"                  format="dimension"/>
+        <attr name="egActivateIndicatorShadow"      format="boolean"/>
+        <attr name="egIndicatorShadowStrength"      format="dimension"/>
+        <attr name="egIndicatorShadowColor"         format="color"/>
+        <attr name="egIndicatorTextUnit"            format="string"/>
+        <attr name="egShowLegendBeneathIndicator"   format="boolean"/>
 
     </declare-styleable>
 

@@ -13,10 +13,12 @@
         android:layout_height="200dp"
         app:egUseCubic="true"
         app:egUseOverlapFill="true"
-        app:egCurveSmoothness="0.4"
+        app:egCurveSmoothness="0.25"
         app:egIndicatorLineColor="#FE6DA8"
         app:egIndicatorTextColor="#FE6DA8"
         app:egLegendHeight="40dp"
-        app:egShowStandardValue="false"/>
+        app:egShowStandardValue="false"
+        app:egIndicatorTextUnit="g"
+        app:egShowLegendBeneathIndicator="true"/>
 
 </LinearLayout>

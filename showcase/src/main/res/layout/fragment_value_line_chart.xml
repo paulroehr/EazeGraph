@@ -17,6 +17,7 @@
         app:egIndicatorLineColor="#FE6DA8"
         app:egLegendHeight="40dp"
         app:egIndicatorTextUnit="g"
-        app:egIndicatorTextColor="#FE6DA8"/>
+        app:egIndicatorTextColor="#FE6DA8"
+        app:egActivateIndicatorShadow="false"/>
 
 </LinearLayout>

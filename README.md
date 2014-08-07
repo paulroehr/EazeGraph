@@ -75,7 +75,7 @@ Insert in your root project's 'build.gradle' under repositories:
 and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
-        compile 'com.github.blackfizz:eazegraph:1.1.7-SNAPSHOT@aar'
+        compile 'com.github.blackfizz:eazegraph:1.1.8-SNAPSHOT@aar'
         compile 'com.nineoldandroids:library:2.4.0'
     }
 
@@ -237,6 +237,11 @@ Wiki
 
 Changelog
 =========
+**1.1.8**
+* fixed bug in VlaueLineChart where the `egActivateIndicatorShadow` was not usable
+* added the possibility to change colors for the legend
+* added a toggle which activates the drawing of the currently selected ValueLineChart point beneath the indicator (`egActivateIndicatorShadow`)
+
 **1.1.7**
 * PieChart's inner value and ValueLineChart's indicator value now can be extended with an unit. (PieChart: `egInnerValueUnit` ValueLineChart: `egIndicatorTextUnit`)
 * (ValueLineChart) removed `egIndicatorColor` and made separate attributes for indicator line and text (`egIndicatorLineColor` and `egIndicatorTextColor`)

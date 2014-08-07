@@ -50,6 +50,7 @@ public abstract class BaseChart extends ViewGroup {
 
         mLegendHeight   = Utils.dpToPx(DEF_LEGEND_HEIGHT);
         mLegendTextSize = Utils.dpToPx(DEF_LEGEND_TEXT_SIZE);
+        mLegendColor    = DEF_LEGEND_COLOR;
         mAnimationTime  = DEF_ANIMATION_TIME;
         mShowDecimal    = DEF_SHOW_DECIMAL;
     }
@@ -83,9 +84,9 @@ public abstract class BaseChart extends ViewGroup {
 
             mLegendHeight       = a.getDimension(R.styleable.BaseChart_egLegendHeight,     Utils.dpToPx(DEF_LEGEND_HEIGHT));
             mLegendTextSize     = a.getDimension(R.styleable.BaseChart_egLegendTextSize,   Utils.dpToPx(DEF_LEGEND_TEXT_SIZE));
-            mAnimationTime      = a.getInt(R.styleable.BaseChart_egAnimationTime,          DEF_ANIMATION_TIME);
-            mShowDecimal        = a.getBoolean(R.styleable.BaseChart_egShowDecimal,        DEF_SHOW_DECIMAL);
-
+            mAnimationTime      = a.getInt(R.styleable.BaseChart_egAnimationTime, DEF_ANIMATION_TIME);
+            mShowDecimal        = a.getBoolean(R.styleable.BaseChart_egShowDecimal, DEF_SHOW_DECIMAL);
+            mLegendColor        = a.getColor(R.styleable.BaseChart_egLegendColor, DEF_LEGEND_COLOR);
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -152,6 +153,14 @@ public abstract class BaseChart extends ViewGroup {
     public void setShowDecimal(boolean _showDecimal) {
         mShowDecimal = _showDecimal;
         invalidate();
+    }
+
+    public int getLegendColor() {
+        return mLegendColor;
+    }
+
+    public void setLegendColor(int _legendColor) {
+        mLegendColor = _legendColor;
     }
 
     /**
@@ -238,6 +247,7 @@ public abstract class BaseChart extends ViewGroup {
     protected float             mLegendWidth;
     protected float             mLegendHeight;
     protected float             mLegendTextSize;
+    protected int               mLegendColor;
 
     protected int               mLeftPadding;
     protected int               mTopPadding;
