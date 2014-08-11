@@ -75,7 +75,7 @@ Insert in your root project's 'build.gradle' under repositories:
 and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
-        compile 'com.github.blackfizz:eazegraph:1.1.8-SNAPSHOT@aar'
+        compile 'com.github.blackfizz:eazegraph:1.1.9-SNAPSHOT@aar'
         compile 'com.nineoldandroids:library:2.4.0'
     }
 
@@ -237,6 +237,10 @@ Wiki
 
 Changelog
 =========
+**1.1.9**
+* did a complete code restructuring. Now adding the graph, graph overlay and legend view is done by the `BaseChart` class and only calls methods which can be overwritten in the child graph classes. This reduced many redundancies and the layout generation of the views is handled in one location.
+* based on the restructuring, the padding attributes are now drawn and interpreted correctly and no chart has to include the padding in the calculation as it is handled in the layout generation.
+
 **1.1.8**
 * fixed bug in VlaueLineChart where the `egActivateIndicatorShadow` was not usable
 * added the possibility to change colors for the legend
