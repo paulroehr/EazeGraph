@@ -122,7 +122,7 @@ public class BarChart extends BaseBarChart {
      */
     public void setShowValues(boolean _showValues) {
         mShowValues = _showValues;
-        invalidateGraphs();
+        invalidateGlobal();
     }
 
     /**
@@ -190,7 +190,7 @@ public class BarChart extends BaseBarChart {
      */
     protected void calculateBounds(float _Width, float _Margin) {
         float maxValue = 0;
-        int   last = mLeftPadding;
+        int   last = 0;
 
         for (BarModel model : mData) {
             if(model.getValue() > maxValue) {
@@ -205,13 +205,13 @@ public class BarChart extends BaseBarChart {
         for (BarModel model : mData) {
             float height = model.getValue() * heightMultiplier;
             last += _Margin / 2;
-            model.setBarBounds(new RectF(last, mGraphHeight - height + mTopPadding, last + _Width, mGraphHeight + mTopPadding));
+            model.setBarBounds(new RectF(last, mGraphHeight - height, last + _Width, mGraphHeight));
             model.setLegendBounds(new RectF(last, 0, last + _Width, mLegendHeight));
             last += _Width + (_Margin / 2);
 
         }
 
-        Utils.calculateLegendInformation(mData, mLeftPadding, mGraphWidth + mLeftPadding, mLegendPaint);
+        Utils.calculateLegendInformation(mData, 0, mGraphWidth, mLegendPaint);
     }
 
     /**

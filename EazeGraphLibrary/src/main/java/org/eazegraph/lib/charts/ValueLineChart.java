@@ -242,7 +242,7 @@ public class ValueLineChart extends BaseChart {
      */
     public void setLineStroke(float _lineStroke) {
         mLineStroke = Utils.dpToPx(_lineStroke);
-        invalidate();
+        invalidateGlobal();
     }
 
     /**
@@ -259,7 +259,7 @@ public class ValueLineChart extends BaseChart {
      */
     public void setShowIndicator(boolean _showIndicator) {
         mShowIndicator = _showIndicator;
-        invalidate();
+        invalidateGlobal();
     }
 
     /**
@@ -276,7 +276,7 @@ public class ValueLineChart extends BaseChart {
      */
     public void setIndicatorWidth(float _indicatorWidth) {
         mIndicatorWidth = Utils.dpToPx(_indicatorWidth);
-        invalidate();
+        invalidateGlobal();
     }
 
     /**
@@ -293,7 +293,7 @@ public class ValueLineChart extends BaseChart {
      */
     public void setIndicatorLineColor(int _indicatorLineColor) {
         mIndicatorLineColor = _indicatorLineColor;
-        mGraphOverlay.invalidate();
+        invalidateGraphOverlay();
     }
 
     /**
@@ -312,7 +312,7 @@ public class ValueLineChart extends BaseChart {
      */
     public void setIndicatorTextColor(int _indicatorTextColor) {
         mIndicatorTextColor = _indicatorTextColor;
-        mGraphOverlay.invalidate();
+        invalidateGraphOverlay();
     }
 
     /**
@@ -329,7 +329,7 @@ public class ValueLineChart extends BaseChart {
      */
     public void setIndicatorTextSize(float _indicatorTextSize) {
         mIndicatorTextSize = Utils.dpToPx(_indicatorTextSize);
-        mGraphOverlay.invalidate();
+        invalidateGraphOverlay();
     }
 
     /**
@@ -346,7 +346,7 @@ public class ValueLineChart extends BaseChart {
      */
     public void setIndicatorLeftPadding(float _indicatorLeftPadding) {
         mIndicatorLeftPadding = Utils.dpToPx(_indicatorLeftPadding);
-        mGraphOverlay.invalidate();
+        invalidateGraphOverlay();
     }
 
     /**
@@ -363,7 +363,7 @@ public class ValueLineChart extends BaseChart {
      */
     public void setIndicatorTopPadding(float _indicatorTopPadding) {
         mIndicatorTopPadding = Utils.dpToPx(_indicatorTopPadding);
-        mGraphOverlay.invalidate();
+        invalidateGraphOverlay();
     }
 
     /**
@@ -397,7 +397,7 @@ public class ValueLineChart extends BaseChart {
      */
     public void setStandardValueIndicatorStroke(float _standardValueIndicatorStroke) {
         mStandardValueIndicatorStroke = Utils.dpToPx(_standardValueIndicatorStroke);
-        mGraphOverlay.invalidate();
+        invalidateGraphOverlay();
     }
 
     /**
@@ -414,7 +414,7 @@ public class ValueLineChart extends BaseChart {
      */
     public void setStandardValueColor(int _standardValueColor) {
         mStandardValueColor = _standardValueColor;
-        mGraphOverlay.invalidate();
+        invalidateGraphOverlay();
     }
 
     /**
@@ -431,7 +431,7 @@ public class ValueLineChart extends BaseChart {
      */
     public void setXAxisStroke(float _XAxisStroke) {
         mXAxisStroke = Utils.dpToPx(_XAxisStroke);
-        mGraphOverlay.invalidate();
+        invalidateGraphOverlay();
     }
 
     /**
@@ -448,7 +448,7 @@ public class ValueLineChart extends BaseChart {
      */
     public void setActivateIndicatorShadow(boolean _activateIndicatorShadow) {
         mActivateIndicatorShadow = _activateIndicatorShadow;
-        mGraphOverlay.invalidate();
+        invalidateGraphOverlay();
     }
 
     /**
@@ -466,7 +466,7 @@ public class ValueLineChart extends BaseChart {
      */
     public void setIndicatorShadowStrength(float _indicatorShadowStrength) {
         mIndicatorShadowStrength = Utils.dpToPx(_indicatorShadowStrength);
-        mGraphOverlay.invalidate();
+        invalidateGraphOverlay();
     }
 
     /**
@@ -484,7 +484,7 @@ public class ValueLineChart extends BaseChart {
      */
     public void setIndicatorShadowColor(int _indicatorShadowColor) {
         mIndicatorShadowColor = _indicatorShadowColor;
-        mGraphOverlay.invalidate();
+        invalidateGraphOverlay();
     }
 
     /**
@@ -503,7 +503,7 @@ public class ValueLineChart extends BaseChart {
      */
     public void setIndicatorTextUnit(String _indicatorTextUnit) {
         mIndicatorTextUnit = _indicatorTextUnit;
-        mGraphOverlay.invalidate();
+        invalidateGraphOverlay();
     }
 
     /**
@@ -534,12 +534,7 @@ public class ValueLineChart extends BaseChart {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mWidth = w;
-        mHeight = h;
 
-        mGraph.layout(0, 0, w, (int) (h - mLegendHeight));
-        mGraphOverlay.layout(0, 0, w, (int) (h - mLegendHeight));
-        mLegend.layout(0, (int) (h - mLegendHeight), w, h);
         onDataChanged();
         if(mUseCustomLegend) {
             onLegendDataChanged();
@@ -552,6 +547,10 @@ public class ValueLineChart extends BaseChart {
      */
     @Override
     protected void initializeGraph() {
+        super.initializeGraph();
+
+        mGraphOverlay.decelerate();
+
         mSeries     = new ArrayList<ValueLineSeries>();
         mLegendList = new ArrayList<LegendModel>();
 
@@ -572,15 +571,6 @@ public class ValueLineChart extends BaseChart {
         mIndicatorPaint.setStrokeWidth(mIndicatorWidth);
         mIndicatorPaint.setStyle(Paint.Style.FILL);
 
-        mGraph = new Graph(getContext());
-        addView(mGraph);
-
-        mGraphOverlay = new GraphOverlay(getContext());
-        addView(mGraphOverlay);
-
-        mLegend = new Legend(getContext());
-        addView(mLegend);
-
         mRevealAnimator = ValueAnimator.ofFloat(0, 1);
         mRevealAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -588,7 +578,7 @@ public class ValueLineChart extends BaseChart {
                 mRevealValue = animation.getAnimatedFraction();
 
                 mScale.reset();
-                mScale.setScale(1, 1.f * mRevealValue, 0, mUsableGraphHeight + mTopPadding - mNegativeOffset);
+                mScale.setScale(1, 1.f * mRevealValue, 0, mGraphHeight - mNegativeOffset);
 
                 mGraph.invalidate();
             }
@@ -680,7 +670,7 @@ public class ValueLineChart extends BaseChart {
                 maxValue += (mNegativeValue * -1);
             }
 
-            float heightMultiplier  = mUsableGraphHeight / maxValue;
+            float heightMultiplier  = mGraphHeight / maxValue;
 
             // calculate the offset
             if(mHasNegativeValues) {
@@ -689,7 +679,7 @@ public class ValueLineChart extends BaseChart {
 
             // calculate the y position for standardValue
             if(mShowStandardValue) {
-                mStandardValueY = (mUsableGraphHeight + mTopPadding) - (mStandardValue * heightMultiplier);
+                mStandardValueY = mGraphHeight - (mStandardValue * heightMultiplier);
             }
 
             for (ValueLineSeries series : mSeries) {
@@ -709,7 +699,7 @@ public class ValueLineChart extends BaseChart {
 
                     // used to store first point and set it later as ending point, if a graph fill is selected
                     float firstX = currentOffset;
-                    float firstY = (mUsableGraphHeight + mTopPadding) - (series.getSeries().get(0).getValue() * heightMultiplier);
+                    float firstY = mGraphHeight - (series.getSeries().get(0).getValue() * heightMultiplier);
 
                     Path path = new Path();
                     path.moveTo(firstX, firstY);
@@ -727,14 +717,14 @@ public class ValueLineChart extends BaseChart {
                             // Check if the end of the array has been reached and do the last calculation to prevent ArrayOutOfBounds
                             if ((seriesPointCount - i) < 3) {
                                 P1.setX(currentOffset);
-                                P1.setY((mUsableGraphHeight + mTopPadding) - (series.getSeries().get(i).getValue() * heightMultiplier));
+                                P1.setY(mGraphHeight - (series.getSeries().get(i).getValue() * heightMultiplier));
 
                                 P2.setX(mGraphWidth);
-                                P2.setY((mUsableGraphHeight + mTopPadding) - (series.getSeries().get(i + 1).getValue() * heightMultiplier));
+                                P2.setY(mGraphHeight - (series.getSeries().get(i + 1).getValue() * heightMultiplier));
                                 calculatePointDiff(P1, P2, P1, mSecondMultiplier);
 
                                 P3.setX(mGraphWidth);
-                                P3.setY((mUsableGraphHeight + mTopPadding) - (series.getSeries().get(i + 1).getValue() * heightMultiplier));
+                                P3.setY(mGraphHeight - (series.getSeries().get(i + 1).getValue() * heightMultiplier));
                                 calculatePointDiff(P2, P3, P3, mFirstMultiplier);
 
                                 path.cubicTo(P1.getX(), P1.getY(), P2.getX(), P2.getY(), P3.getX(), P3.getY());
@@ -742,14 +732,14 @@ public class ValueLineChart extends BaseChart {
                                 break;
                             } else {
                                 P1.setX(currentOffset);
-                                P1.setY((mUsableGraphHeight + mTopPadding) - (series.getSeries().get(i).getValue() * heightMultiplier));
+                                P1.setY(mGraphHeight - (series.getSeries().get(i).getValue() * heightMultiplier));
 
                                 P2.setX(currentOffset + widthOffset);
-                                P2.setY((mUsableGraphHeight + mTopPadding) - (series.getSeries().get(i + 1).getValue() * heightMultiplier));
+                                P2.setY(mGraphHeight - (series.getSeries().get(i + 1).getValue() * heightMultiplier));
                                 calculatePointDiff(P1, P2, P1, mSecondMultiplier);
 
                                 P3.setX(currentOffset + (2 * widthOffset));
-                                P3.setY((mUsableGraphHeight + mTopPadding) - (series.getSeries().get(i + 2).getValue() * heightMultiplier));
+                                P3.setY(mGraphHeight - (series.getSeries().get(i + 2).getValue() * heightMultiplier));
                                 calculatePointDiff(P2, P3, P3, mFirstMultiplier);
 
                                 series.getSeries().get(i + 1).setCoordinates(new Point2D(P2.getX(), P2.getY()));
@@ -775,7 +765,7 @@ public class ValueLineChart extends BaseChart {
                                     currentOffset = mGraphWidth;
                                 }
                             }
-                            point.setCoordinates(new Point2D(currentOffset, (mUsableGraphHeight + mTopPadding) - (point.getValue() * heightMultiplier)));
+                            point.setCoordinates(new Point2D(currentOffset, mGraphHeight - (point.getValue() * heightMultiplier)));
                             path.lineTo(point.getCoordinates().getX(), point.getCoordinates().getY());
                             count++;
                         }
@@ -811,7 +801,7 @@ public class ValueLineChart extends BaseChart {
 
                         index++;
                     }
-                    Utils.calculateLegendInformation(mSeries.get(0).getSeries(), mLeftPadding, mGraphWidth + mLeftPadding, mLegendPaint);
+                    Utils.calculateLegendInformation(mSeries.get(0).getSeries(), 0, mGraphWidth, mLegendPaint);
                 }
             }
 
@@ -839,8 +829,7 @@ public class ValueLineChart extends BaseChart {
         }
 
         super.onDataChanged();
-        mLegend.invalidate();
-        mGraphOverlay.invalidate();
+        invalidateGlobal();
     }
 
     /**
@@ -860,7 +849,7 @@ public class ValueLineChart extends BaseChart {
             currentOffset += margin;
         }
 
-        invalidate();
+        invalidateGlobal();
     }
 
     /**
@@ -892,18 +881,18 @@ public class ValueLineChart extends BaseChart {
 
         // calculate string positions in overlay
         mValueTextHeight = valueRect.height();
-        mGraphOverlay.mValueLabelY  = (int) (mValueTextHeight + mIndicatorTopPadding);
-        mGraphOverlay.mLegendLabelY = (int) (mValueTextHeight + mIndicatorTopPadding + legendRect.height() + Utils.dpToPx(7.f));
+        mValueLabelY  = (int) (mValueTextHeight + mIndicatorTopPadding);
+        mLegendLabelY = (int) (mValueTextHeight + mIndicatorTopPadding + legendRect.height() + Utils.dpToPx(7.f));
 
         int chosenWidth = valueRect.width() > legendRect.width() ? valueRect.width() : legendRect.width();
 
         // check if text reaches over screen
-        if(mFocusedPoint.getCoordinates().getX() + chosenWidth + mIndicatorLeftPadding > mGraphWidth + mLeftPadding) {
-            mGraphOverlay.mValueLabelX  = (int) (mFocusedPoint.getCoordinates().getX() - (valueRect.width() + mIndicatorLeftPadding));
-            mGraphOverlay.mLegendLabelX = (int) (mFocusedPoint.getCoordinates().getX() - (legendRect.width() + mIndicatorLeftPadding));
+        if(mFocusedPoint.getCoordinates().getX() + chosenWidth + mIndicatorLeftPadding > mGraphWidth) {
+            mValueLabelX  = (int) (mFocusedPoint.getCoordinates().getX() - (valueRect.width() + mIndicatorLeftPadding));
+            mLegendLabelX = (int) (mFocusedPoint.getCoordinates().getX() - (legendRect.width() + mIndicatorLeftPadding));
         }
         else {
-            mGraphOverlay.mValueLabelX = mGraphOverlay.mLegendLabelX = (int) (mFocusedPoint.getCoordinates().getX() + mIndicatorLeftPadding);
+            mValueLabelX = mLegendLabelX = (int) (mFocusedPoint.getCoordinates().getX() + mIndicatorLeftPadding);
         }
     }
 
@@ -920,364 +909,218 @@ public class ValueLineChart extends BaseChart {
      */
     public List<ValueLineSeries> getDataSeries() { return mSeries; }
 
-    //##############################################################################################
-    // Graph
-    //##############################################################################################
-    private class Graph extends View {
-        /**
-         * Simple constructor to use when creating a view from code.
-         *
-         * @param context The Context the view is running in, through which it can
-         *                access the current theme, resources, etc.
-         */
-        private Graph(Context context) {
-            super(context);
+    // ---------------------------------------------------------------------------------------------
+    //                          Override methods from view layers
+    // ---------------------------------------------------------------------------------------------
+
+
+    @Override
+    protected void onGraphDraw(Canvas _Canvas) {
+        super.onGraphDraw(_Canvas);
+        if(mUseOverlapFill) {
+            mLinePaint.setStyle(Paint.Style.FILL);
         }
-
-        /**
-         * Implement this to do your drawing.
-         *
-         * @param canvas the canvas on which the background will be drawn
-         */
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-
-            if(mUseOverlapFill) {
+        else {
+            if(mSeries.size() == 1) {
                 mLinePaint.setStyle(Paint.Style.FILL);
             }
             else {
-                if(mSeries.size() == 1) {
-                    mLinePaint.setStyle(Paint.Style.FILL);
-                }
-                else {
-                    mLinePaint.setStrokeWidth(mLineStroke);
-                    mLinePaint.setStyle(Paint.Style.STROKE);
-                }
+                mLinePaint.setStrokeWidth(mLineStroke);
+                mLinePaint.setStyle(Paint.Style.STROKE);
             }
-
-            canvas.concat(mScale);
-            if(mHasNegativeValues) {
-                canvas.translate(0, -mNegativeOffset);
-            }
-            // drawing of lines
-            for (ValueLineSeries series : mSeries) {
-                mLinePaint.setColor(series.getColor());
-                canvas.drawPath(series.getPath(), mLinePaint);
-            }
-
-            canvas.restore();
-
         }
 
-        /**
-         * This is called during layout when the size of this view has changed. If
-         * you were just added to the view hierarchy, you're called with the old
-         * values of 0.
-         *
-         * @param w    Current width of this view.
-         * @param h    Current height of this view.
-         * @param oldw Old width of this view.
-         * @param oldh Old height of this view.
-         */
-        @Override
-        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-            super.onSizeChanged(w, h, oldw, oldh);
-            mGraphWidth = w;
-            mGraphHeight = h;
-            mUsableGraphHeight = mGraphHeight - mTopPadding;
+        _Canvas.concat(mScale);
+        if(mHasNegativeValues) {
+            _Canvas.translate(0, -mNegativeOffset);
+        }
+        // drawing of lines
+        for (ValueLineSeries series : mSeries) {
+            mLinePaint.setColor(series.getColor());
+            _Canvas.drawPath(series.getPath(), mLinePaint);
         }
 
-        @Override
-        public boolean performClick() {
-            return super.performClick();
+        _Canvas.restore();
+    }
+
+    @Override
+    protected void onGraphOverlayDraw(Canvas _Canvas) {
+        super.onGraphOverlayDraw(_Canvas);
+
+        // draw x-axis
+        mLegendPaint.setStrokeWidth(mXAxisStroke);
+        _Canvas.drawLine(
+                0,
+                mGraphHeight - mNegativeOffset,
+                mGraphWidth,
+                mGraphHeight - mNegativeOffset,
+                mLegendPaint
+        );
+
+        // draw standard value line
+        if(mShowStandardValue) {
+            mIndicatorPaint.setColor(mStandardValueColor);
+            mIndicatorPaint.setStrokeWidth(mStandardValueIndicatorStroke);
+            _Canvas.drawLine(
+                    0,
+                    mStandardValueY - mNegativeOffset,
+                    mGraphWidth,
+                    mStandardValueY - mNegativeOffset,
+                    mIndicatorPaint
+            );
+        }
+
+        // draw touch indicator
+        // TODO: if mShowIndicator is true, then check all series not only if one series is inserted
+        if(mShowIndicator && mSeries.size() == 1) {
+            mIndicatorPaint.setColor(mIndicatorLineColor);
+            mIndicatorPaint.setStrokeWidth(mIndicatorWidth);
+
+            _Canvas.drawLine(mTouchedArea.getX(), 0, mTouchedArea.getX(), mGraphHeight, mIndicatorPaint);
+
+            if(mFocusedPoint != null) {
+
+                // set shadow
+                if(mActivateIndicatorShadow) {
+                    mIndicatorPaint.setShadowLayer(mIndicatorShadowStrength, 0, 0, mIndicatorShadowColor);
+                }
+
+                mIndicatorPaint.setColor(mIndicatorTextColor);
+                _Canvas.drawText(Utils.getFloatString(mFocusedPoint.getValue(), mShowDecimal) + (!mIndicatorTextUnit.isEmpty() ? " " + mIndicatorTextUnit : ""),
+                        mValueLabelX,
+                        mValueLabelY,
+                        mIndicatorPaint);
+
+                if(mShowLegendBeneathIndicator) {
+                    mLegendPaint.setColor(mIndicatorTextColor);
+                    _Canvas.drawText(mFocusedPoint.getLegendLabel(),
+                            mLegendLabelX,
+                            mLegendLabelY,
+                            mLegendPaint);
+                }
+
+                // reset shadow
+                if(mActivateIndicatorShadow) {
+                    mIndicatorPaint.setShadowLayer(0, 0, 0, 0x00000000);
+                }
+            }
         }
 
     }
 
-    //##############################################################################################
-    // GraphOverlay
-    //##############################################################################################
-    private class GraphOverlay extends View {
-        /**
-         * Simple constructor to use when creating a view from code.
-         *
-         * @param context The Context the view is running in, through which it can
-         *                access the current theme, resources, etc.
-         */
-        private GraphOverlay(Context context) {
-            super(context);
-            if (Build.VERSION.SDK_INT >= 14) {
-                this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-            }
-        }
+    @Override
+    protected void onLegendDraw(Canvas _Canvas) {
+        super.onLegendDraw(_Canvas);
+        mLegendPaint.setColor(mLegendColor);
+        mLegendPaint.setStrokeWidth(DEF_LEGEND_STROKE);
 
-        /**
-         * Implement this to do your drawing.
-         *
-         * @param canvas the canvas on which the background will be drawn
-         */
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-
-            // draw x-axis
-            mLegendPaint.setStrokeWidth(mXAxisStroke);
-            canvas.drawLine(
-                    mLeftPadding,
-                    mTopPadding + mGraphHeight - mNegativeOffset,
-                    mLeftPadding + mGraphWidth,
-                    mTopPadding + mGraphHeight - mNegativeOffset,
-                    mLegendPaint
-            );
-
-            // draw standard value line
-            if(mShowStandardValue) {
-                mIndicatorPaint.setColor(mStandardValueColor);
-                mIndicatorPaint.setStrokeWidth(mStandardValueIndicatorStroke);
-                canvas.drawLine(
-                        mLeftPadding,
-                        mStandardValueY - mNegativeOffset,
-                        mLeftPadding + mGraphWidth,
-                        mStandardValueY - mNegativeOffset,
-                        mIndicatorPaint
-                );
-            }
-
-            // draw touch indicator
-            // TODO: if mShowIndicator is true, then check all series not only if one series is inserted
-            if(mShowIndicator && mSeries.size() == 1) {
-                mIndicatorPaint.setColor(mIndicatorLineColor);
-                mIndicatorPaint.setStrokeWidth(mIndicatorWidth);
-
-                canvas.drawLine(mTouchedArea.getX(), 0, mTouchedArea.getX(), mGraphHeight, mIndicatorPaint);
-
-                if(mFocusedPoint != null) {
-
-                    // set shadow
-                    if(mActivateIndicatorShadow) {
-                        mIndicatorPaint.setShadowLayer(mIndicatorShadowStrength, 0, 0, mIndicatorShadowColor);
-                    }
-
-                    mIndicatorPaint.setColor(mIndicatorTextColor);
-                    canvas.drawText(Utils.getFloatString(mFocusedPoint.getValue(), mShowDecimal) + (!mIndicatorTextUnit.isEmpty() ? " " + mIndicatorTextUnit : ""),
-                            mValueLabelX,
-                            mValueLabelY,
-                            mIndicatorPaint);
-
-                    if(mShowLegendBeneathIndicator) {
-                        mLegendPaint.setColor(mIndicatorTextColor);
-                        canvas.drawText(mFocusedPoint.getLegendLabel(),
-                                mLegendLabelX,
-                                mLegendLabelY,
-                                mLegendPaint);
-                    }
-
-                    // reset shadow
-                    if(mActivateIndicatorShadow) {
-                        mIndicatorPaint.setShadowLayer(0, 0, 0, 0x00000000);
+        if(!mSeries.isEmpty()) {
+            if (mUseCustomLegend) {
+                for (LegendModel model : mLegendList) {
+                    Rect textBounds = model.getTextBounds();
+                    RectF bounds = model.getLegendBounds();
+                    _Canvas.drawText(model.getLegendLabel(), bounds.centerX() - (textBounds.width() / 2), bounds.centerY(), mLegendPaint);
+                    _Canvas.drawLine(bounds.centerX(), bounds.centerY() - textBounds.height() - mLegendTopPadding, bounds.centerX(), mLegendTopPadding, mLegendPaint);
+                }
+            } else {
+                List<? extends BaseModel> list = mSeries.get(0).getSeries();
+                for (BaseModel model : list) {
+                    if (model.canShowLabel()) {
+                        RectF bounds = model.getLegendBounds();
+                        _Canvas.drawText(model.getLegendLabel(), model.getLegendLabelPosition(), bounds.bottom - mMaxFontHeight, mLegendPaint);
+                        _Canvas.drawLine(
+                                bounds.centerX(),
+                                bounds.bottom - mMaxFontHeight * 2 - mLegendTopPadding,
+                                bounds.centerX(),
+                                mLegendTopPadding, mLegendPaint
+                        );
                     }
                 }
             }
+        }
+    }
 
+    @Override
+    protected boolean onGraphOverlayTouchEvent(MotionEvent _Event) {
+        performClick();
+
+        float newX = _Event.getX();
+        float newY = _Event.getY();
+
+        switch (_Event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+
+                return true;
+            case MotionEvent.ACTION_MOVE:
+
+                break;
+            case MotionEvent.ACTION_UP:
+
+
+                break;
         }
 
-        /**
-         * This is called during layout when the size of this view has changed. If
-         * you were just added to the view hierarchy, you're called with the old
-         * values of 0.
-         *
-         * @param w    Current width of this view.
-         * @param h    Current height of this view.
-         * @param oldw Old width of this view.
-         * @param oldh Old height of this view.
-         */
-        @Override
-        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-            super.onSizeChanged(w, h, oldw, oldh);
-        }
+        if(mShowIndicator && mSeries.size() == 1) {
+            int size       = mSeries.get(0).getSeries().size();
 
-        /**
-         * Implement this method to handle touch screen motion events.
-         * <p/>
-         * If this method is used to detect click actions, it is recommended that
-         * the actions be performed by implementing and calling
-         * {@link #performClick()}. This will ensure consistent system behavior,
-         * including:
-         * <ul>
-         * <li>obeying click sound preferences
-         * <li>dispatching OnClickListener calls
-         * <li>handling {@link AccessibilityNodeInfo#ACTION_CLICK ACTION_CLICK} when
-         * accessibility features are enabled
-         * </ul>
-         *
-         * @param event The motion event.
-         * @return True if the event was handled, false otherwise.
-         */
-        @Override
-        public boolean onTouchEvent(MotionEvent event) {
+            for (int i = 0; i < size; i++) {
 
-            performClick();
-
-            float newX = event.getX();
-            float newY = event.getY();
-
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-
-                    return true;
-                case MotionEvent.ACTION_MOVE:
-
+                // check if touchedX equals one the points
+                if (mSeries.get(0).getSeries().get(i).getCoordinates().getX() == newX) {
+                    mFocusedPoint = mSeries.get(0).getSeries().get(i);
                     break;
-                case MotionEvent.ACTION_UP:
-
-
-                    break;
-            }
-
-            if(mShowIndicator && mSeries.size() == 1) {
-                int size       = mSeries.get(0).getSeries().size();
-
-                for (int i = 0; i < size; i++) {
-
-                    // check if touchedX equals one the points
-                    if (mSeries.get(0).getSeries().get(i).getCoordinates().getX() == newX) {
+                } else {
+                    // check if we reached the last when --> (true) use last point
+                    if (i == size - 1) {
                         mFocusedPoint = mSeries.get(0).getSeries().get(i);
                         break;
                     } else {
-                        // check if we reached the last when --> (true) use last point
-                        if (i == size - 1) {
-                            mFocusedPoint = mSeries.get(0).getSeries().get(i);
-                            break;
-                        } else {
-                            float x = mSeries.get(0).getSeries().get(i).getCoordinates().getX();
-                            float nextX = mSeries.get(0).getSeries().get(i + 1).getCoordinates().getX();
+                        float x = mSeries.get(0).getSeries().get(i).getCoordinates().getX();
+                        float nextX = mSeries.get(0).getSeries().get(i + 1).getCoordinates().getX();
 
-                            // check if touchedX is between two points
-                            if (newX > x && newX < nextX) {
-                                // check which distance between touchedX and the two points is smaller
-                                if (newX - x > nextX - newX) {
-                                    mFocusedPoint = mSeries.get(0).getSeries().get(i + 1);
-                                    break;
-                                } else {
-                                    mFocusedPoint = mSeries.get(0).getSeries().get(i);
-                                    break;
-                                }
-                            }
-                            //check if touchedX distance between the points is equal -> choose first Point
-                            else if (newX > x && newX < nextX) {
+                        // check if touchedX is between two points
+                        if (newX > x && newX < nextX) {
+                            // check which distance between touchedX and the two points is smaller
+                            if (newX - x > nextX - newX) {
+                                mFocusedPoint = mSeries.get(0).getSeries().get(i + 1);
+                                break;
+                            } else {
                                 mFocusedPoint = mSeries.get(0).getSeries().get(i);
                                 break;
                             }
                         }
-                    }
-                }
-
-                if (mFocusedPoint != null) {
-                    mTouchedArea = mFocusedPoint.getCoordinates();
-
-                } else {
-                    mTouchedArea.setX(newX);
-                    mTouchedArea.setY(newY);
-                }
-
-                if(mLastPoint != mFocusedPoint) {
-                    mLastPoint = mFocusedPoint;
-
-                    calculateValueTextHeight();
-
-                    if (mListener != null) {
-                        mListener.onPointFocused(mSeries.get(0).getSeries().indexOf(mFocusedPoint));
-                    }
-                }
-
-                invalidate();
-                mLegend.invalidate();
-            }
-            return true;
-        }
-
-        @Override
-        public boolean performClick() {
-            return super.performClick();
-        }
-
-        private ValueLinePoint mLastPoint = null;
-        private int            mValueLabelX  = 0;
-        private int            mValueLabelY  = 0;
-        private int            mLegendLabelX = 0;
-        private int            mLegendLabelY = 0;
-    }
-
-    //##############################################################################################
-    // Legend
-    //##############################################################################################
-    private class Legend extends View {
-        /**
-         * Simple constructor to use when creating a view from code.
-         *
-         * @param context The Context the view is running in, through which it can
-         *                access the current theme, resources, etc.
-         */
-        private Legend(Context context) {
-            super(context);
-        }
-
-        /**
-         * Implement this to do your drawing.
-         *
-         * @param canvas the canvas on which the background will be drawn
-         */
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-
-            mLegendPaint.setColor(mLegendColor);
-            mLegendPaint.setStrokeWidth(DEF_LEGEND_STROKE);
-
-            if(!mSeries.isEmpty()) {
-                if (mUseCustomLegend) {
-                    for (LegendModel model : mLegendList) {
-                        Rect textBounds = model.getTextBounds();
-                        RectF bounds = model.getLegendBounds();
-                        canvas.drawText(model.getLegendLabel(), bounds.centerX() - (textBounds.width() / 2), bounds.centerY(), mLegendPaint);
-                        canvas.drawLine(bounds.centerX(), bounds.centerY() - textBounds.height() - mLegendTopPadding, bounds.centerX(), mLegendTopPadding, mLegendPaint);
-                    }
-                } else {
-                    List<? extends BaseModel> list = mSeries.get(0).getSeries();
-                    for (BaseModel model : list) {
-                        if (model.canShowLabel()) {
-                            RectF bounds = model.getLegendBounds();
-                            canvas.drawText(model.getLegendLabel(), model.getLegendLabelPosition(), bounds.bottom - mMaxFontHeight, mLegendPaint);
-                            canvas.drawLine(
-                                    bounds.centerX(),
-                                    bounds.bottom - mMaxFontHeight * 2 - mLegendTopPadding,
-                                    bounds.centerX(),
-                                    mLegendTopPadding, mLegendPaint
-                            );
+                        //check if touchedX distance between the points is equal -> choose first Point
+                        else if (newX > x && newX < nextX) {
+                            mFocusedPoint = mSeries.get(0).getSeries().get(i);
+                            break;
                         }
                     }
                 }
             }
-        }
 
-        /**
-         * This is called during layout when the size of this view has changed. If
-         * you were just added to the view hierarchy, you're called with the old
-         * values of 0.
-         *
-         * @param w    Current width of this view.
-         * @param h    Current height of this view.
-         * @param oldw Old width of this view.
-         * @param oldh Old height of this view.
-         */
-        @Override
-        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-            super.onSizeChanged(w, h, oldw, oldh);
-            mLegendWidth = w;
-            mLegendHeight = h;
+            if (mFocusedPoint != null) {
+                mTouchedArea = mFocusedPoint.getCoordinates();
+
+            } else {
+                mTouchedArea.setX(newX);
+                mTouchedArea.setY(newY);
+            }
+
+            if(mLastPoint != mFocusedPoint) {
+                mLastPoint = mFocusedPoint;
+
+                calculateValueTextHeight();
+
+                if (mListener != null) {
+                    mListener.onPointFocused(mSeries.get(0).getSeries().indexOf(mFocusedPoint));
+                }
+            }
+
+            invalidateGlobal();
         }
+        return true;
     }
+
 
     //##############################################################################################
     // Variables
@@ -1309,12 +1152,6 @@ public class ValueLineChart extends BaseChart {
     public static final String  DEF_INDICATOR_TEXT_UNIT             = "";
     public static final boolean DEF_SHOW_LEGEND_BENEATH_INDICATOR   = false;
 
-    private int                     mUsableGraphHeight;
-
-    private Graph                   mGraph;
-    private GraphOverlay            mGraphOverlay;
-    private Legend                  mLegend;
-
     private Paint                   mLinePaint;
     private Paint                   mLegendPaint;
     private Paint                   mIndicatorPaint;
@@ -1339,6 +1176,13 @@ public class ValueLineChart extends BaseChart {
     private float                   mValueTextHeight;
 
     private boolean                 mUseCubic;
+
+    // GraphOverlay vars
+    private ValueLinePoint          mLastPoint = null;
+    private int                     mValueLabelX  = 0;
+    private int                     mValueLabelY  = 0;
+    private int                     mLegendLabelX = 0;
+    private int                     mLegendLabelY = 0;
 
     /**
      * Indicates to fill the bottom area of a series with its given color.

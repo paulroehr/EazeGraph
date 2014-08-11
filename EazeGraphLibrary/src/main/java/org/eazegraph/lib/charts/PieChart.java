@@ -214,7 +214,7 @@ public class PieChart extends BaseChart {
      */
     public void setInnerPaddingColor(int color) {
         mInnerPaddingColor = color;
-        mGraph.invalidate();
+        invalidateGraph();
     }
 
     /**
@@ -261,8 +261,8 @@ public class PieChart extends BaseChart {
         mHighlightStrength = _highlightStrength;
         for (PieModel model : mPieData) {
             highlightSlice(model);
-        };
-        invalidate();
+        }
+        invalidateGlobal();
     }
 
     /**
@@ -320,7 +320,7 @@ public class PieChart extends BaseChart {
      */
     public void setDrawValueInPie(boolean _drawValueInPie) {
         mDrawValueInPie = _drawValueInPie;
-        invalidate();
+        invalidateGlobal();
     }
 
     /**
@@ -339,7 +339,7 @@ public class PieChart extends BaseChart {
      */
     public void setValueTextSize(float _valueTextSize) {
         mValueTextSize = Utils.dpToPx(_valueTextSize);
-        invalidate();
+        invalidateGlobal();
     }
 
     /**
@@ -376,7 +376,7 @@ public class PieChart extends BaseChart {
      */
     public void setInnerValueString(String _innerValueString) {
         mInnerValueString = _innerValueString;
-        mValueView.invalidate();
+        invalidateGraphOverlay();
     }
 
     /**
@@ -469,7 +469,7 @@ public class PieChart extends BaseChart {
         if (scrollIntoView) {
             centerOnCurrentItem();
         }
-        invalidate();
+        invalidateGlobal();
     }
 
     /**
@@ -569,7 +569,7 @@ public class PieChart extends BaseChart {
         if (Build.VERSION.SDK_INT < 11) {
             tickScrollAnimation();
             if (!mScroller.isFinished()) {
-                postInvalidate();
+                mGraph.postInvalidate();
             }
         }
     }
@@ -593,15 +593,7 @@ public class PieChart extends BaseChart {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        mWidth  = w;
-        mHeight = h;
-
-        mGraph.layout(0, 0, mWidth, (int) (mHeight - mLegendHeight));
         mGraph.setPivot(mGraphBounds.centerX(), mGraphBounds.centerY());
-
-        mValueView.layout(0, 0, mWidth, (int) (mHeight - mLegendHeight));
-
-        mLegend.layout(0, (int) (mHeight - mLegendHeight), mWidth, mHeight);
 
         onDataChanged();
     }
@@ -612,7 +604,9 @@ public class PieChart extends BaseChart {
      */
     @Override
     protected void initializeGraph() {
-        setLayerToSW(this);
+        super.initializeGraph();
+
+        Utils.setLayerToSW(this);
 
         mPieData = new ArrayList<PieModel>();
 
@@ -629,23 +623,15 @@ public class PieChart extends BaseChart {
         mValuePaint.setColor(mValueTextColor);
         mValuePaint.setStyle(Paint.Style.FILL);
 
-        mGraph = new Graph(getContext());
         mGraph.rotateTo(mPieRotation);
-        setLayerToSW(mGraph);
-        addView(mGraph);
-
-        mValueView = new InnerValueView(getContext());
-        addView(mValueView);
-
-        mLegend = new Legend(getContext());
-        addView(mLegend);
+        mGraph.decelerate();
 
         mRevealAnimator = ValueAnimator.ofFloat(0, 1);
         mRevealAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 mRevealValue = animation.getAnimatedFraction();
-                invalidate();
+                invalidateGlobal();
             }
         });
         mRevealAnimator.addListener(new Animator.AnimatorListener() {
@@ -693,7 +679,6 @@ public class PieChart extends BaseChart {
                 });
             }
 
-            // Create a Scroller to handle the fling gesture.
             // Create a Scroller to handle the fling gesture.
             if (Build.VERSION.SDK_INT < 11) {
                 mScroller = new Scroller(getContext());
@@ -815,19 +800,6 @@ public class PieChart extends BaseChart {
         }
     }
 
-    @SuppressLint("NewApi")
-    private void setLayerToSW(View v) {
-        if (!v.isInEditMode() && Build.VERSION.SDK_INT >= 11) {
-            setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
-    }
-
-    @SuppressLint("NewApi")
-    private void setLayerToHW(View v) {
-        if (!v.isInEditMode() && Build.VERSION.SDK_INT >= 11) {
-            setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        }
-    }
 
     /**
      * Force a stop to all pie motion. Called when the user taps during a fling.
@@ -897,320 +869,171 @@ public class PieChart extends BaseChart {
     @Override
     public List<PieModel> getData() { return mPieData; }
 
-    //##############################################################################################
-    // Graph
-    //##############################################################################################
-    private class Graph extends View {
-        /**
-         * Simple constructor to use when creating a view from code.
-         *
-         * @param context The Context the view is running in, through which it can
-         *                access the current theme, resources, etc.
-         */
-        private Graph(Context context) {
-            super(context);
-        }
 
-        /**
-         * Enable hardware acceleration (consumes memory)
-         */
-        public void accelerate() {
-            setLayerToHW(this);
-        }
+    // ---------------------------------------------------------------------------------------------
+    //                          Override methods from view layers
+    // ---------------------------------------------------------------------------------------------
 
-        /**
-         * Disable hardware acceleration (releases memory)
-         */
-        public void decelerate() {
-            setLayerToSW(this);
-        }
+    @Override
+    protected void onGraphDraw(Canvas _Canvas) {
+        super.onGraphDraw(_Canvas);
 
-        /**
-         * Implement this to do your drawing.
-         *
-         * @param canvas the canvas on which the background will be drawn
-         */
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
+        if (!mPieData.isEmpty()) {
 
-            if (!mPieData.isEmpty()) {
+            for (PieModel model : mPieData) {
+                mGraphPaint.setColor(model.getColor());
 
-                if (Build.VERSION.SDK_INT < 11) {
-                    mTransform.set(canvas.getMatrix());
-                    mTransform.preRotate(mRotation, mPivot.x, mPivot.y);
-                    canvas.setMatrix(mTransform);
+                // TODO: put calculation in the animation onUpdate method and provide an animated value
+                float startAngle;
+                if(mOpenClockwise) {
+                    startAngle = model.getStartAngle() * mRevealValue;
+                }
+                else {
+                    startAngle = 360 - model.getEndAngle() * mRevealValue;
                 }
 
-                for (PieModel model : mPieData) {
-                    mGraphPaint.setColor(model.getColor());
+                float sweepAngle = (model.getEndAngle() - model.getStartAngle()) * mRevealValue;
+                _Canvas.drawArc(mGraphBounds,
+                        startAngle,
+                        sweepAngle,
+                        true, mGraphPaint);
 
-                    // TODO: put calculation in the animation onUpdate method and provide an animated value
-                    float startAngle;
-                    if(mOpenClockwise) {
-                        startAngle = model.getStartAngle() * mRevealValue;
-                    }
-                    else {
-                        startAngle = 360 - model.getEndAngle() * mRevealValue;
-                    }
+                // Draw the highlighted inner edges if an InnerPadding is selected
+                if (mUseInnerPadding) {
+                    mGraphPaint.setColor(model.getHighlightedColor());
 
-                    float sweepAngle = (model.getEndAngle() - model.getStartAngle()) * mRevealValue;
-                    canvas.drawArc(mGraphBounds,
+                    _Canvas.drawArc(mInnerBounds,
                             startAngle,
                             sweepAngle,
                             true, mGraphPaint);
-
-                    // Draw the highlighted inner edges if an InnerPadding is selected
-                    if (mUseInnerPadding) {
-                        mGraphPaint.setColor(model.getHighlightedColor());
-
-                        canvas.drawArc(mInnerBounds,
-                                startAngle,
-                                sweepAngle,
-                                true, mGraphPaint);
-                    }
-                }
-
-                // Draw inner white circle
-                if (mUseInnerPadding) {
-                    mGraphPaint.setColor(mInnerPaddingColor);
-
-                    if(mOpenClockwise) {
-                        canvas.drawArc(mInnerOutlineBounds,
-                                0,
-                                (360 * mRevealValue),
-                                true,
-                                mGraphPaint);
-                    }
-                    else {
-                        canvas.drawArc(mInnerOutlineBounds,
-                                0,
-                                (360 * -mRevealValue),
-                                true,
-                                mGraphPaint);
-                    }
                 }
             }
-            else {
-                // No Data available
+
+            // Draw inner white circle
+            if (mUseInnerPadding) {
+                mGraphPaint.setColor(mInnerPaddingColor);
+
+                if(mOpenClockwise) {
+                    _Canvas.drawArc(mInnerOutlineBounds,
+                            0,
+                            (360 * mRevealValue),
+                            true,
+                            mGraphPaint);
+                }
+                else {
+                    _Canvas.drawArc(mInnerOutlineBounds,
+                            0,
+                            (360 * -mRevealValue),
+                            true,
+                            mGraphPaint);
+                }
             }
         }
+        else {
+            // No Data available
+        }
+    }
 
-        /**
-         * This is called during layout when the size of this view has changed. If
-         * you were just added to the view hierarchy, you're called with the old
-         * values of 0.
-         *
-         * @param w    Current width of this view.
-         * @param h    Current height of this view.
-         * @param oldw Old width of this view.
-         * @param oldh Old height of this view.
-         */
-        @Override
-        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-            super.onSizeChanged(w, h, oldw, oldh);
+    @Override
+    protected void onGraphOverlayDraw(Canvas _Canvas) {
+        super.onGraphOverlayDraw(_Canvas);
 
-            float newWidth = w - mLeftPadding - mRightPadding;
-            float newHeight = h - mTopPadding - mBottomPadding;
-            // Figure out how big we can make the pie.
-            mPieDiameter = Math.min(newWidth, newHeight);
-            mPieRadius = mPieDiameter / 2.f;
-            // calculate the left and right space to be center aligned
-            float centeredValueWidth  = (w - mPieDiameter) / 2f;
-            float centeredValueHeight = (h - mPieDiameter) / 2f;
-            mGraphBounds = new RectF(
-                    0.0f,
-                    0.0f,
-                    mPieDiameter,
-                    mPieDiameter);
-            mGraphBounds.offsetTo(centeredValueWidth, centeredValueHeight);
+        if(!mPieData.isEmpty() && mDrawValueInPie) {
+            PieModel model = mPieData.get(mCurrentItem);
 
-            mCalculatedInnerPadding         = (mPieRadius / 100) * mInnerPadding;
-            mCalculatedInnerPaddingOutline  = (mPieRadius / 100) * mInnerPaddingOutline;
+            if(!mUseCustomInnerValue) {
+                mInnerValueString = Utils.getFloatString(model.getValue(), mShowDecimal);
+                if (mInnerValueUnit != null && mInnerValueUnit.length() > 0) {
+                    mInnerValueString += " " + mInnerValueUnit;
+                }
+            }
 
-            mInnerBounds = new RectF(
+            mValuePaint.getTextBounds(mInnerValueString, 0, mInnerValueString.length(), mValueTextBounds);
+            _Canvas.drawText(
+                    mInnerValueString,
+                    mInnerBounds.centerX() - (mValueTextBounds.width() / 2),
+                    mInnerBounds.centerY() + (mValueTextBounds.height() / 2),
+                    mValuePaint
+            );
+        }
+    }
+
+    @Override
+    protected void onLegendDraw(Canvas _Canvas) {
+        super.onLegendDraw(_Canvas);
+
+        _Canvas.drawPath(mTriangle, mLegendPaint);
+
+        float height = mMaxFontHeight = Utils.calculateMaxTextHeight(mLegendPaint);
+
+        if(!mPieData.isEmpty()) {
+            PieModel model = mPieData.get(mCurrentItem);
+
+            // center text in view
+            // TODO: move the boundary calculation out of onDraw
+            mLegendPaint.getTextBounds(model.getLegendLabel(), 0, model.getLegendLabel().length(), mTextBounds);
+            _Canvas.drawText(
+                    model.getLegendLabel(),
+                    (mLegendWidth / 2) - (mTextBounds.width() / 2),
+                    mIndicatorSize * 2 + mIndicatorBottomMargin + mIndicatorTopMargin + height,
+                    mLegendPaint
+            );
+        }
+        else {
+            String str = "No Data available";
+            mLegendPaint.getTextBounds(str, 0, str.length(), mTextBounds);
+            _Canvas.drawText(
+                    str,
+                    (mLegendWidth / 2) - (mTextBounds.width() / 2),
+                    mIndicatorSize * 2 + mIndicatorBottomMargin + mIndicatorTopMargin + height,
+                    mLegendPaint
+            );
+        }
+    }
+
+    @Override
+    protected void onGraphSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onGraphSizeChanged(w, h, oldw, oldh);
+
+        // Figure out how big we can make the pie.
+        mPieDiameter = Math.min(w, h);
+        mPieRadius = mPieDiameter / 2.f;
+        // calculate the left and right space to be center aligned
+        float centeredValueWidth  = (w - mPieDiameter) / 2f;
+        float centeredValueHeight = (h - mPieDiameter) / 2f;
+        mGraphBounds = new RectF(
+                0.0f,
+                0.0f,
+                mPieDiameter,
+                mPieDiameter);
+        mGraphBounds.offsetTo(centeredValueWidth, centeredValueHeight);
+
+        mCalculatedInnerPadding         = (mPieRadius / 100) * mInnerPadding;
+        mCalculatedInnerPaddingOutline  = (mPieRadius / 100) * mInnerPaddingOutline;
+
+        mInnerBounds = new RectF(
                 mGraphBounds.centerX() - mCalculatedInnerPadding - mCalculatedInnerPaddingOutline,
                 mGraphBounds.centerY() - mCalculatedInnerPadding - mCalculatedInnerPaddingOutline,
                 mGraphBounds.centerX() + mCalculatedInnerPadding + mCalculatedInnerPaddingOutline,
                 mGraphBounds.centerY() + mCalculatedInnerPadding + mCalculatedInnerPaddingOutline);
 
-            mInnerOutlineBounds = new RectF(
-                    mGraphBounds.centerX() - mCalculatedInnerPadding,
-                    mGraphBounds.centerY() - mCalculatedInnerPadding,
-                    mGraphBounds.centerX() + mCalculatedInnerPadding,
-                    mGraphBounds.centerY() + mCalculatedInnerPadding);
-
-            mGraphWidth  = w;
-            mGraphHeight = h;
-
-        }
-
-        public void rotateTo(float pieRotation) {
-            mRotation = pieRotation;
-            if (Build.VERSION.SDK_INT >= 11) {
-                setRotation(pieRotation);
-            } else {
-                invalidate();
-            }
-        }
-
-        public void setPivot(float x, float y) {
-            mPivot.x = x;
-            mPivot.y = y;
-            if (Build.VERSION.SDK_INT >= 11) {
-                setPivotX(x);
-                setPivotY(y);
-            } else {
-                invalidate();
-            }
-        }
-
-        private float   mRotation  = 0;
-        private Matrix  mTransform = new Matrix();
-        private PointF  mPivot     = new PointF();
+        mInnerOutlineBounds = new RectF(
+                mGraphBounds.centerX() - mCalculatedInnerPadding,
+                mGraphBounds.centerY() - mCalculatedInnerPadding,
+                mGraphBounds.centerX() + mCalculatedInnerPadding,
+                mGraphBounds.centerY() + mCalculatedInnerPadding);
     }
 
-    private class InnerValueView extends View {
+    @Override
+    protected void onLegendSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onLegendSizeChanged(w, h, oldw, oldh);
 
-        /**
-         * Simple constructor to use when creating a view from code.
-         *
-         * @param context The Context the view is running in, through which it can
-         *                access the current theme, resources, etc.
-         */
-        public InnerValueView(Context context) {
-            super(context);
-        }
+        mTriangle = new Path();
+        mTriangle.moveTo((w / 2) - mIndicatorSize, mIndicatorSize*2 + mIndicatorTopMargin);
+        mTriangle.lineTo((w / 2) + mIndicatorSize, mIndicatorSize*2 + mIndicatorTopMargin);
+        mTriangle.lineTo(w / 2, mIndicatorTopMargin);
+        mTriangle.lineTo((w / 2) - mIndicatorSize, mIndicatorSize*2 + mIndicatorTopMargin);
 
-        /**
-         * Implement this to do your drawing.
-         *
-         * @param canvas the canvas on which the background will be drawn
-         */
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-
-            if(!mPieData.isEmpty() && mDrawValueInPie) {
-                PieModel model = mPieData.get(mCurrentItem);
-
-                if(!mUseCustomInnerValue) {
-                    mInnerValueString = Utils.getFloatString(model.getValue(), mShowDecimal);
-                    if (mInnerValueUnit != null && mInnerValueUnit.length() > 0) {
-                        mInnerValueString += " " + mInnerValueUnit;
-                    }
-                }
-
-                mValuePaint.getTextBounds(mInnerValueString, 0, mInnerValueString.length(), mValueTextBounds);
-                canvas.drawText(
-                        mInnerValueString,
-                        mInnerBounds.centerX() - (mValueTextBounds.width() / 2),
-                        mInnerBounds.centerY() + (mValueTextBounds.height() / 2),
-                        mValuePaint
-                );
-            }
-        }
-
-        /**
-         * This is called during layout when the size of this view has changed. If
-         * you were just added to the view hierarchy, you're called with the old
-         * values of 0.
-         *
-         * @param w    Current width of this view.
-         * @param h    Current height of this view.
-         * @param oldw Old width of this view.
-         * @param oldh Old height of this view.
-         */
-        @Override
-        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-            super.onSizeChanged(w, h, oldw, oldh);
-
-        }
-
-        private Rect mValueTextBounds = new Rect();
-
-    }
-
-    //##############################################################################################
-    // Legend
-    //##############################################################################################
-    private class Legend extends View {
-        /**
-         * Simple constructor to use when creating a view from code.
-         *
-         * @param context The Context the view is running in, through which it can
-         *                access the current theme, resources, etc.
-         */
-        private Legend(Context context) {
-            super(context);
-        }
-
-        /**
-         * Implement this to do your drawing.
-         *
-         * @param canvas the canvas on which the background will be drawn
-         */
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-
-            canvas.drawPath(mTriangle, mLegendPaint);
-
-            float height = mMaxFontHeight = Utils.calculateMaxTextHeight(mLegendPaint);
-
-            if(!mPieData.isEmpty()) {
-                PieModel model = mPieData.get(mCurrentItem);
-
-                // center text in view
-                // TODO: move the boundary calculation out of onDraw
-                mLegendPaint.getTextBounds(model.getLegendLabel(), 0, model.getLegendLabel().length(), mTextBounds);
-                canvas.drawText(
-                        model.getLegendLabel(),
-                        (mLegendWidth / 2) - (mTextBounds.width() / 2),
-                        mIndicatorSize * 2 + mIndicatorBottomMargin + height,
-                        mLegendPaint
-                );
-            }
-            else {
-                String str = "No Data available";
-                mLegendPaint.getTextBounds(str, 0, str.length(), mTextBounds);
-                canvas.drawText(
-                        str,
-                        (mLegendWidth / 2) - (mTextBounds.width() / 2),
-                        mIndicatorSize * 2 + mIndicatorBottomMargin + height,
-                        mLegendPaint
-                );
-            }
-        }
-
-        /**
-         * This is called during layout when the size of this view has changed. If
-         * you were just added to the view hierarchy, you're called with the old
-         * values of 0.
-         *
-         * @param w    Current width of this view.
-         * @param h    Current height of this view.
-         * @param oldw Old width of this view.
-         * @param oldh Old height of this view.
-         */
-        @Override
-        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-            super.onSizeChanged(w, h, oldw, oldh);
-
-            mTriangle = new Path();
-            mTriangle.moveTo((w / 2) - mIndicatorSize, mIndicatorSize*2);
-            mTriangle.lineTo((w / 2) + mIndicatorSize, mIndicatorSize*2);
-            mTriangle.lineTo(w / 2, 0);
-            mTriangle.lineTo((w / 2) - mIndicatorSize, mIndicatorSize*2);
-
-            mLegendWidth  = w;
-            mLegendHeight = h;
-        }
-
-        private float mIndicatorSize = Utils.dpToPx(8);
-        private float mIndicatorBottomMargin = Utils.dpToPx(4);
-        private Path  mTriangle;
-        private Rect  mTextBounds = new Rect();
     }
 
     /**
@@ -1260,6 +1083,7 @@ public class PieChart extends BaseChart {
         public boolean onDown(MotionEvent e) {
             // The user is interacting with the pie, so we want to turn on acceleration
             // so that the interaction is smooth.
+            mGraph.accelerate();
             if (isAnimationRunning()) {
                 stopScrolling();
             }
@@ -1315,13 +1139,20 @@ public class PieChart extends BaseChart {
     private Paint               mLegendPaint;
     private Paint               mValuePaint;
 
-    private Graph               mGraph;
-    private InnerValueView      mValueView;
-    private Legend              mLegend;
-
     private RectF               mGraphBounds;
     private RectF               mInnerBounds;
     private RectF               mInnerOutlineBounds;
+
+    // Inner Value stuff
+    private Rect                mValueTextBounds = new Rect();
+
+    // Legend stuff
+    private float               mIndicatorSize = Utils.dpToPx(8);
+    private float               mIndicatorTopMargin = Utils.dpToPx(6);
+    private float               mIndicatorBottomMargin = Utils.dpToPx(4);
+    private Path                mTriangle;
+    private Rect                mTextBounds = new Rect();
+
 
     private float               mPieDiameter;
     private float               mPieRadius;

@@ -17,10 +17,13 @@
 
 package org.eazegraph.lib.utils;
 
+import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build;
+import android.view.View;
 
 import org.eazegraph.lib.models.BaseModel;
 
@@ -170,6 +173,21 @@ public class Utils {
      */
     public static boolean intersectsPointWithRectF(RectF _Rect, float _X, float _Y) {
         return _X > _Rect.left && _X < _Rect.right && _Y > _Rect.top && _Y < _Rect.bottom;
+    }
+
+
+    @SuppressLint("NewApi")
+    public static void setLayerToSW(View v) {
+        if (!v.isInEditMode() && Build.VERSION.SDK_INT >= 11) {
+            v.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
+    }
+
+    @SuppressLint("NewApi")
+    public static void setLayerToHW(View v) {
+        if (!v.isInEditMode() && Build.VERSION.SDK_INT >= 11) {
+            v.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        }
     }
 
     private static final String LOG_TAG = Utils.class.getSimpleName();

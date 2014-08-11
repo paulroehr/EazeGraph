@@ -188,23 +188,10 @@ public abstract class BaseBarChart extends BaseChart {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mWidth  = w;
-        mHeight = h;
-
-        mGraph.layout(0, 0, w, (int) (h - mLegendHeight));
-        mLegend.layout(0, (int) (h - mLegendHeight), w, h);
 
         if(getData().size() > 0) {
             onDataChanged();
         }
-    }
-
-    /**
-     * Invalidates graph and legend and forces them to be redrawn.
-     */
-    protected void invalidateGraphs() {
-        mGraph.invalidate();
-        mLegend.invalidate();
     }
 
     /**
@@ -213,6 +200,8 @@ public abstract class BaseBarChart extends BaseChart {
      */
     @Override
     protected void initializeGraph() {
+        super.initializeGraph();
+
         mGraphPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mGraphPaint.setStyle(Paint.Style.FILL);
 
@@ -223,12 +212,6 @@ public abstract class BaseBarChart extends BaseChart {
         mLegendPaint.setStyle(Paint.Style.FILL);
 
         mMaxFontHeight = Utils.calculateMaxTextHeight(mLegendPaint);
-
-        mGraph = new Graph(getContext());
-        addView(mGraph);
-
-        mLegend = new Legend(getContext());
-        addView(mLegend);
 
         mRevealAnimator = ValueAnimator.ofFloat(0, 1);
         mRevealAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -308,136 +291,62 @@ public abstract class BaseBarChart extends BaseChart {
 
     protected abstract List<RectF> getBarBounds();
 
-    //##############################################################################################
-    // Graph
-    //##############################################################################################
-    protected class Graph extends View {
-        /**
-         * Simple constructor to use when creating a view from code.
-         *
-         * @param context The Context the view is running in, through which it can
-         *                access the current theme, resources, etc.
-         */
-        protected Graph(Context context) {
-            super(context);
-        }
+    // ---------------------------------------------------------------------------------------------
+    //                          Override methods from view layers
+    // ---------------------------------------------------------------------------------------------
 
-        /**
-         * Implement this to do your drawing.
-         *
-         * @param canvas the canvas on which the background will be drawn
-         */
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-            drawBars(canvas);
-        }
 
-        /**
-         * This is called during layout when the size of this view has changed. If
-         * you were just added to the view hierarchy, you're called with the old
-         * values of 0.
-         *
-         * @param w    Current width of this view.
-         * @param h    Current height of this view.
-         * @param oldw Old width of this view.
-         * @param oldh Old height of this view.
-         */
-        @Override
-        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-            super.onSizeChanged(w, h, oldw, oldh);
-            mGraphHeight = h - mTopPadding;
-            mGraphWidth  = w - mLeftPadding - mRightPadding;
-        }
-
-        @Override
-        public boolean onTouchEvent(MotionEvent event) {
-            boolean result = false;
-
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                performClick();
-                result = true;
-
-                if (mListener == null) {
-                    // we're not interested in clicks on individual bars here
-                    BaseBarChart.this.onTouchEvent(event);
-                } else {
-                    float newX = event.getX();
-                    float newY = event.getY();
-                    int   counter = 0;
-
-                    for (RectF rectF : getBarBounds()) {
-                        if (Utils.intersectsPointWithRectF(rectF, newX, newY)) {
-                            mListener.onBarClicked(counter);
-                            break; // no need to check other bars
-                        }
-                        counter++;
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        @Override
-        public boolean performClick() {
-            return super.performClick();
-        }
-
+    @Override
+    protected void onGraphDraw(Canvas _Canvas) {
+        super.onGraphDraw(_Canvas);
+        drawBars(_Canvas);
     }
 
-    //##############################################################################################
-    // Legend
-    //##############################################################################################
-    protected class Legend extends View {
-        /**
-         * Simple constructor to use when creating a view from code.
-         *
-         * @param context The Context the view is running in, through which it can
-         *                access the current theme, resources, etc.
-         */
-        private Legend(Context context) {
-            super(context);
+    @Override
+    protected void onLegendDraw(Canvas _Canvas) {
+        super.onLegendDraw(_Canvas);
+
+        for (BaseModel model : getLegendData()) {
+            if(model.canShowLabel()) {
+                RectF bounds = model.getLegendBounds();
+                _Canvas.drawText(model.getLegendLabel(), model.getLegendLabelPosition(), bounds.bottom - mMaxFontHeight, mLegendPaint);
+                _Canvas.drawLine(
+                        bounds.centerX(),
+                        bounds.bottom - mMaxFontHeight*2 - mLegendTopPadding,
+                        bounds.centerX(),
+                        mLegendTopPadding, mLegendPaint
+                );
+            }
         }
+    }
 
-        /**
-         * Implement this to do your drawing.
-         *
-         * @param canvas the canvas on which the background will be drawn
-         */
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
+    @Override
+    protected boolean onGraphOverlayTouchEvent(MotionEvent _Event) {
+        boolean result = false;
 
-            for (BaseModel model : getLegendData()) {
-                if(model.canShowLabel()) {
-                    RectF bounds = model.getLegendBounds();
-                    canvas.drawText(model.getLegendLabel(), model.getLegendLabelPosition(), bounds.bottom - mMaxFontHeight, mLegendPaint);
-                    canvas.drawLine(
-                            bounds.centerX(),
-                            bounds.bottom - mMaxFontHeight*2 - mLegendTopPadding,
-                            bounds.centerX(),
-                            mLegendTopPadding, mLegendPaint
-                    );
+        if (_Event.getAction() == MotionEvent.ACTION_DOWN) {
+            performClick();
+            result = true;
+
+            if (mListener == null) {
+                // we're not interested in clicks on individual bars here
+                BaseBarChart.this.onTouchEvent(_Event);
+            } else {
+                float newX = _Event.getX();
+                float newY = _Event.getY();
+                int   counter = 0;
+
+                for (RectF rectF : getBarBounds()) {
+                    if (Utils.intersectsPointWithRectF(rectF, newX, newY)) {
+                        mListener.onBarClicked(counter);
+                        break; // no need to check other bars
+                    }
+                    counter++;
                 }
             }
         }
 
-        /**
-         * This is called during layout when the size of this view has changed. If
-         * you were just added to the view hierarchy, you're called with the old
-         * values of 0.
-         *
-         * @param w    Current width of this view.
-         * @param h    Current height of this view.
-         * @param oldw Old width of this view.
-         * @param oldh Old height of this view.
-         */
-        @Override
-        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-            super.onSizeChanged(w, h, oldw, oldh);
-        }
-
+        return result;
     }
 
     //##############################################################################################
@@ -452,9 +361,6 @@ public abstract class BaseBarChart extends BaseChart {
     public static final float   DEF_BAR_MARGIN          = 12.f;
 
     protected IOnBarClickedListener mListener = null;
-
-    protected Graph           mGraph;
-    protected Legend          mLegend;
 
     protected Paint           mGraphPaint;
     protected Paint           mLegendPaint;

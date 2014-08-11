@@ -140,10 +140,10 @@ public class StackedBarChart extends BaseBarChart {
      */
     protected void calculateBounds(float _Width, float _Margin) {
 
-        int   last = mLeftPadding;
+        int   last = 0;
 
         for (StackedBarModel model : mData) {
-            float lastHeight = mTopPadding;
+            float lastHeight = 0;
             float cumulatedValues = 0;
 
             for (BarModel barModel : model.getBars()) {
@@ -163,7 +163,7 @@ public class StackedBarChart extends BaseBarChart {
             last += _Width + (_Margin / 2);
         }
 
-        Utils.calculateLegendInformation(mData, mLeftPadding, mGraphWidth + mLeftPadding, mLegendPaint);
+        Utils.calculateLegendInformation(mData, 0, mGraphWidth, mLegendPaint);
     }
 
     /**
@@ -173,7 +173,7 @@ public class StackedBarChart extends BaseBarChart {
     protected void drawBars(Canvas _Canvas) {
         for (StackedBarModel model : mData) {
             float lastTop;
-            float lastBottom = mGraphHeight + mTopPadding;
+            float lastBottom = mGraphHeight;
 
             for (BarModel barModel : model.getBars()) {
                 RectF bounds = barModel.getBarBounds();
