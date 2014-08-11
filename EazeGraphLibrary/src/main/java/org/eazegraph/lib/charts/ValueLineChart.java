@@ -1095,9 +1095,6 @@ public class ValueLineChart extends BaseChart {
         @Override
         protected void onSizeChanged(int w, int h, int oldw, int oldh) {
             super.onSizeChanged(w, h, oldw, oldh);
-            mGraphWidth = w;
-            mGraphHeight = h;
-            mUsableGraphHeight = mGraphHeight - mTopPadding;
         }
 
         /**

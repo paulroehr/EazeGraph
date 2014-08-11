@@ -11,6 +11,7 @@
         android:id="@+id/linechart"
         android:layout_width="match_parent"
         android:layout_height="200dp"
+        android:paddingLeft="18dp"
         app:egUseCubic="false"
         app:egUseOverlapFill="false"
         app:egCurveSmoothness="0.4"
