@@ -75,7 +75,7 @@ Insert in your root project's 'build.gradle' under repositories:
 and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
-        compile 'com.github.blackfizz:eazegraph:1.1.9-SNAPSHOT@aar'
+        compile 'com.github.blackfizz:eazegraph:1.1.10-SNAPSHOT@aar'
         compile 'com.nineoldandroids:library:2.4.0'
     }
 
@@ -237,6 +237,14 @@ Wiki
 
 Changelog
 =========
+**1.1.10**
+* removed the `egStandardValueIndicatorStroke` and `egStandardValueColor` attributes and created an extra `StandardValue` class, which contains all these information. Doing this enabled the support for multiple StandardValues
+* fixed issue #23
+* fixed bug in ValueLineChart when inserting an empty series, the previous indicator is still shown even when there is no data available.
+* fixed bug in PieChart when an InnerPadding is activated, the animated inner circle sometimes is a little smaller than the PieChart which led to colored edges.
+* tweaked the legend generation algorithm
+* added Comparable interface for `BarModel`, `PieModel`, `ValueLinePoint`
+
 **1.1.9**
 * did a complete code restructuring. Now adding the graph, graph overlay and legend view is done by the `BaseChart` class and only calls methods which can be overwritten in the child graph classes. This reduced many redundancies and the layout generation of the views is handled in one location.
 * based on the restructuring, the padding attributes are now drawn and interpreted correctly and no chart has to include the padding in the calculation as it is handled in the layout generation.

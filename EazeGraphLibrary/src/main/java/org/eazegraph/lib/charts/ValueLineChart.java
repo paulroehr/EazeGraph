@@ -25,11 +25,9 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ValueAnimator;
@@ -39,6 +37,7 @@ import org.eazegraph.lib.communication.IOnPointFocusedListener;
 import org.eazegraph.lib.models.BaseModel;
 import org.eazegraph.lib.models.LegendModel;
 import org.eazegraph.lib.models.Point2D;
+import org.eazegraph.lib.models.StandardValue;
 import org.eazegraph.lib.models.ValueLinePoint;
 import org.eazegraph.lib.models.ValueLineSeries;
 import org.eazegraph.lib.utils.Utils;
@@ -73,9 +72,7 @@ public class ValueLineChart extends BaseChart {
         mIndicatorTextSize            = Utils.dpToPx(DEF_INDICATOR_TEXT_SIZE);
         mIndicatorLeftPadding         = Utils.dpToPx(DEF_INDICATOR_LEFT_PADDING);
         mIndicatorTopPadding          = Utils.dpToPx(DEF_INDICATOR_TOP_PADDING);
-        mShowStandardValue            = DEF_SHOW_STANDARD_VALUE;
-        mStandardValueIndicatorStroke = Utils.dpToPx(DEF_STANDARD_VALUE_INDICATOR_STROKE);
-        mStandardValueColor           = DEF_STANDARD_VALUE_COLOR;
+        mShowStandardValues           = DEF_SHOW_STANDARD_VALUE;
         mXAxisStroke                  = Utils.dpToPx(DEF_X_AXIS_STROKE);
         mActivateIndicatorShadow      = DEF_ACTIVATE_INDICATOR_SHADOW;
         mIndicatorShadowStrength      = Utils.dpToPx(DEF_INDICATOR_SHADOW_STRENGTH);
@@ -113,21 +110,19 @@ public class ValueLineChart extends BaseChart {
 
         try {
 
-            mUseCubic                     = a.getBoolean(R.styleable.ValueLineChart_egUseCubic,                         DEF_USE_CUBIC);
-            mUseOverlapFill               = a.getBoolean(R.styleable.ValueLineChart_egUseOverlapFill,                   DEF_USE_OVERLAP_FILL);
+            mUseCubic                     = a.getBoolean(R.styleable.ValueLineChart_egUseCubic, DEF_USE_CUBIC);
+            mUseOverlapFill               = a.getBoolean(R.styleable.ValueLineChart_egUseOverlapFill, DEF_USE_OVERLAP_FILL);
             mLineStroke                   = a.getDimension(R.styleable.ValueLineChart_egLineStroke, Utils.dpToPx(DEF_LINE_STROKE));
             mFirstMultiplier              = a.getFloat(R.styleable.ValueLineChart_egCurveSmoothness, DEF_FIRST_MULTIPLIER);
             mSecondMultiplier             = 1.0f - mFirstMultiplier;
-            mShowIndicator                = a.getBoolean(R.styleable.ValueLineChart_egShowValueIndicator,               DEF_SHOW_INDICATOR);
+            mShowIndicator                = a.getBoolean(R.styleable.ValueLineChart_egShowValueIndicator, DEF_SHOW_INDICATOR);
             mIndicatorWidth               = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth, Utils.dpToPx(DEF_INDICATOR_WIDTH));
             mIndicatorLineColor           = a.getColor(R.styleable.ValueLineChart_egIndicatorLineColor, DEF_INDICATOR_COLOR);
-            mIndicatorTextColor           = a.getColor(R.styleable.ValueLineChart_egIndicatorTextColor,                 DEF_INDICATOR_COLOR);
+            mIndicatorTextColor           = a.getColor(R.styleable.ValueLineChart_egIndicatorTextColor, DEF_INDICATOR_COLOR);
             mIndicatorTextSize            = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth,                 Utils.dpToPx(DEF_INDICATOR_TEXT_SIZE));
-            mIndicatorLeftPadding         = a.getDimension(R.styleable.ValueLineChart_egIndicatorLeftPadding,           Utils.dpToPx(DEF_INDICATOR_LEFT_PADDING));
+            mIndicatorLeftPadding         = a.getDimension(R.styleable.ValueLineChart_egIndicatorLeftPadding, Utils.dpToPx(DEF_INDICATOR_LEFT_PADDING));
             mIndicatorTopPadding          = a.getDimension(R.styleable.ValueLineChart_egIndicatorTopPadding,            Utils.dpToPx(DEF_INDICATOR_TOP_PADDING));
-            mShowStandardValue            = a.getBoolean(R.styleable.ValueLineChart_egShowStandardValue,                DEF_SHOW_STANDARD_VALUE);
-            mStandardValueIndicatorStroke = a.getDimension(R.styleable.ValueLineChart_egStandardValueIndicatorStroke,   Utils.dpToPx(DEF_STANDARD_VALUE_INDICATOR_STROKE));
-            mStandardValueColor           = a.getColor(R.styleable.ValueLineChart_egStandardValueColor,                 DEF_STANDARD_VALUE_COLOR);
+            mShowStandardValues           = a.getBoolean(R.styleable.ValueLineChart_egShowStandardValue, DEF_SHOW_STANDARD_VALUE);
             mXAxisStroke                  = a.getDimension(R.styleable.ValueLineChart_egXAxisStroke,                    Utils.dpToPx(DEF_X_AXIS_STROKE));
             mActivateIndicatorShadow      = a.getBoolean(R.styleable.ValueLineChart_egActivateIndicatorShadow,          DEF_ACTIVATE_INDICATOR_SHADOW);
             mIndicatorShadowStrength      = a.getDimension(R.styleable.ValueLineChart_egIndicatorShadowStrength,        Utils.dpToPx(DEF_INDICATOR_SHADOW_STRENGTH));
@@ -162,6 +157,8 @@ public class ValueLineChart extends BaseChart {
     @Override
     public void clearChart() {
         mSeries.clear();
+        mStandardValues.clear();
+        mFocusedPoint = null;
     }
 
     /**
@@ -180,8 +177,36 @@ public class ValueLineChart extends BaseChart {
      * @param _standardValue The value which will be interpreted as a y-coordinate dependent
      *                       on the maximum value of the data set.
      */
+    public void addStandardValue(StandardValue _standardValue) {
+        mStandardValues.add(_standardValue);
+        onDataChanged();
+    }
+
+    /**
+     * Adds a standard value to the graph. The standard value is a horizontal line as an overlay
+     * dependent on the loaded data set.
+     * @param _standardValue The value which will be interpreted as a y-coordinate dependent
+     *                       on the maximum value of the data set.
+     */
     public void addStandardValue(float _standardValue) {
-        mStandardValue = _standardValue;
+        mStandardValues.add(new StandardValue(_standardValue));
+        onDataChanged();
+    }
+
+    /**
+     * Adds a list of standard values to the graph.
+     * @param _standardValues The list with standard values.
+     */
+    public void addStandardValues(List<StandardValue> _standardValues) {
+        mStandardValues.addAll(_standardValues);
+        onDataChanged();
+    }
+
+    /**
+     * Clears the list which contains all standard values.
+     */
+    public void clearStandardValues() {
+        mStandardValues.clear();
         onDataChanged();
     }
 
@@ -370,51 +395,17 @@ public class ValueLineChart extends BaseChart {
      * Checks if the standard value line should be shown or not.
      * @return True if the standard value line should be shown.
      */
-    public boolean isShowStandardValue() {
-        return mShowStandardValue;
+    public boolean isShowStandardValues() {
+        return mShowStandardValues;
     }
 
     /**
      * Sets if the standard value should be shown or not.
-     * @param _showStandardValue True if the standard value line should be shown.
+     * @param _showStandardValues True if the standard value line should be shown.
      */
-    public void setShowStandardValue(boolean _showStandardValue) {
-        mShowStandardValue = _showStandardValue;
+    public void setShowStandardValues(boolean _showStandardValues) {
+        mShowStandardValues = _showStandardValues;
         onDataChanged();
-    }
-
-    /**
-     * Returns the stroke size of the standard value line.
-     * @return Stroke size of standard value line.
-     */
-    public float getStandardValueIndicatorStroke() {
-        return mStandardValueIndicatorStroke;
-    }
-
-    /**
-     * Sets the standard value line stroke.
-     * @param _standardValueIndicatorStroke Stroke size of standard value line in dp.
-     */
-    public void setStandardValueIndicatorStroke(float _standardValueIndicatorStroke) {
-        mStandardValueIndicatorStroke = Utils.dpToPx(_standardValueIndicatorStroke);
-        invalidateGraphOverlay();
-    }
-
-    /**
-     * Returns the color of the standard value line.
-     * @return Color of the standard value line.
-     */
-    public int getStandardValueColor() {
-        return mStandardValueColor;
-    }
-
-    /**
-     * Sets the color for the standard value line.
-     * @param _standardValueColor Color value for the standard value line.
-     */
-    public void setStandardValueColor(int _standardValueColor) {
-        mStandardValueColor = _standardValueColor;
-        invalidateGraphOverlay();
     }
 
     /**
@@ -658,9 +649,13 @@ public class ValueLineChart extends BaseChart {
             }
 
             // check if the standardvalue is greater than all other values
-            if(mShowStandardValue) {
-                if(mStandardValue > maxValue) {
-                    maxValue = mStandardValue;
+            if(mShowStandardValues) {
+                for (StandardValue value : mStandardValues) {
+                    if(value.getValue() > maxValue) {
+                        maxValue = value.getValue();
+                    }
+                    if (value.getValue() < mNegativeValue)
+                        mNegativeValue = value.getValue();
                 }
             }
 
@@ -678,8 +673,10 @@ public class ValueLineChart extends BaseChart {
             }
 
             // calculate the y position for standardValue
-            if(mShowStandardValue) {
-                mStandardValueY = mGraphHeight - (mStandardValue * heightMultiplier);
+            if(mShowStandardValues) {
+                for (StandardValue value : mStandardValues) {
+                    value.setY((int) (mGraphHeight - mNegativeOffset - ((value.getValue()) * heightMultiplier)));
+                };
             }
 
             for (ValueLineSeries series : mSeries) {
@@ -721,11 +718,11 @@ public class ValueLineChart extends BaseChart {
 
                                 P2.setX(mGraphWidth);
                                 P2.setY(mGraphHeight - (series.getSeries().get(i + 1).getValue() * heightMultiplier));
-                                calculatePointDiff(P1, P2, P1, mSecondMultiplier);
+                                Utils.calculatePointDiff(P1, P2, P1, mSecondMultiplier);
 
                                 P3.setX(mGraphWidth);
                                 P3.setY(mGraphHeight - (series.getSeries().get(i + 1).getValue() * heightMultiplier));
-                                calculatePointDiff(P2, P3, P3, mFirstMultiplier);
+                                Utils.calculatePointDiff(P2, P3, P3, mFirstMultiplier);
 
                                 path.cubicTo(P1.getX(), P1.getY(), P2.getX(), P2.getY(), P3.getX(), P3.getY());
                                 series.getSeries().get(i + 1).setCoordinates(new Point2D(P2.getX(), P2.getY()));
@@ -736,11 +733,11 @@ public class ValueLineChart extends BaseChart {
 
                                 P2.setX(currentOffset + widthOffset);
                                 P2.setY(mGraphHeight - (series.getSeries().get(i + 1).getValue() * heightMultiplier));
-                                calculatePointDiff(P1, P2, P1, mSecondMultiplier);
+                                Utils.calculatePointDiff(P1, P2, P1, mSecondMultiplier);
 
                                 P3.setX(currentOffset + (2 * widthOffset));
                                 P3.setY(mGraphHeight - (series.getSeries().get(i + 2).getValue() * heightMultiplier));
-                                calculatePointDiff(P2, P3, P3, mFirstMultiplier);
+                                Utils.calculatePointDiff(P2, P3, P3, mFirstMultiplier);
 
                                 series.getSeries().get(i + 1).setCoordinates(new Point2D(P2.getX(), P2.getY()));
                             }
@@ -853,21 +850,6 @@ public class ValueLineChart extends BaseChart {
     }
 
     /**
-     * Calculates the middle point between two points and multiplies its coordinates with the given
-     * smoothness _Mulitplier.
-     * @param _P1           First point
-     * @param _P2           Second point
-     * @param _Result       Resulting point
-     * @param _Multiplier   Smoothness multiplier
-     */
-    private void calculatePointDiff(Point2D _P1, Point2D _P2, Point2D _Result, float _Multiplier) {
-        float diffX = _P2.getX() - _P1.getX();
-        float diffY = _P2.getY() - _P1.getY();
-        _Result.setX(_P1.getX() + (diffX * _Multiplier));
-        _Result.setY(_P1.getY() + (diffY * _Multiplier));
-    }
-
-    /**
      * Calculates the text height for the indicator value and sets its x-coordinate.
      */
     private void calculateValueTextHeight() {
@@ -958,16 +940,18 @@ public class ValueLineChart extends BaseChart {
         );
 
         // draw standard value line
-        if(mShowStandardValue) {
-            mIndicatorPaint.setColor(mStandardValueColor);
-            mIndicatorPaint.setStrokeWidth(mStandardValueIndicatorStroke);
-            _Canvas.drawLine(
-                    0,
-                    mStandardValueY - mNegativeOffset,
-                    mGraphWidth,
-                    mStandardValueY - mNegativeOffset,
-                    mIndicatorPaint
-            );
+        if(mShowStandardValues) {
+            for (StandardValue value : mStandardValues) {
+                mIndicatorPaint.setColor(value.getColor());
+                mIndicatorPaint.setStrokeWidth(value.getStroke());
+                _Canvas.drawLine(
+                        0,
+                        value.getY(),
+                        mGraphWidth,
+                        value.getY(),
+                        mIndicatorPaint
+                );
+            }
         }
 
         // draw touch indicator
@@ -1141,8 +1125,6 @@ public class ValueLineChart extends BaseChart {
     public static final float   DEF_INDICATOR_TOP_PADDING           = 4.f;
 
     public static final boolean DEF_SHOW_STANDARD_VALUE             = false;
-    public static final float   DEF_STANDARD_VALUE_INDICATOR_STROKE = 2f;
-    public static final int     DEF_STANDARD_VALUE_COLOR            = 0xFF00FF00;
     public static final float   DEF_X_AXIS_STROKE                   = 2f;
     public static final float   DEF_LEGEND_STROKE                   = 2f;
     public static final boolean DEF_ACTIVATE_INDICATOR_SHADOW       = false;
@@ -1157,8 +1139,6 @@ public class ValueLineChart extends BaseChart {
     private Paint                   mIndicatorPaint;
 
     private List<ValueLineSeries>   mSeries;
-    private float                   mStandardValue = 0;
-    private float                   mStandardValueY;
     private List<LegendModel>       mLegendList;
 
     private boolean                 mHasNegativeValues  = false;
@@ -1175,8 +1155,6 @@ public class ValueLineChart extends BaseChart {
     private ValueLinePoint          mFocusedPoint    = null;
     private float                   mValueTextHeight;
 
-    private boolean                 mUseCubic;
-
     // GraphOverlay vars
     private ValueLinePoint          mLastPoint = null;
     private int                     mValueLabelX  = 0;
@@ -1184,10 +1162,13 @@ public class ValueLineChart extends BaseChart {
     private int                     mLegendLabelX = 0;
     private int                     mLegendLabelY = 0;
 
+    private List<StandardValue>     mStandardValues = new ArrayList<StandardValue>();
+
     /**
      * Indicates to fill the bottom area of a series with its given color.
      */
     private boolean                 mUseOverlapFill;
+    private boolean                 mUseCubic;
     private float                   mLineStroke;
     private boolean                 mShowIndicator;
     private float                   mIndicatorWidth;
@@ -1196,9 +1177,7 @@ public class ValueLineChart extends BaseChart {
     private float                   mIndicatorTextSize;
     private float                   mIndicatorLeftPadding;
     private float                   mIndicatorTopPadding;
-    private boolean                 mShowStandardValue;
-    private float                   mStandardValueIndicatorStroke;
-    private int                     mStandardValueColor;
+    private boolean                 mShowStandardValues;
     private float                   mXAxisStroke;
     private boolean                 mActivateIndicatorShadow;
     private float                   mIndicatorShadowStrength;

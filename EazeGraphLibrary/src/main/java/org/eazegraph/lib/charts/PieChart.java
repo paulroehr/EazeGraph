@@ -62,6 +62,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -880,19 +881,35 @@ public class PieChart extends BaseChart {
 
         if (!mPieData.isEmpty()) {
 
-            for (PieModel model : mPieData) {
+            float innerStartAngle = 0;
+            float innerSweepAngle = 0;
+            int   amountOfPieSlices = mPieData.size();
+
+            for (int pieIndex = 0; pieIndex < amountOfPieSlices; pieIndex++) {
+                PieModel model = mPieData.get(pieIndex);
+
                 mGraphPaint.setColor(model.getColor());
 
                 // TODO: put calculation in the animation onUpdate method and provide an animated value
                 float startAngle;
-                if(mOpenClockwise) {
+                float sweepAngle = (model.getEndAngle() - model.getStartAngle()) * mRevealValue;
+
+                if (mOpenClockwise) {
                     startAngle = model.getStartAngle() * mRevealValue;
                 }
                 else {
                     startAngle = 360 - model.getEndAngle() * mRevealValue;
                 }
 
-                float sweepAngle = (model.getEndAngle() - model.getStartAngle()) * mRevealValue;
+                if(pieIndex == 0) {
+                    innerStartAngle = startAngle +  (mOpenClockwise ? 0 : (float) Math.ceil(sweepAngle));
+                }
+
+                if (mOpenClockwise)
+                    innerSweepAngle += sweepAngle;
+                else
+                    innerSweepAngle -= (float) Math.ceil(sweepAngle);
+
                 _Canvas.drawArc(mGraphBounds,
                         startAngle,
                         sweepAngle,
@@ -913,20 +930,11 @@ public class PieChart extends BaseChart {
             if (mUseInnerPadding) {
                 mGraphPaint.setColor(mInnerPaddingColor);
 
-                if(mOpenClockwise) {
-                    _Canvas.drawArc(mInnerOutlineBounds,
-                            0,
-                            (360 * mRevealValue),
-                            true,
-                            mGraphPaint);
-                }
-                else {
-                    _Canvas.drawArc(mInnerOutlineBounds,
-                            0,
-                            (360 * -mRevealValue),
-                            true,
-                            mGraphPaint);
-                }
+                _Canvas.drawArc(mInnerOutlineBounds,
+                        innerStartAngle,
+                        innerSweepAngle,
+                        true,
+                        mGraphPaint);
             }
         }
         else {
@@ -1083,7 +1091,6 @@ public class PieChart extends BaseChart {
         public boolean onDown(MotionEvent e) {
             // The user is interacting with the pie, so we want to turn on acceleration
             // so that the interaction is smooth.
-            mGraph.accelerate();
             if (isAnimationRunning()) {
                 stopScrolling();
             }

@@ -22,7 +22,7 @@ import android.graphics.RectF;
 /**
  * Model for the {@link org.eazegraph.lib.charts.BarChart}
  */
-public class BarModel extends BaseModel {
+public class BarModel extends BaseModel implements Comparable {
 
     public BarModel(String _legendLabel, float _value, int _color) {
         super(_legendLabel);
@@ -31,13 +31,13 @@ public class BarModel extends BaseModel {
     }
 
     public BarModel(float _value, int _color) {
-        super(""+_value);
+        super("" + _value);
         mValue = _value;
         mColor = _color;
     }
 
     public BarModel(float _value) {
-        super(""+_value);
+        super("" + _value);
         mValue = _value;
         mColor = 0xFFFF0000;
     }
@@ -66,6 +66,20 @@ public class BarModel extends BaseModel {
         mBarBounds = _bounds;
     }
 
+    @Override
+    public int compareTo(Object o) {
+        BarModel bar = (BarModel) o;
+        if (this.mValue > bar.getValue()) {
+            return 1;
+        }
+        else if (this.mValue == bar.getValue()) {
+            return 0;
+        }
+        else {
+            return -1;
+        }
+    }
+
     /**
      * Value of the bar.
      */
@@ -74,11 +88,10 @@ public class BarModel extends BaseModel {
     /**
      * Color in which the bar will be drawn.
      */
-    private int   mColor;
+    private int mColor;
 
     /**
      * Bar boundaries.
      */
     private RectF mBarBounds;
-
 }

@@ -20,7 +20,7 @@ package org.eazegraph.lib.models;
 /**
  * Model for the {@link org.eazegraph.lib.models.ValueLineSeries}.
  */
-public class ValueLinePoint extends BaseModel {
+public class ValueLinePoint extends BaseModel implements Comparable {
 
     public ValueLinePoint(float _value) {
         super("" + _value);
@@ -46,6 +46,20 @@ public class ValueLinePoint extends BaseModel {
 
     public void setCoordinates(Point2D _coordinates) {
         mCoordinates = _coordinates;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        ValueLinePoint point = (ValueLinePoint) o;
+        if (this.mValue > point.getValue()) {
+            return 1;
+        }
+        else if (this.mValue == point.getValue()) {
+            return 0;
+        }
+        else {
+            return -1;
+        }
     }
 
     /**

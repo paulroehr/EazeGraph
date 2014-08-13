@@ -109,6 +109,8 @@ public class CubicValueLineChartFragment extends ChartFragment {
 //        mCubicValueLineChart.addSeries(series1);
         mCubicValueLineChart.addSeries(series);
         mCubicValueLineChart.addStandardValue(2.3f);
+        mCubicValueLineChart.addStandardValue(-1.3f);
+        mCubicValueLineChart.addStandardValue(4.3f);
         mCubicValueLineChart.setOnPointFocusedListener(new IOnPointFocusedListener() {
             @Override
             public void onPointFocused(int _PointPos) {

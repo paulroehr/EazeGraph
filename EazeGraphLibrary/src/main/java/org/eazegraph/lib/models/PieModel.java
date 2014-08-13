@@ -20,7 +20,7 @@ package org.eazegraph.lib.models;
 /**
  * Model for the {@link org.eazegraph.lib.charts.PieChart}
  */
-public class PieModel extends BaseModel {
+public class PieModel extends BaseModel implements Comparable {
 
     public PieModel(String _legendLabel, float _value, int _color) {
         super(_legendLabel);
@@ -75,6 +75,20 @@ public class PieModel extends BaseModel {
 
     public void setEndAngle(int _EndAngle) {
         mEndAngle = _EndAngle;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        PieModel pie = (PieModel) o;
+        if (this.mValue > pie.getValue()) {
+            return 1;
+        }
+        else if (this.mValue == pie.getValue()) {
+            return 0;
+        }
+        else {
+            return -1;
+        }
     }
 
     /**

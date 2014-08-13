@@ -26,6 +26,7 @@ import android.os.Build;
 import android.view.View;
 
 import org.eazegraph.lib.models.BaseModel;
+import org.eazegraph.lib.models.Point2D;
 
 import java.util.List;
 
@@ -43,6 +44,21 @@ public class Utils {
      */
     public static float dpToPx(float _Dp) {
         return _Dp * Resources.getSystem().getDisplayMetrics().density;
+    }
+
+    /**
+     * Calculates the middle point between two points and multiplies its coordinates with the given
+     * smoothness _Mulitplier.
+     * @param _P1           First point
+     * @param _P2           Second point
+     * @param _Result       Resulting point
+     * @param _Multiplier   Smoothness multiplier
+     */
+    public static void calculatePointDiff(Point2D _P1, Point2D _P2, Point2D _Result, float _Multiplier) {
+        float diffX = _P2.getX() - _P1.getX();
+        float diffY = _P2.getY() - _P1.getY();
+        _Result.setX(_P1.getX() + (diffX * _Multiplier));
+        _Result.setY(_P1.getY() + (diffY * _Multiplier));
     }
 
     /**
@@ -92,28 +108,14 @@ public class Utils {
                 _Paint.getTextBounds(model.getLegendLabel(), 0, model.getLegendLabel().length(), textBounds);
                 model.setTextBounds(textBounds);
 
-                float centerX           = legendBounds.centerX();
-                float centeredTextPos   = centerX - (textBounds.width() / 2);
-                float textStartPos      = centeredTextPos - textMargin;
+                float centerX = legendBounds.centerX();
+                float centeredTextPos = centerX - (textBounds.width() / 2);
+                float textStartPos = centeredTextPos - textMargin;
 
-                if (lastX == _StartX) {
-                    model.setShowLabel(true);
-                    // check if the text position is beyond the screen
-                    if (textStartPos + textMargin < _StartX) {
-                        // set text position to screen start
-                        model.setLegendLabelPosition((int) _StartX);
-                        lastX = textBounds.width();
-                    } else {
-                        // set text centered beneath the line
-                        model.setLegendLabelPosition((int) centeredTextPos);
-                        lastX = centerX + (textBounds.width() / 2);
-                    }
-                }
                 // check if the text is too big to fit on the screen
-                else if(centeredTextPos + textBounds.width() > _EndX) {
+                if (centeredTextPos + textBounds.width() > _EndX - textMargin) {
                     model.setShowLabel(false);
-                }
-                else {
+                } else {
                     // check if the current legend label overrides the label before
                     // if the label overrides the label before, the current label will not be shown.
                     // If not the label will be shown and the label position is calculated
@@ -125,8 +127,7 @@ public class Utils {
                         } else {
                             model.setShowLabel(false);
                         }
-                    }
-                    else {
+                    } else {
                         model.setShowLabel(true);
                         model.setLegendLabelPosition((int) centeredTextPos);
                         lastX = centerX + (textBounds.width() / 2);
