@@ -27,6 +27,8 @@ import android.view.View;
 
 import org.eazegraph.lib.models.BaseModel;
 import org.eazegraph.lib.models.Point2D;
+import org.eazegraph.lib.models.ValueLinePoint;
+import org.eazegraph.lib.models.ValueLineSeries;
 
 import java.util.List;
 
@@ -189,6 +191,27 @@ public class Utils {
         if (!v.isInEditMode() && Build.VERSION.SDK_INT >= 11) {
             v.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         }
+    }
+
+    //normalizeLineSeries---------------------------------------------------------------------------
+    public static float normalizeLineSeries(ValueLineSeries _series, float _percentage) {
+        float subtractionOffset = 0;
+        if(_series != null && !_series.getSeries().isEmpty()) {
+            float minValue = _series.getSeries().get(0).getValue();
+
+            for (ValueLinePoint point : _series.getSeries()) {
+                if (minValue > point.getValue())
+                    minValue = point.getValue();
+            }
+
+            subtractionOffset = minValue * _percentage;
+
+            for (ValueLinePoint point : _series.getSeries()) {
+                point.setValue(point.getValue() - subtractionOffset);
+            }
+
+        }
+        return subtractionOffset;
     }
 
     private static final String LOG_TAG = Utils.class.getSimpleName();

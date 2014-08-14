@@ -498,6 +498,14 @@ public class ValueLineChart extends BaseChart {
         invalidateGraphOverlay();
     }
 
+    public boolean isShowSecondValue() {
+        return mShowSecondValue;
+    }
+
+    public void setShowSecondValue(boolean _showSecondValue) {
+        mShowSecondValue = _showSecondValue;
+    }
+
     /**
      * Implement this to do your drawing.
      *
@@ -639,6 +647,11 @@ public class ValueLineChart extends BaseChart {
             mNegativeOffset    = 0.f;
             mHasNegativeValues = false;
 
+            if(mScalePath) {
+//                subtractionOffset = Utils.normalizeLineSeries(mSeries.get(0), mPathScale);
+            }
+
+
             // calculate the maximum value present in data
             for (ValueLineSeries series : mSeries) {
                 for (ValueLinePoint point : series.getSeries()) {
@@ -652,11 +665,12 @@ public class ValueLineChart extends BaseChart {
             // check if the standardvalue is greater than all other values
             if(mShowStandardValues) {
                 for (StandardValue value : mStandardValues) {
-                    if(value.getValue() > maxValue) {
-                        maxValue = value.getValue();
+                    float modValue = value.getValue();
+                    if(modValue > maxValue) {
+                        maxValue = modValue;
                     }
-                    if (value.getValue() < mNegativeValue)
-                        mNegativeValue = value.getValue();
+                    if (modValue < mNegativeValue)
+                        mNegativeValue = modValue;
                 }
             }
 
@@ -676,7 +690,7 @@ public class ValueLineChart extends BaseChart {
             // calculate the y position for standardValue
             if(mShowStandardValues) {
                 for (StandardValue value : mStandardValues) {
-                    value.setY((int) (mGraphHeight - mNegativeOffset - ((value.getValue()) * heightMultiplier)));
+                    value.setY((int) (mGraphHeight - mNegativeOffset - (value.getValue() * heightMultiplier)));
                 };
             }
 
@@ -804,7 +818,7 @@ public class ValueLineChart extends BaseChart {
             }
 
             // set the first point for the indicator
-            if(mShowIndicator && mSeries.size() == 1) {
+            if(mShowIndicator && mSeries.size() > 0) {
                 int size = mSeries.get(0).getSeries().size();
                 int index;
 
@@ -856,7 +870,11 @@ public class ValueLineChart extends BaseChart {
     private void calculateValueTextHeight() {
         Rect valueRect = new Rect();
         Rect legendRect = new Rect();
-        String str = Utils.getFloatString(mFocusedPoint.getValue(), mShowDecimal) + (!mIndicatorTextUnit.isEmpty() ? " " + mIndicatorTextUnit : "");
+        mIndicatorValue = Utils.getFloatString(mFocusedPoint.getValue(), mShowDecimal) +
+                (mShowSecondValue && mSeries.size() > 1 ?
+                 "/" + Utils.getFloatString(mSeries.get(1).getSeries().get(mIndicatorIndex).getValue(), mShowDecimal) :
+                 "");
+        String str = mIndicatorValue + (!mIndicatorTextUnit.isEmpty() ? " " + mIndicatorTextUnit : "");
 
         // calculate the boundaries for both texts
         mIndicatorPaint.getTextBounds(str, 0, str.length(), valueRect);
@@ -957,7 +975,7 @@ public class ValueLineChart extends BaseChart {
 
         // draw touch indicator
         // TODO: if mShowIndicator is true, then check all series not only if one series is inserted
-        if(mShowIndicator && mSeries.size() == 1) {
+        if(mShowIndicator && mSeries.size() > 0) {
             mIndicatorPaint.setColor(mIndicatorLineColor);
             mIndicatorPaint.setStrokeWidth(mIndicatorWidth);
 
@@ -971,7 +989,7 @@ public class ValueLineChart extends BaseChart {
                 }
 
                 mIndicatorPaint.setColor(mIndicatorTextColor);
-                _Canvas.drawText(Utils.getFloatString(mFocusedPoint.getValue(), mShowDecimal) + (!mIndicatorTextUnit.isEmpty() ? " " + mIndicatorTextUnit : ""),
+                _Canvas.drawText(mIndicatorValue + (!mIndicatorTextUnit.isEmpty() ? " " + mIndicatorTextUnit : ""),
                         mValueLabelX,
                         mValueLabelY,
                         mIndicatorPaint);
@@ -1045,10 +1063,12 @@ public class ValueLineChart extends BaseChart {
                 break;
         }
 
-        if(mShowIndicator && mSeries.size() == 1) {
+        if(mShowIndicator && mSeries.size() > 0) {
             int size       = mSeries.get(0).getSeries().size();
 
             for (int i = 0; i < size; i++) {
+
+                mIndicatorIndex = i;
 
                 // check if touchedX equals one the points
                 if (mSeries.get(0).getSeries().get(i).getCoordinates().getX() == newX) {
@@ -1068,6 +1088,7 @@ public class ValueLineChart extends BaseChart {
                             // check which distance between touchedX and the two points is smaller
                             if (newX - x > nextX - newX) {
                                 mFocusedPoint = mSeries.get(0).getSeries().get(i + 1);
+                                mIndicatorIndex++;
                                 break;
                             } else {
                                 mFocusedPoint = mSeries.get(0).getSeries().get(i);
@@ -1155,6 +1176,15 @@ public class ValueLineChart extends BaseChart {
     private Point2D                 mTouchedArea     = new Point2D(0, 0);
     private ValueLinePoint          mFocusedPoint    = null;
     private float                   mValueTextHeight;
+
+    // YAZIO
+    private String                  mIndicatorValue  = "";
+    private int                     mIndicatorIndex;
+    private boolean                 mShowSecondValue = false;
+
+    private boolean                 mScalePath = true;
+    private float                   mPathScale = 0.9f;
+    private Matrix                  mScaleMatrix = new Matrix();
 
     // GraphOverlay vars
     private ValueLinePoint          mLastPoint = null;
