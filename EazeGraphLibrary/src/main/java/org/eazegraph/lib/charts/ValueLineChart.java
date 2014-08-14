@@ -159,6 +159,7 @@ public class ValueLineChart extends BaseChart {
         mSeries.clear();
         mStandardValues.clear();
         mFocusedPoint = null;
+        mLastPoint = null;
     }
 
     /**
