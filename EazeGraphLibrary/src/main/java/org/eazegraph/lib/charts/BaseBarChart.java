@@ -21,10 +21,15 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.OverScroller;
 
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ValueAnimator;
@@ -213,6 +218,9 @@ public abstract class BaseBarChart extends BaseChart {
 
         mMaxFontHeight = Utils.calculateMaxTextHeight(mLegendPaint);
 
+        mGestureDetector = new GestureDetector(getContext(), mGestureListener);
+        mScroller = new OverScroller(getContext());
+
         mRevealAnimator = ValueAnimator.ofFloat(0, 1);
         mRevealAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -251,23 +259,107 @@ public abstract class BaseBarChart extends BaseChart {
      */
     protected void calculateBarPositions(int _DataSize) {
 
+        int dataSize = mScrollEnabled ? mVisibleBars : _DataSize;
         float barWidth = mBarWidth;
         float margin   = mBarMargin;
 
-        if(!mFixedBarWidth) {
+        if (!mFixedBarWidth) {
             // calculate the bar width if the bars should be dynamically displayed
             barWidth = (mGraphWidth / _DataSize) - margin;
-        }
-        else {
+        } else {
+
             // calculate margin between bars if the bars have a fixed width
-            float cumulatedBarWidths = barWidth * _DataSize;
+            float cumulatedBarWidths = barWidth * dataSize;
             float remainingWidth = mGraphWidth - cumulatedBarWidths;
-            margin = remainingWidth / _DataSize;
+
+            margin = remainingWidth / dataSize;
         }
+
+
+        mContentRect = new Rect(0, 0, (int) ((barWidth * _DataSize) + (margin * _DataSize)), mGraphHeight);
+        mCurrentViewport = new RectF(0, 0, mGraphWidth, mGraphHeight);
 
         calculateBounds(barWidth, margin);
         mLegend.invalidate();
         mGraph.invalidate();
+    }
+
+    /**
+     * The gesture listener, used for handling simple gestures such as double touches, scrolls,
+     * and flings.
+     */
+    private final GestureDetector.SimpleOnGestureListener mGestureListener
+            = new GestureDetector.SimpleOnGestureListener() {
+        @Override
+        public boolean onDown(MotionEvent e) {
+
+            return true;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+
+            return true;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+
+            if (mCurrentViewport.left + distanceX > mContentRect.left && mCurrentViewport.right + distanceX < mContentRect.right) {
+                mCurrentViewport.left += distanceX;
+                mCurrentViewport.right += distanceX;
+            }
+
+            constrainViewport();
+
+            invalidateGlobal();
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+//            fling((int) -velocityX, (int) -velocityY);
+            return true;
+        }
+    };
+
+
+    /** Ensures that current viewport is inside the viewport extremes defined by {@link #AXIS_X_MIN},
+     * {@link #AXIS_X_MAX}, {@link #AXIS_Y_MIN} and {@link #AXIS_Y_MAX}.
+     */
+    private void constrainViewport() {
+        mCurrentViewport.left = Math.max(mContentRect.left, mCurrentViewport.left);
+        mCurrentViewport.top = Math.max(mContentRect.top, mCurrentViewport.top);
+        mCurrentViewport.bottom = Math.min(mContentRect.bottom, mCurrentViewport.bottom);
+        mCurrentViewport.right =  Math.min(mContentRect.right, mCurrentViewport.right);
+
+    }
+
+    private void fling(int velocityX, int velocityY) {
+
+        mScroller.forceFinished(true);
+        mScroller.fling(
+                (int) mCurrentViewport.left,
+                0,
+                velocityX,
+                0,
+                0, mContentRect.width(),
+                0, mContentRect.height(),
+                mContentRect.width() / 2,
+                mContentRect.height() / 2);
+        postInvalidate();
+        mGraph.postInvalidate();
+        mGraphOverlay.postInvalidate();
+        mLegend.postInvalidate();
+    }
+
+    @Override
+    public void computeScroll() {
+        super.computeScroll();
+
+        mScroller.computeScrollOffset();
+        mCurrentViewport.left =  mScroller.getCurrX();
+        mCurrentViewport.right =  mScroller.getCurrX() + mGraphWidth;
     }
 
     /**
@@ -295,16 +387,19 @@ public abstract class BaseBarChart extends BaseChart {
     //                          Override methods from view layers
     // ---------------------------------------------------------------------------------------------
 
-
+    //region Override Methods
     @Override
     protected void onGraphDraw(Canvas _Canvas) {
         super.onGraphDraw(_Canvas);
+        _Canvas.translate(-mCurrentViewport.left, 0);
         drawBars(_Canvas);
     }
 
     @Override
     protected void onLegendDraw(Canvas _Canvas) {
         super.onLegendDraw(_Canvas);
+
+        _Canvas.translate(-mCurrentViewport.left, 0);
 
         for (BaseModel model : getLegendData()) {
             if(model.canShowLabel()) {
@@ -322,32 +417,45 @@ public abstract class BaseBarChart extends BaseChart {
 
     @Override
     protected boolean onGraphOverlayTouchEvent(MotionEvent _Event) {
-        boolean result = false;
+        boolean result = mGestureDetector.onTouchEvent(_Event);
 
-        if (_Event.getAction() == MotionEvent.ACTION_DOWN) {
-            performClick();
-            result = true;
+        switch (_Event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
 
-            if (mListener == null) {
-                // we're not interested in clicks on individual bars here
-                BaseBarChart.this.onTouchEvent(_Event);
-            } else {
-                float newX = _Event.getX();
-                float newY = _Event.getY();
-                int   counter = 0;
+                performClick();
+                result = true;
 
-                for (RectF rectF : getBarBounds()) {
-                    if (Utils.intersectsPointWithRectF(rectF, newX, newY)) {
-                        mListener.onBarClicked(counter);
-                        break; // no need to check other bars
+                if (mListener == null) {
+                    // we're not interested in clicks on individual bars here
+                    BaseBarChart.this.onTouchEvent(_Event);
+                } else {
+                    float newX = _Event.getX() + mCurrentViewport.left;
+                    float newY = _Event.getY();
+                    int   counter = 0;
+
+                    for (RectF rectF : getBarBounds()) {
+                        if (Utils.intersectsPointWithRectF(rectF, newX, newY)) {
+                            mListener.onBarClicked(counter);
+                            break; // no need to check other bars
+                        }
+                        counter++;
                     }
-                    counter++;
                 }
-            }
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+
+                break;
+
+            case MotionEvent.ACTION_UP:
+
+                break;
         }
 
         return result;
     }
+
+    //endregion
 
     //##############################################################################################
     // Variables
@@ -360,6 +468,34 @@ public abstract class BaseBarChart extends BaseChart {
     public static final boolean DEF_FIXED_BAR_WIDTH     = false;
     public static final float   DEF_BAR_MARGIN          = 12.f;
 
+    // Viewport extremes. See mCurrentViewport for a discussion of the viewport.
+    private static final float AXIS_X_MIN = -1f;
+    private static final float AXIS_X_MAX = 1f;
+    private static final float AXIS_Y_MIN = -1f;
+    private static final float AXIS_Y_MAX = 1f;
+
+    /**
+     * The current viewport. This rectangle represents the currently visible chart domain
+     * and range. The currently visible chart X values are from this rectangle's left to its right.
+     * The currently visible chart Y values are from this rectangle's top to its bottom.
+     * <p>
+     * Note that this rectangle's top is actually the smaller Y value, and its bottom is the larger
+     * Y value. Since the chart is drawn onscreen in such a way that chart Y values increase
+     * towards the top of the screen (decreasing pixel Y positions), this rectangle's "top" is drawn
+     * above this rectangle's "bottom" value.
+     *
+     * @see #mContentRect
+     */
+    protected RectF mCurrentViewport = new RectF(AXIS_X_MIN, AXIS_Y_MIN, AXIS_X_MAX, AXIS_Y_MAX);
+
+    /**
+     * The current destination rectangle (in pixel coordinates) into which the chart data should
+     * be drawn. Chart labels are drawn outside this area.
+     *
+     * @see #mCurrentViewport
+     */
+    protected Rect mContentRect = new Rect();
+
     protected IOnBarClickedListener mListener = null;
 
     protected Paint           mGraphPaint;
@@ -368,5 +504,11 @@ public abstract class BaseBarChart extends BaseChart {
     protected float           mBarWidth;
     protected boolean         mFixedBarWidth;
     protected float           mBarMargin;
+
+    protected boolean         mScrollEnabled = true;
+    protected int             mVisibleBars = 5;
+
+    private GestureDetector mGestureDetector;
+    private OverScroller    mScroller;
 
 }

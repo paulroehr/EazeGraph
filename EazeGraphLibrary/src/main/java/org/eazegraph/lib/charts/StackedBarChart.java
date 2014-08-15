@@ -163,7 +163,7 @@ public class StackedBarChart extends BaseBarChart {
             last += _Width + (_Margin / 2);
         }
 
-        Utils.calculateLegendInformation(mData, 0, mGraphWidth, mLegendPaint);
+        Utils.calculateLegendInformation(mData, 0, mContentRect.width(), mLegendPaint);
     }
 
     /**
