@@ -18,6 +18,7 @@
         app:egLegendHeight="40dp"
         app:egIndicatorTextUnit="g"
         app:egIndicatorTextColor="#FE6DA8"
-        app:egActivateIndicatorShadow="false"/>
+        app:egActivateIndicatorShadow="false"
+        app:egUseDynamicScaling="false"/>
 
 </LinearLayout>

@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 
 import org.eazegraph.lib.charts.ValueLineChart;
 import org.eazegraph.lib.communication.IOnPointFocusedListener;
+import org.eazegraph.lib.models.StandardValue;
 import org.eazegraph.lib.models.ValueLinePoint;
 import org.eazegraph.lib.models.ValueLineSeries;
 import org.eazegraph.showcase.R;
@@ -65,7 +66,19 @@ public class ValueLineChartFragment extends ChartFragment {
         ValueLineSeries series = new ValueLineSeries();
         series.setColor(0xFF63CBB0);
 
-        series.addPoint(new ValueLinePoint(1.4f));
+//        series.addPoint(new ValueLinePoint(163.4f));
+//        series.addPoint(new ValueLinePoint(162.f));
+//        series.addPoint(new ValueLinePoint(161.4f));
+//        series.addPoint(new ValueLinePoint(160.4f));
+//        series.addPoint(new ValueLinePoint(159.4f));
+//        series.addPoint(new ValueLinePoint(160.4f));
+//        series.addPoint(new ValueLinePoint(158.4f));
+//        series.addPoint(new ValueLinePoint(158.f));
+//        series.addPoint(new ValueLinePoint(144.f));
+//        series.addPoint(new ValueLinePoint(134.f));
+//        series.addPoint(new ValueLinePoint(120.f));
+//        series.addPoint(new ValueLinePoint(180.f));
+
         series.addPoint(new ValueLinePoint(4.4f));
         series.addPoint(new ValueLinePoint(2.4f));
         series.addPoint(new ValueLinePoint(3.2f));
@@ -107,6 +120,8 @@ public class ValueLineChartFragment extends ChartFragment {
         series.addPoint(new ValueLinePoint(2.0f));
         series.addPoint(new ValueLinePoint(1.4f));
 
+//        mValueLineChart.addStandardValue(new StandardValue(140f));
+//        mValueLineChart.addStandardValue(new StandardValue(163.4f));
         mValueLineChart.addSeries(series);
         mValueLineChart.setOnPointFocusedListener(new IOnPointFocusedListener() {
             @Override

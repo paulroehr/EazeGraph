@@ -290,17 +290,6 @@ public abstract class BaseBarChart extends BaseChart {
      */
     private final GestureDetector.SimpleOnGestureListener mGestureListener
             = new GestureDetector.SimpleOnGestureListener() {
-        @Override
-        public boolean onDown(MotionEvent e) {
-
-            return true;
-        }
-
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-
-            return true;
-        }
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
@@ -347,19 +336,16 @@ public abstract class BaseBarChart extends BaseChart {
                 0, mContentRect.height(),
                 mContentRect.width() / 2,
                 mContentRect.height() / 2);
-        postInvalidate();
-        mGraph.postInvalidate();
-        mGraphOverlay.postInvalidate();
-        mLegend.postInvalidate();
     }
 
     @Override
     public void computeScroll() {
         super.computeScroll();
 
-        mScroller.computeScrollOffset();
-        mCurrentViewport.left =  mScroller.getCurrX();
-        mCurrentViewport.right =  mScroller.getCurrX() + mGraphWidth;
+        if (mScroller.computeScrollOffset()) {
+            mCurrentViewport.left = mScroller.getCurrX();
+            mCurrentViewport.right = mScroller.getCurrX() + mGraphWidth;
+        }
     }
 
     /**
