@@ -170,6 +170,24 @@ public abstract class BaseBarChart extends BaseChart {
         onDataChanged();
     }
 
+    public boolean isScrollEnabled() {
+        return mScrollEnabled;
+    }
+
+    public void setScrollEnabled(boolean _scrollEnabled) {
+        mScrollEnabled = _scrollEnabled;
+        onDataChanged();
+    }
+
+    public int getVisibleBars() {
+        return mVisibleBars;
+    }
+
+    public void setVisibleBars(int _visibleBars) {
+        mVisibleBars = _visibleBars;
+        onDataChanged();
+    }
+
     /**
      * Implement this to do your drawing.
      *
