@@ -1082,7 +1082,8 @@ public class ValueLineChart extends BaseChart {
 
     @Override
     protected boolean onGraphOverlayTouchEvent(MotionEvent _Event) {
-        performClick();
+
+        super.onGraphOverlayTouchEvent(_Event);
 
         float newX = _Event.getX();
         float newY = _Event.getY();
@@ -1091,13 +1092,6 @@ public class ValueLineChart extends BaseChart {
             case MotionEvent.ACTION_DOWN:
 
                 return true;
-            case MotionEvent.ACTION_MOVE:
-
-                break;
-            case MotionEvent.ACTION_UP:
-
-
-                break;
         }
 
         if(mShowIndicator && mSeries.size() > 0) {

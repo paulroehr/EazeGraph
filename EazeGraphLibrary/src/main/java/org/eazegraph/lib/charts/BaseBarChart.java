@@ -437,7 +437,6 @@ public abstract class BaseBarChart extends BaseChart {
         switch (_Event.getAction()) {
             case MotionEvent.ACTION_DOWN:
 
-                performClick();
                 result = true;
 
                 if (mListener == null) {
