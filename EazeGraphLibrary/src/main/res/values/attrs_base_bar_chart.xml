@@ -5,6 +5,8 @@
         <attr name="egBarWidth"           format="dimension" />
         <attr name="egBarMargin"          format="dimension" />
         <attr name="egFixedBarWidth"      format="boolean"/>
+        <attr name="egEnableScroll"       format="boolean"/>
+        <attr name="egVisibleBars"        format="integer"/>
     </declare-styleable>
 
 </resources>

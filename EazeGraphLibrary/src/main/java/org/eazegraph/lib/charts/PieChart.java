@@ -49,23 +49,18 @@
 
 package org.eazegraph.lib.charts;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Scroller;
 
 import com.nineoldandroids.animation.Animator;
@@ -660,25 +655,23 @@ public class PieChart extends BaseChart {
         if(mUsePieRotation) {
             // Set up an animator to animate the PieRotation property. This is used to
             // correct the pie's orientation after the user lets go of it.
-            if (Build.VERSION.SDK_INT >= 11) {
-                mAutoCenterAnimator = ObjectAnimator.ofInt(PieChart.this, "PieRotation", 0);
-                // Add a listener to hook the onAnimationEnd event so that we can do
-                // some cleanup when the pie stops moving.
-                mAutoCenterAnimator.addListener(new Animator.AnimatorListener() {
-                    public void onAnimationStart(Animator animator) {
-                    }
+            mAutoCenterAnimator = ObjectAnimator.ofInt(PieChart.this, "PieRotation", 0);
+            // Add a listener to hook the onAnimationEnd event so that we can do
+            // some cleanup when the pie stops moving.
+            mAutoCenterAnimator.addListener(new Animator.AnimatorListener() {
+                public void onAnimationStart(Animator animator) {
+                }
 
-                    public void onAnimationEnd(Animator animator) {
-                        mGraph.decelerate();
-                    }
+                public void onAnimationEnd(Animator animator) {
+                    mGraph.decelerate();
+                }
 
-                    public void onAnimationCancel(Animator animator) {
-                    }
+                public void onAnimationCancel(Animator animator) {
+                }
 
-                    public void onAnimationRepeat(Animator animator) {
-                    }
-                });
-            }
+                public void onAnimationRepeat(Animator animator) {
+                }
+            });
 
             // Create a Scroller to handle the fling gesture.
             if (Build.VERSION.SDK_INT < 11) {
@@ -691,14 +684,12 @@ public class PieChart extends BaseChart {
             // values when we ask it to. So we have to have a way to call it every frame
             // until the fling ends. This code (ab)uses a ValueAnimator object to generate
             // a callback on every animation frame. We don't use the animated value at all.
-            if (Build.VERSION.SDK_INT >= 11) {
-                mScrollAnimator = ValueAnimator.ofFloat(0, 1);
-                mScrollAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                        tickScrollAnimation();
-                    }
-                });
-            }
+            mScrollAnimator = ValueAnimator.ofFloat(0, 1);
+            mScrollAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    tickScrollAnimation();
+                }
+            });
 
             // Create a gesture detector to handle onTouch messages
             mDetector = new GestureDetector(PieChart.this.getContext(), new GestureListener());
@@ -794,9 +785,7 @@ public class PieChart extends BaseChart {
             mScroller.computeScrollOffset();
             setPieRotation(mScroller.getCurrY());
         } else {
-            if (Build.VERSION.SDK_INT >= 11) {
-                mScrollAnimator.cancel();
-            }
+            mScrollAnimator.cancel();
             onScrollFinished();
         }
     }
@@ -807,9 +796,7 @@ public class PieChart extends BaseChart {
      */
     private void stopScrolling() {
         mScroller.forceFinished(true);
-        if (Build.VERSION.SDK_INT >= 11) {
-            mAutoCenterAnimator.cancel();
-        }
+        mAutoCenterAnimator.cancel();
 
         onScrollFinished();
     }
@@ -844,14 +831,9 @@ public class PieChart extends BaseChart {
                 if (targetAngle > 270 && mPieRotation < 90) targetAngle -= 360;
             }
 
-            if (Build.VERSION.SDK_INT >= 11) {
-                // Fancy animated version
-                mAutoCenterAnimator.setIntValues(targetAngle);
-                mAutoCenterAnimator.setDuration(AUTOCENTER_ANIM_DURATION).start();
-            } else {
-                // Dull non-animated version
-                mGraph.rotateTo(targetAngle);
-            }
+            mAutoCenterAnimator.setIntValues(targetAngle);
+            mAutoCenterAnimator.setDuration(AUTOCENTER_ANIM_DURATION).start();
+
         }
     }
 
@@ -1080,10 +1062,8 @@ public class PieChart extends BaseChart {
                     Integer.MAX_VALUE);
 
             // Start the animator and tell it to animate for the expected duration of the fling.
-            if (Build.VERSION.SDK_INT >= 11) {
-                mScrollAnimator.setDuration(mScroller.getDuration());
-                mScrollAnimator.start();
-            }
+            mScrollAnimator.setDuration(mScroller.getDuration());
+            mScrollAnimator.start();
             return true;
         }
 
@@ -1109,7 +1089,7 @@ public class PieChart extends BaseChart {
      * @return True if animation is running.
      */
     private boolean isAnimationRunning() {
-        return !mScroller.isFinished() || (Build.VERSION.SDK_INT >= 11 && mAutoCenterAnimator.isRunning());
+        return !mScroller.isFinished() || mAutoCenterAnimator.isRunning();
     }
 
 

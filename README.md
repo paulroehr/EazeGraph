@@ -75,7 +75,7 @@ Insert in your root project's 'build.gradle' under repositories:
 and in your android app project folder in the 'build.gradle' under dependencies:
 
     dependencies {
-        compile 'com.github.blackfizz:eazegraph:1.1.10-SNAPSHOT@aar'
+        compile 'com.github.blackfizz:eazegraph:1.1.12-SNAPSHOT@aar'
         compile 'com.nineoldandroids:library:2.4.0'
     }
 
@@ -237,6 +237,11 @@ Wiki
 
 Changelog
 =========
+**1.1.12**
+* added dynamic scaling for ValueLineChart with the attribute `egUseDynamicScaling` and the scaling factor can be set with `egScalingFactor` which should be between 0 and 1 (When only high values are given, the chart scales them down to achieve a better presentation without any loss of information)
+* added Scrolling in BarCharts
+* PieCharts animations are now running properly on Android 2.3 devices (Autocenter and scrolling)
+
 **1.1.10**
 * removed the `egStandardValueIndicatorStroke` and `egStandardValueColor` attributes and created an extra `StandardValue` class, which contains all these information. Doing this enabled the support for multiple StandardValues
 * fixed issue #23

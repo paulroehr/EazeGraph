@@ -170,6 +170,11 @@ public class BarChart extends BaseBarChart {
             addBar(new BarModel(3.3f));
             addBar(new BarModel(1.1f));
             addBar(new BarModel(2.7f));
+            addBar(new BarModel(2.3f));
+            addBar(new BarModel(2.f));
+            addBar(new BarModel(3.3f));
+            addBar(new BarModel(1.1f));
+            addBar(new BarModel(2.7f));
         }
     }
 
@@ -208,10 +213,9 @@ public class BarChart extends BaseBarChart {
             model.setBarBounds(new RectF(last, mGraphHeight - height, last + _Width, mGraphHeight));
             model.setLegendBounds(new RectF(last, 0, last + _Width, mLegendHeight));
             last += _Width + (_Margin / 2);
-
         }
 
-        Utils.calculateLegendInformation(mData, 0, mGraphWidth, mLegendPaint);
+        Utils.calculateLegendInformation(mData, 0, mContentRect.width(), mLegendPaint);
     }
 
     /**

@@ -21,10 +21,15 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
+import android.widget.OverScroller;
+import android.widget.Scroller;
 
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ValueAnimator;
@@ -53,6 +58,9 @@ public abstract class BaseBarChart extends BaseChart {
         mBarWidth           = Utils.dpToPx(DEF_BAR_WIDTH);
         mBarMargin          = Utils.dpToPx(DEF_BAR_MARGIN);
         mFixedBarWidth      = DEF_FIXED_BAR_WIDTH;
+        mScrollEnabled      = DEF_SCROLL_ENABLED;
+        mVisibleBars        = DEF_VISIBLE_BARS;
+
     }
 
     /**
@@ -85,6 +93,8 @@ public abstract class BaseBarChart extends BaseChart {
             mBarWidth           = a.getDimension(R.styleable.BaseBarChart_egBarWidth,         Utils.dpToPx(DEF_BAR_WIDTH));
             mBarMargin          = a.getDimension(R.styleable.BaseBarChart_egBarMargin,        Utils.dpToPx(DEF_BAR_MARGIN));
             mFixedBarWidth      = a.getBoolean(R.styleable.BaseBarChart_egFixedBarWidth,      DEF_FIXED_BAR_WIDTH);
+            mScrollEnabled      = a.getBoolean(R.styleable.BaseBarChart_egEnableScroll,       DEF_SCROLL_ENABLED);
+            mVisibleBars        = a.getInt(R.styleable.BaseBarChart_egVisibleBars,            DEF_VISIBLE_BARS);
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -213,6 +223,9 @@ public abstract class BaseBarChart extends BaseChart {
 
         mMaxFontHeight = Utils.calculateMaxTextHeight(mLegendPaint);
 
+        mGestureDetector = new GestureDetector(getContext(), mGestureListener);
+        mScroller = new Scroller(getContext());
+
         mRevealAnimator = ValueAnimator.ofFloat(0, 1);
         mRevealAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -242,6 +255,18 @@ public abstract class BaseBarChart extends BaseChart {
             }
         });
 
+        // The scroller doesn't have any built-in animation functions--it just supplies
+        // values when we ask it to. So we have to have a way to call it every frame
+        // until the fling ends. This code (ab)uses a ValueAnimator object to generate
+        // a callback on every animation frame. We don't use the animated value at all.
+        mScrollAnimator = ValueAnimator.ofFloat(0, 1);
+        mScrollAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                tickScrollAnimation();
+                invalidateGlobal();
+            }
+        });
+
     }
 
     /**
@@ -251,23 +276,105 @@ public abstract class BaseBarChart extends BaseChart {
      */
     protected void calculateBarPositions(int _DataSize) {
 
+        int dataSize = mScrollEnabled ? mVisibleBars : _DataSize;
         float barWidth = mBarWidth;
         float margin   = mBarMargin;
 
-        if(!mFixedBarWidth) {
+        if (!mFixedBarWidth) {
             // calculate the bar width if the bars should be dynamically displayed
             barWidth = (mGraphWidth / _DataSize) - margin;
-        }
-        else {
+        } else {
+
+            if(_DataSize < mVisibleBars) {
+                dataSize = _DataSize;
+            }
+
             // calculate margin between bars if the bars have a fixed width
-            float cumulatedBarWidths = barWidth * _DataSize;
+            float cumulatedBarWidths = barWidth * dataSize;
             float remainingWidth = mGraphWidth - cumulatedBarWidths;
-            margin = remainingWidth / _DataSize;
+
+            margin = remainingWidth / dataSize;
         }
+
+
+        mContentRect = new Rect(0, 0, (int) ((barWidth * _DataSize) + (margin * _DataSize)), mGraphHeight);
+        mCurrentViewport = new RectF(0, 0, mGraphWidth, mGraphHeight);
 
         calculateBounds(barWidth, margin);
         mLegend.invalidate();
         mGraph.invalidate();
+    }
+
+    /**
+     * The gesture listener, used for handling simple gestures such as double touches, scrolls,
+     * and flings.
+     */
+    private final GestureDetector.SimpleOnGestureListener mGestureListener
+            = new GestureDetector.SimpleOnGestureListener() {
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+
+            if (mCurrentViewport.left + distanceX > mContentRect.left && mCurrentViewport.right + distanceX < mContentRect.right) {
+                mCurrentViewport.left += distanceX;
+                mCurrentViewport.right += distanceX;
+            }
+
+            invalidateGlobal();
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            fling((int) -velocityX, (int) -velocityY);
+            return true;
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            // The user is interacting with the pie, so we want to turn on acceleration
+            // so that the interaction is smooth.
+            if (!mScroller.isFinished()) {
+                stopScrolling();
+            }
+            return true;
+        }
+    };
+
+    private void fling(int velocityX, int velocityY) {
+
+        mScroller.fling(
+                (int) mCurrentViewport.left,
+                0,
+                velocityX,
+                velocityY,
+                0, mContentRect.width() - mGraphWidth,
+                0, mContentRect.height());
+
+        // Start the animator and tell it to animate for the expected duration of the fling.
+        mScrollAnimator.setDuration(mScroller.getDuration());
+        mScrollAnimator.start();
+    }
+
+    private void tickScrollAnimation() {
+        if (!mScroller.isFinished()) {
+            mScroller.computeScrollOffset();
+            int currX = mScroller.getCurrX();
+
+            if (currX > mContentRect.left && currX + mGraphWidth< mContentRect.right) {
+                mCurrentViewport.left = currX;
+                mCurrentViewport.right = currX + mGraphWidth;
+            }
+        } else {
+            mScrollAnimator.cancel();
+        }
+    }
+
+    /**
+     * Force a stop to all pie motion. Called when the user taps during a fling.
+     */
+    private void stopScrolling() {
+        mScroller.forceFinished(true);
     }
 
     /**
@@ -295,16 +402,19 @@ public abstract class BaseBarChart extends BaseChart {
     //                          Override methods from view layers
     // ---------------------------------------------------------------------------------------------
 
-
+    //region Override Methods
     @Override
     protected void onGraphDraw(Canvas _Canvas) {
         super.onGraphDraw(_Canvas);
+        _Canvas.translate(-mCurrentViewport.left, 0);
         drawBars(_Canvas);
     }
 
     @Override
     protected void onLegendDraw(Canvas _Canvas) {
         super.onLegendDraw(_Canvas);
+
+        _Canvas.translate(-mCurrentViewport.left, 0);
 
         for (BaseModel model : getLegendData()) {
             if(model.canShowLabel()) {
@@ -322,32 +432,37 @@ public abstract class BaseBarChart extends BaseChart {
 
     @Override
     protected boolean onGraphOverlayTouchEvent(MotionEvent _Event) {
-        boolean result = false;
+        boolean result = mGestureDetector.onTouchEvent(_Event);
 
-        if (_Event.getAction() == MotionEvent.ACTION_DOWN) {
-            performClick();
-            result = true;
+        switch (_Event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
 
-            if (mListener == null) {
-                // we're not interested in clicks on individual bars here
-                BaseBarChart.this.onTouchEvent(_Event);
-            } else {
-                float newX = _Event.getX();
-                float newY = _Event.getY();
-                int   counter = 0;
+                performClick();
+                result = true;
 
-                for (RectF rectF : getBarBounds()) {
-                    if (Utils.intersectsPointWithRectF(rectF, newX, newY)) {
-                        mListener.onBarClicked(counter);
-                        break; // no need to check other bars
+                if (mListener == null) {
+                    // we're not interested in clicks on individual bars here
+                    BaseBarChart.this.onTouchEvent(_Event);
+                } else {
+                    float newX = _Event.getX() + mCurrentViewport.left;
+                    float newY = _Event.getY();
+                    int   counter = 0;
+
+                    for (RectF rectF : getBarBounds()) {
+                        if (Utils.intersectsPointWithRectF(rectF, newX, newY)) {
+                            mListener.onBarClicked(counter);
+                            break; // no need to check other bars
+                        }
+                        counter++;
                     }
-                    counter++;
                 }
-            }
+                break;
         }
 
         return result;
     }
+
+    //endregion
 
     //##############################################################################################
     // Variables
@@ -359,6 +474,30 @@ public abstract class BaseBarChart extends BaseChart {
     public static final float   DEF_BAR_WIDTH           = 32.f;
     public static final boolean DEF_FIXED_BAR_WIDTH     = false;
     public static final float   DEF_BAR_MARGIN          = 12.f;
+    public static final boolean DEF_SCROLL_ENABLED      = true;
+    public static final int     DEF_VISIBLE_BARS        = 6;
+
+    /**
+     * The current viewport. This rectangle represents the currently visible chart domain
+     * and range. The currently visible chart X values are from this rectangle's left to its right.
+     * The currently visible chart Y values are from this rectangle's top to its bottom.
+     * <p>
+     * Note that this rectangle's top is actually the smaller Y value, and its bottom is the larger
+     * Y value. Since the chart is drawn onscreen in such a way that chart Y values increase
+     * towards the top of the screen (decreasing pixel Y positions), this rectangle's "top" is drawn
+     * above this rectangle's "bottom" value.
+     *
+     * @see #mContentRect
+     */
+    protected RectF mCurrentViewport = new RectF();
+
+    /**
+     * The current destination rectangle (in pixel coordinates) into which the chart data should
+     * be drawn. Chart labels are drawn outside this area.
+     *
+     * @see #mCurrentViewport
+     */
+    protected Rect mContentRect = new Rect();
 
     protected IOnBarClickedListener mListener = null;
 
@@ -368,5 +507,12 @@ public abstract class BaseBarChart extends BaseChart {
     protected float           mBarWidth;
     protected boolean         mFixedBarWidth;
     protected float           mBarMargin;
+
+    protected boolean         mScrollEnabled;
+    protected int             mVisibleBars;
+
+    private GestureDetector   mGestureDetector;
+    private Scroller          mScroller;
+    private ValueAnimator     mScrollAnimator;
 
 }

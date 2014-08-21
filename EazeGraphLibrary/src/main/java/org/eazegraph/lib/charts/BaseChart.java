@@ -21,10 +21,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -38,8 +35,8 @@ import org.eazegraph.lib.models.BaseModel;
 import org.eazegraph.lib.utils.Utils;
 
 import java.text.NumberFormat;
-import java.util.Locale;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
