@@ -647,11 +647,6 @@ public class ValueLineChart extends BaseChart {
             mNegativeOffset    = 0.f;
             mHasNegativeValues = false;
 
-            if(mScalePath) {
-//                subtractionOffset = Utils.normalizeLineSeries(mSeries.get(0), mPathScale);
-            }
-
-
             // calculate the maximum value present in data
             for (ValueLineSeries series : mSeries) {
                 for (ValueLinePoint point : series.getSeries()) {
@@ -1181,10 +1176,6 @@ public class ValueLineChart extends BaseChart {
     private String                  mIndicatorValue  = "";
     private int                     mIndicatorIndex;
     private boolean                 mShowSecondValue = false;
-
-    private boolean                 mScalePath = true;
-    private float                   mPathScale = 0.9f;
-    private Matrix                  mScaleMatrix = new Matrix();
 
     // GraphOverlay vars
     private ValueLinePoint          mLastPoint = null;
