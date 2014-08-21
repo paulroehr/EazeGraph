@@ -457,14 +457,6 @@ public abstract class BaseBarChart extends BaseChart {
                     }
                 }
                 break;
-
-            case MotionEvent.ACTION_MOVE:
-
-                break;
-
-            case MotionEvent.ACTION_UP:
-
-                break;
         }
 
         return result;
@@ -485,12 +477,6 @@ public abstract class BaseBarChart extends BaseChart {
     public static final boolean DEF_SCROLL_ENABLED      = true;
     public static final int     DEF_VISIBLE_BARS        = 6;
 
-    // Viewport extremes. See mCurrentViewport for a discussion of the viewport.
-    private static final float AXIS_X_MIN = -1f;
-    private static final float AXIS_X_MAX = 1f;
-    private static final float AXIS_Y_MIN = -1f;
-    private static final float AXIS_Y_MAX = 1f;
-
     /**
      * The current viewport. This rectangle represents the currently visible chart domain
      * and range. The currently visible chart X values are from this rectangle's left to its right.
@@ -503,7 +489,7 @@ public abstract class BaseBarChart extends BaseChart {
      *
      * @see #mContentRect
      */
-    protected RectF mCurrentViewport = new RectF(AXIS_X_MIN, AXIS_Y_MIN, AXIS_X_MAX, AXIS_Y_MAX);
+    protected RectF mCurrentViewport = new RectF();
 
     /**
      * The current destination rectangle (in pixel coordinates) into which the chart data should
