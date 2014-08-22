@@ -508,6 +508,7 @@ public class ValueLineChart extends BaseChart {
 
     public void setShowSecondValue(boolean _showSecondValue) {
         mShowSecondValue = _showSecondValue;
+        invalidateGraphOverlay();
     }
         
     public boolean isUseDynamicScaling() {
