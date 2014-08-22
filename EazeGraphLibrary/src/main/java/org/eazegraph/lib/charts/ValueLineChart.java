@@ -474,7 +474,7 @@ public class ValueLineChart extends BaseChart {
     }
 
     /**
-     * Sets the color in whcih the shadow layer will be drawn.
+     * Sets the color in which the shadow layer will be drawn.
      *
      * @param _indicatorShadowColor Color for the shadow.
      */
@@ -646,7 +646,7 @@ public class ValueLineChart extends BaseChart {
 
     /**
      * Should be called after new data is inserted. Will be automatically called, when the view dimensions
-     * has changed.
+     * changed.
      *
      * Calculates various offsets and positions for different overlay features based on the graph settings.
      * After the calculation the Path is generated as a normal path or cubic path (Based on 'egUseCubic' attribute).
@@ -753,46 +753,32 @@ public class ValueLineChart extends BaseChart {
                         Point2D P2 = new Point2D();
                         Point2D P3 = new Point2D();
 
-                        for (int i = 0; i < seriesPointCount; i++) {
+                        for (int i = 0; i < seriesPointCount - 1; i++) {
 
-                            // Check if the end of the array has been reached and do the last calculation to prevent ArrayOutOfBounds
-                            if ((seriesPointCount - i) < 3) {
-                                P1.setX(currentOffset);
-                                P1.setY(usableGraphHeight - ((series.getSeries().get(i).getValue() - minValue) * heightMultiplier));
+                            int i3 = (seriesPointCount - i) < 3 ? i + 1 : i + 2;
+                            float offset2 = (seriesPointCount - i) < 3 ? mGraphWidth : currentOffset + widthOffset;
+                            float offset3 = (seriesPointCount - i) < 3 ? mGraphWidth : currentOffset + (2*widthOffset);
 
-                                P2.setX(mGraphWidth);
-                                P2.setY(usableGraphHeight - ((series.getSeries().get(i + 1).getValue() - minValue) * heightMultiplier));
-                                Utils.calculatePointDiff(P1, P2, P1, mSecondMultiplier);
+                            P1.setX(currentOffset);
+                            P1.setY(usableGraphHeight - ((series.getSeries().get(i).getValue() - minValue) * heightMultiplier));
 
-                                P3.setX(mGraphWidth);
-                                P3.setY(usableGraphHeight - ((series.getSeries().get(i + 1).getValue() - minValue) * heightMultiplier));
-                                Utils.calculatePointDiff(P2, P3, P3, mFirstMultiplier);
+                            P2.setX(offset2);
+                            P2.setY(usableGraphHeight - ((series.getSeries().get(i + 1).getValue() - minValue) * heightMultiplier));
+                            Utils.calculatePointDiff(P1, P2, P1, mSecondMultiplier);
 
-                                path.cubicTo(P1.getX(), P1.getY(), P2.getX(), P2.getY(), P3.getX(), P3.getY());
-                                series.getSeries().get(i + 1).setCoordinates(new Point2D(P2.getX(), P2.getY()));
-                                break;
-                            } else {
-                                P1.setX(currentOffset);
-                                P1.setY(usableGraphHeight - ((series.getSeries().get(i).getValue() - minValue) * heightMultiplier));
-
-                                P2.setX(currentOffset + widthOffset);
-                                P2.setY(usableGraphHeight - ((series.getSeries().get(i + 1).getValue() - minValue) * heightMultiplier));
-                                Utils.calculatePointDiff(P1, P2, P1, mSecondMultiplier);
-
-                                P3.setX(currentOffset + (2 * widthOffset));
-                                P3.setY(usableGraphHeight - ((series.getSeries().get(i + 2).getValue() - minValue) * heightMultiplier));
-                                Utils.calculatePointDiff(P2, P3, P3, mFirstMultiplier);
-
-                                series.getSeries().get(i + 1).setCoordinates(new Point2D(P2.getX(), P2.getY()));
-                            }
+                            P3.setX(offset3);
+                            P3.setY(usableGraphHeight - ((series.getSeries().get(i3).getValue() - minValue) * heightMultiplier));
+                            Utils.calculatePointDiff(P2, P3, P3, mFirstMultiplier);
 
                             currentOffset += widthOffset;
 
+                            series.getSeries().get(i + 1).setCoordinates(new Point2D(P2.getX(), P2.getY()));
                             path.cubicTo(P1.getX(), P1.getY(), P2.getX(), P2.getY(), P3.getX(), P3.getY());
                         }
                     } else {
                         boolean first = true;
                         int count = 1;
+
                         for (ValueLinePoint point : series.getSeries()) {
                             if (first) {
                                 first = false;
