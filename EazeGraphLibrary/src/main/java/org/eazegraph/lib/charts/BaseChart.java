@@ -226,7 +226,7 @@ public abstract class BaseChart extends ViewGroup {
      * has changed.
      */
     protected void onDataChanged() {
-        invalidate();
+        invalidateGlobal();
     }
 
     /**

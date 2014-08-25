@@ -27,7 +27,9 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ValueAnimator;
@@ -563,6 +565,7 @@ public class ValueLineChart extends BaseChart {
     protected void initializeGraph() {
         super.initializeGraph();
 
+        mDrawMatrix.setValues(mDrawMatrixValues);
         mGraphOverlay.decelerate();
 
         mSeries     = new ArrayList<ValueLineSeries>();
@@ -585,14 +588,17 @@ public class ValueLineChart extends BaseChart {
         mIndicatorPaint.setStrokeWidth(mIndicatorWidth);
         mIndicatorPaint.setStyle(Paint.Style.FILL);
 
+        mScaleGestureDetector = new ScaleGestureDetector(getContext(), mScaleGestureListener);
+        mGestureDetector = new GestureDetector(getContext(), mGestureListener);
+
         mRevealAnimator = ValueAnimator.ofFloat(0, 1);
         mRevealAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 mRevealValue = animation.getAnimatedFraction();
 
-                mScale.reset();
-                mScale.setScale(1, 1.f * mRevealValue, 0, mGraphHeight - mNegativeOffset);
+                mDrawMatrix.reset();
+                mDrawMatrix.setScale(1, 1.f * mRevealValue, 0, mGraphHeight - mNegativeOffset);
 
                 mGraph.invalidate();
             }
@@ -809,27 +815,8 @@ public class ValueLineChart extends BaseChart {
             }
 
             if(!mUseCustomLegend) {
-                int index = 0;
-                int size = mSeries.get(0).getSeries().size();
-
-                // Only calculate if more than one point is available
-                if (size > 1) {
-
-                    for (ValueLinePoint valueLinePoint : mSeries.get(0).getSeries()) {
-                        if (!(index == 0 || index == size - 1)) {
-                            valueLinePoint.setLegendBounds(new RectF(
-                                    valueLinePoint.getCoordinates().getX() - mSeries.get(0).getWidthOffset() / 2,
-                                    0,
-                                    valueLinePoint.getCoordinates().getX() + mSeries.get(0).getWidthOffset() / 2,
-                                    mLegendHeight));
-                        } else {
-                            valueLinePoint.setIgnore(true);
-                        }
-
-                        index++;
-                    }
+                if(calculateLegendBounds())
                     Utils.calculateLegendInformation(mSeries.get(0).getSeries(), 0, mGraphWidth, mLegendPaint);
-                }
             }
 
             // set the first point for the indicator
@@ -856,7 +843,46 @@ public class ValueLineChart extends BaseChart {
         }
 
         super.onDataChanged();
-        invalidateGlobal();
+    }
+
+    private void recalculateXCoordinates(float _GraphWidth) {
+        int seriesPointCount = mSeries.get(0).getSeries().size();
+        float widthOffset = (float) _GraphWidth / (float) seriesPointCount;
+        widthOffset += widthOffset / seriesPointCount;
+        float currentOffset = 0;
+
+        for (ValueLinePoint point : mSeries.get(0).getSeries()) {
+            point.getCoordinates().setX(currentOffset);
+            currentOffset += widthOffset;
+        }
+    }
+
+    private boolean calculateLegendBounds() {
+        int index = 0;
+        int size = mSeries.get(0).getSeries().size();
+
+        // Only calculate if more than one point is available
+        if (size > 1) {
+
+            for (ValueLinePoint valueLinePoint : mSeries.get(0).getSeries()) {
+                if (!(index == 0 || index == size - 1)) {
+                    valueLinePoint.setLegendBounds(new RectF(
+                            valueLinePoint.getCoordinates().getX() - mSeries.get(0).getWidthOffset() / 2,
+                            0,
+                            valueLinePoint.getCoordinates().getX() + mSeries.get(0).getWidthOffset() / 2,
+                            mLegendHeight));
+                } else {
+                    valueLinePoint.setIgnore(true);
+                }
+
+                index++;
+            }
+
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     /**
@@ -909,6 +935,97 @@ public class ValueLineChart extends BaseChart {
     }
 
     /**
+     * The scale listener, used for handling multi-finger scale gestures.
+     */
+    private final ScaleGestureDetector.OnScaleGestureListener mScaleGestureListener
+            = new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+
+        float mLastFocusX;
+        float mLastFocusY;
+
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector detector) {
+            mLastFocusX = detector.getFocusX();
+            mLastFocusY = detector.getFocusY();
+            return true;
+        }
+
+        @Override
+        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+
+            Matrix transformationMatrix = new Matrix();
+            float focusX = scaleGestureDetector.getFocusX();
+            float focusY = scaleGestureDetector.getFocusY();
+
+            //Zoom focus is where the fingers are centered,
+            transformationMatrix.postTranslate(-focusX, -focusY);
+
+            float scaleFactor = scaleGestureDetector.getScaleFactor();
+
+            transformationMatrix.postScale(scaleFactor, scaleFactor);
+
+            float focusShiftX = focusX - mLastFocusX;
+            float focusShiftY = focusY - mLastFocusY;
+            transformationMatrix.postTranslate(focusX + focusShiftX, focusY + focusShiftY);
+            mDrawMatrix.postConcat(transformationMatrix);
+
+            mDrawMatrix.getValues(mDrawMatrixValues);
+            if(mDrawMatrixValues[0] < 1f || mDrawMatrixValues[4] < 1f) {
+                mDrawMatrixValues[0] = 1.f;
+                mDrawMatrixValues[4] = 1.f;
+            }
+            mDrawMatrix.setValues(mDrawMatrixValues);
+
+            recalculateXCoordinates(mGraphWidth * mDrawMatrixValues[0]);
+            if(calculateLegendBounds())
+                Utils.calculateLegendInformation(mSeries.get(0).getSeries(), 0, mGraphWidth * mDrawMatrixValues[0], mLegendPaint);
+
+            mLastFocusX = focusX;
+            mLastFocusY = focusY;
+
+            invalidateGlobal();
+
+            return true;
+        }
+    };
+
+    /**
+     * The gesture listener, used for handling simple gestures such as double touches, scrolls,
+     * and flings.
+     */
+    private final GestureDetector.SimpleOnGestureListener mGestureListener
+            = new GestureDetector.SimpleOnGestureListener() {
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+
+            mDrawMatrix.postTranslate(-distanceX, -distanceY);
+
+            mDrawMatrix.getValues(mDrawMatrixValues);
+
+            mDrawMatrixValues[2] = Math.min(0f, mDrawMatrixValues[2]);
+            mDrawMatrixValues[5] = Math.min(0f, mDrawMatrixValues[5]);
+
+            float scale = mDrawMatrixValues[0];
+
+            float remainingTranslationX = (scale * mGraphWidth) + mDrawMatrixValues[2];
+            if(remainingTranslationX < mGraphWidth) {
+                mDrawMatrixValues[2] = -(scale * mGraphWidth - mGraphWidth);
+            }
+
+            float remainingTranslationY = (scale * mGraphHeight) + mDrawMatrixValues[5];
+            if(remainingTranslationY < mGraphHeight) {
+                mDrawMatrixValues[5] = -(scale * mGraphHeight - mGraphHeight);
+            }
+
+            mDrawMatrix.setValues(mDrawMatrixValues);
+
+            invalidateGlobal();
+            return true;
+        }
+    };
+
+    /**
      * Returns the first series.
      * @return The first series.
      */
@@ -924,7 +1041,6 @@ public class ValueLineChart extends BaseChart {
     // ---------------------------------------------------------------------------------------------
     //                          Override methods from view layers
     // ---------------------------------------------------------------------------------------------
-
 
     @Override
     protected void onGraphDraw(Canvas _Canvas) {
@@ -942,17 +1058,16 @@ public class ValueLineChart extends BaseChart {
             }
         }
 
-        _Canvas.concat(mScale);
+        _Canvas.concat(mDrawMatrix);
         if(mHasNegativeValues) {
             _Canvas.translate(0, -mNegativeOffset);
         }
+
         // drawing of lines
         for (ValueLineSeries series : mSeries) {
             mLinePaint.setColor(series.getColor());
             _Canvas.drawPath(series.getPath(), mLinePaint);
         }
-
-        _Canvas.restore();
     }
 
     @Override
@@ -963,9 +1078,9 @@ public class ValueLineChart extends BaseChart {
         mLegendPaint.setStrokeWidth(mXAxisStroke);
         _Canvas.drawLine(
                 0,
-                mGraphHeight - mNegativeOffset,
+                (mGraphHeight - mNegativeOffset) * mDrawMatrixValues[0] + mDrawMatrixValues[5],
                 mGraphWidth,
-                mGraphHeight - mNegativeOffset,
+                (mGraphHeight - mNegativeOffset) * mDrawMatrixValues[0] + mDrawMatrixValues[5],
                 mLegendPaint
         );
 
@@ -976,9 +1091,9 @@ public class ValueLineChart extends BaseChart {
                 mIndicatorPaint.setStrokeWidth(value.getStroke());
                 _Canvas.drawLine(
                         0,
-                        value.getY(),
+                        value.getY() * mDrawMatrixValues[0] + mDrawMatrixValues[5],
                         mGraphWidth,
-                        value.getY(),
+                        value.getY() * mDrawMatrixValues[0] + mDrawMatrixValues[5],
                         mIndicatorPaint
                 );
             }
@@ -1029,6 +1144,9 @@ public class ValueLineChart extends BaseChart {
         mLegendPaint.setStrokeWidth(DEF_LEGEND_STROKE);
 
         if(!mSeries.isEmpty()) {
+
+            _Canvas.translate(mDrawMatrixValues[2], 0);
+
             if (mUseCustomLegend) {
                 for (LegendModel model : mLegendList) {
                     Rect textBounds = model.getTextBounds();
@@ -1059,22 +1177,31 @@ public class ValueLineChart extends BaseChart {
 
         super.onGraphOverlayTouchEvent(_Event);
 
+        if(!mStartedAnimation && !mSeries.isEmpty()) {
+            mScaleGestureDetector.onTouchEvent(_Event);
+            mGestureDetector.onTouchEvent(_Event);
+        }
+
         float newX = _Event.getX();
         float newY = _Event.getY();
 
         switch (_Event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-
+                findNearestPoint(newX, newY);
                 return true;
         }
 
+        return true;
+    }
+
+    private void findNearestPoint(float _X, float _Y) {
         if(mShowIndicator && mSeries.size() == 1) {
             int size       = mSeries.get(0).getSeries().size();
 
             for (int i = 0; i < size; i++) {
 
                 // check if touchedX equals one the points
-                if (mSeries.get(0).getSeries().get(i).getCoordinates().getX() == newX) {
+                if (mSeries.get(0).getSeries().get(i).getCoordinates().getX() == _X) {
                     mFocusedPoint = mSeries.get(0).getSeries().get(i);
                     break;
                 } else {
@@ -1087,9 +1214,9 @@ public class ValueLineChart extends BaseChart {
                         float nextX = mSeries.get(0).getSeries().get(i + 1).getCoordinates().getX();
 
                         // check if touchedX is between two points
-                        if (newX > x && newX < nextX) {
+                        if (_X > x && _X < nextX) {
                             // check which distance between touchedX and the two points is smaller
-                            if (newX - x > nextX - newX) {
+                            if (_X - x > nextX - _X) {
                                 mFocusedPoint = mSeries.get(0).getSeries().get(i + 1);
                                 break;
                             } else {
@@ -1098,7 +1225,7 @@ public class ValueLineChart extends BaseChart {
                             }
                         }
                         //check if touchedX distance between the points is equal -> choose first Point
-                        else if (newX > x && newX < nextX) {
+                        else if (_X > x && _X < nextX) {
                             mFocusedPoint = mSeries.get(0).getSeries().get(i);
                             break;
                         }
@@ -1110,8 +1237,8 @@ public class ValueLineChart extends BaseChart {
                 mTouchedArea = mFocusedPoint.getCoordinates();
 
             } else {
-                mTouchedArea.setX(newX);
-                mTouchedArea.setY(newY);
+                mTouchedArea.setX(_X);
+                mTouchedArea.setY(_Y);
             }
 
             if(mLastPoint != mFocusedPoint) {
@@ -1126,7 +1253,6 @@ public class ValueLineChart extends BaseChart {
 
             invalidateGlobal();
         }
-        return true;
     }
 
 
@@ -1221,5 +1347,13 @@ public class ValueLineChart extends BaseChart {
      */
     private float                   mScalingFactor;
 
-    protected Matrix                mScale = new Matrix();
+    protected Matrix                mDrawMatrix = new Matrix();
+    private   float[]               mDrawMatrixValues = new float[] {1f, 0f, 0f,
+                                                                     0f, 1f, 0f,
+                                                                     0f, 0f, 0f};
+
+    // State objects and values related to gesture tracking.
+    private ScaleGestureDetector mScaleGestureDetector;
+    private GestureDetector   mGestureDetector;
+
 }
