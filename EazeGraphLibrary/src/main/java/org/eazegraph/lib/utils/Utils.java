@@ -192,5 +192,41 @@ public class Utils {
         }
     }
 
+    /**
+     * Returns the x-scale component of the _Matrix
+     * @param _Matrix A float 3x3 matrix
+     * @return X-Scale
+     */
+    public static float getScaleX(float[] _Matrix) {
+        return _Matrix[0];
+    }
+
+    /**
+     * Returns the y-scale component of the _Matrix
+     * @param _Matrix A float 3x3 matrix
+     * @return Y-Scale
+     */
+    public static float getScaleY(float[] _Matrix) {
+        return _Matrix[4];
+    }
+
+    /**
+     * Returns the x-translation component of the _Matrix
+     * @param _Matrix A float 3x3 matrix
+     * @return X-Translation
+     */
+    public static float getTranslationX(float[] _Matrix) {
+        return _Matrix[2];
+    }
+
+    /**
+     * Returns the y-translation component of the _Matrix
+     * @param _Matrix A float 3x3 matrix
+     * @return Y-Translation
+     */
+    public static float getTranslationY(float[] _Matrix) {
+        return _Matrix[5];
+    }
+
     private static final String LOG_TAG = Utils.class.getSimpleName();
 }

@@ -42,6 +42,7 @@ import org.eazegraph.lib.models.Point2D;
 import org.eazegraph.lib.models.StandardValue;
 import org.eazegraph.lib.models.ValueLinePoint;
 import org.eazegraph.lib.models.ValueLineSeries;
+import org.eazegraph.lib.utils.ScaleGestureDetectorCompat;
 import org.eazegraph.lib.utils.Utils;
 
 import java.util.ArrayList;
@@ -522,6 +523,24 @@ public class ValueLineChart extends BaseChart {
         onDataChanged();
     }
 
+    public void resetZoom() {
+
+        Log.d(LOG_TAG, "Matrix: " + mDrawMatrix.toShortString());
+
+        mDrawMatrixValues = new float[] {1f, 0f, 0f,
+                0f, 1f, 0f,
+                0f, 0f, 1f};
+        mDrawMatrix.setValues(mDrawMatrixValues);
+
+        recalculateXCoordinates(mGraphWidth * mDrawMatrixValues[0]);
+        if(calculateLegendBounds())
+            Utils.calculateLegendInformation(mSeries.get(0).getSeries(), 0, mGraphWidth * mDrawMatrixValues[0], mLegendPaint);
+
+        calculateValueTextHeight();
+
+        invalidateGlobal();
+    }
+
     /**
      * Implement this to do your drawing.
      *
@@ -834,8 +853,7 @@ public class ValueLineChart extends BaseChart {
                     }
 
                     mFocusedPoint = mSeries.get(0).getSeries().get(index);
-                    mTouchedArea.setX(mFocusedPoint.getCoordinates().getX());
-                    mTouchedArea.setY(mFocusedPoint.getCoordinates().getY());
+                    mTouchedArea = mFocusedPoint.getCoordinates();
 
                     calculateValueTextHeight();
                 }
@@ -847,7 +865,7 @@ public class ValueLineChart extends BaseChart {
 
     private void recalculateXCoordinates(float _GraphWidth) {
         int seriesPointCount = mSeries.get(0).getSeries().size();
-        float widthOffset = (float) _GraphWidth / (float) seriesPointCount;
+        float widthOffset = _GraphWidth / (float) seriesPointCount;
         widthOffset += widthOffset / seriesPointCount;
         float currentOffset = 0;
 
@@ -919,17 +937,16 @@ public class ValueLineChart extends BaseChart {
 
         // calculate string positions in overlay
         mValueTextHeight = valueRect.height();
-        mValueLabelY  = (int) (mValueTextHeight + mIndicatorTopPadding);
+        mValueLabelY = (int) (mValueTextHeight + mIndicatorTopPadding);
         mLegendLabelY = (int) (mValueTextHeight + mIndicatorTopPadding + legendRect.height() + Utils.dpToPx(7.f));
 
         int chosenWidth = valueRect.width() > legendRect.width() ? valueRect.width() : legendRect.width();
 
         // check if text reaches over screen
-        if(mFocusedPoint.getCoordinates().getX() + chosenWidth + mIndicatorLeftPadding > mGraphWidth) {
-            mValueLabelX  = (int) (mFocusedPoint.getCoordinates().getX() - (valueRect.width() + mIndicatorLeftPadding));
+        if (mFocusedPoint.getCoordinates().getX() + chosenWidth + mIndicatorLeftPadding > -Utils.getTranslationX(mDrawMatrixValues) + mGraphWidth) {
+            mValueLabelX = (int) (mFocusedPoint.getCoordinates().getX() - (valueRect.width() + mIndicatorLeftPadding));
             mLegendLabelX = (int) (mFocusedPoint.getCoordinates().getX() - (legendRect.width() + mIndicatorLeftPadding));
-        }
-        else {
+        } else {
             mValueLabelX = mLegendLabelX = (int) (mFocusedPoint.getCoordinates().getX() + mIndicatorLeftPadding);
         }
     }
@@ -953,28 +970,25 @@ public class ValueLineChart extends BaseChart {
         @Override
         public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
 
+            mIsInteracting = true;
+
             Matrix transformationMatrix = new Matrix();
             float focusX = scaleGestureDetector.getFocusX();
             float focusY = scaleGestureDetector.getFocusY();
 
+            float scaleX = ScaleGestureDetectorCompat.getCurrentSpanX(scaleGestureDetector) / ScaleGestureDetectorCompat.getPreviousSpanX(scaleGestureDetector);
+            float scaleY = ScaleGestureDetectorCompat.getCurrentSpanY(scaleGestureDetector) / ScaleGestureDetectorCompat.getPreviousSpanY(scaleGestureDetector);
+
             //Zoom focus is where the fingers are centered,
             transformationMatrix.postTranslate(-focusX, -focusY);
-
-            float scaleFactor = scaleGestureDetector.getScaleFactor();
-
-            transformationMatrix.postScale(scaleFactor, scaleFactor);
+            transformationMatrix.postScale(scaleX, scaleY);
 
             float focusShiftX = focusX - mLastFocusX;
             float focusShiftY = focusY - mLastFocusY;
             transformationMatrix.postTranslate(focusX + focusShiftX, focusY + focusShiftY);
             mDrawMatrix.postConcat(transformationMatrix);
 
-            mDrawMatrix.getValues(mDrawMatrixValues);
-            if(mDrawMatrixValues[0] < 1f || mDrawMatrixValues[4] < 1f) {
-                mDrawMatrixValues[0] = 1.f;
-                mDrawMatrixValues[4] = 1.f;
-            }
-            mDrawMatrix.setValues(mDrawMatrixValues);
+            constrainView();
 
             recalculateXCoordinates(mGraphWidth * mDrawMatrixValues[0]);
             if(calculateLegendBounds())
@@ -983,6 +997,7 @@ public class ValueLineChart extends BaseChart {
             mLastFocusX = focusX;
             mLastFocusY = focusY;
 
+            calculateValueTextHeight();
             invalidateGlobal();
 
             return true;
@@ -999,31 +1014,47 @@ public class ValueLineChart extends BaseChart {
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 
+            mIsInteracting = true;
+
             mDrawMatrix.postTranslate(-distanceX, -distanceY);
 
-            mDrawMatrix.getValues(mDrawMatrixValues);
-
-            mDrawMatrixValues[2] = Math.min(0f, mDrawMatrixValues[2]);
-            mDrawMatrixValues[5] = Math.min(0f, mDrawMatrixValues[5]);
-
-            float scale = mDrawMatrixValues[0];
-
-            float remainingTranslationX = (scale * mGraphWidth) + mDrawMatrixValues[2];
-            if(remainingTranslationX < mGraphWidth) {
-                mDrawMatrixValues[2] = -(scale * mGraphWidth - mGraphWidth);
-            }
-
-            float remainingTranslationY = (scale * mGraphHeight) + mDrawMatrixValues[5];
-            if(remainingTranslationY < mGraphHeight) {
-                mDrawMatrixValues[5] = -(scale * mGraphHeight - mGraphHeight);
-            }
-
-            mDrawMatrix.setValues(mDrawMatrixValues);
+            constrainView();
 
             invalidateGlobal();
             return true;
         }
     };
+
+    public void constrainView() {
+        mDrawMatrix.getValues(mDrawMatrixValues);
+
+        // Check for minimum scale
+        mDrawMatrixValues[0] = Math.max(1f, mDrawMatrixValues[0]);
+        mDrawMatrixValues[4] = Math.max(1f, mDrawMatrixValues[4]);
+
+        // Check for maximum scale
+        mDrawMatrixValues[0] = Math.min(mMaxZoomX, mDrawMatrixValues[0]);
+        mDrawMatrixValues[4] = Math.min(mMaxZoomY, mDrawMatrixValues[4]);
+
+        // check for translation values so the graph wont be translated further as possible
+        mDrawMatrixValues[2] = Math.min(0f, mDrawMatrixValues[2]);
+        mDrawMatrixValues[5] = Math.min(0f, mDrawMatrixValues[5]);
+
+        float scaleX = Utils.getScaleX(mDrawMatrixValues);
+        float scaleY = Utils.getScaleY(mDrawMatrixValues);
+
+        float remainingTranslationX = (scaleX * mGraphWidth) + mDrawMatrixValues[2];
+        if(remainingTranslationX < mGraphWidth) {
+            mDrawMatrixValues[2] = -(scaleX * mGraphWidth - mGraphWidth);
+        }
+
+        float remainingTranslationY = (scaleY * mGraphHeight) + mDrawMatrixValues[5];
+        if(remainingTranslationY < mGraphHeight) {
+            mDrawMatrixValues[5] = -(scaleY * mGraphHeight - mGraphHeight);
+        }
+
+        mDrawMatrix.setValues(mDrawMatrixValues);
+    }
 
     /**
      * Returns the first series.
@@ -1078,9 +1109,9 @@ public class ValueLineChart extends BaseChart {
         mLegendPaint.setStrokeWidth(mXAxisStroke);
         _Canvas.drawLine(
                 0,
-                (mGraphHeight - mNegativeOffset) * mDrawMatrixValues[0] + mDrawMatrixValues[5],
+                (mGraphHeight - mNegativeOffset) * Utils.getScaleY(mDrawMatrixValues) + Utils.getTranslationY(mDrawMatrixValues),
                 mGraphWidth,
-                (mGraphHeight - mNegativeOffset) * mDrawMatrixValues[0] + mDrawMatrixValues[5],
+                (mGraphHeight - mNegativeOffset) * Utils.getScaleY(mDrawMatrixValues) + Utils.getTranslationY(mDrawMatrixValues),
                 mLegendPaint
         );
 
@@ -1091,9 +1122,9 @@ public class ValueLineChart extends BaseChart {
                 mIndicatorPaint.setStrokeWidth(value.getStroke());
                 _Canvas.drawLine(
                         0,
-                        value.getY() * mDrawMatrixValues[0] + mDrawMatrixValues[5],
+                        value.getY() * Utils.getScaleY(mDrawMatrixValues) + Utils.getTranslationY(mDrawMatrixValues),
                         mGraphWidth,
-                        value.getY() * mDrawMatrixValues[0] + mDrawMatrixValues[5],
+                        value.getY() * Utils.getScaleY(mDrawMatrixValues) + Utils.getTranslationY(mDrawMatrixValues),
                         mIndicatorPaint
                 );
             }
@@ -1105,6 +1136,7 @@ public class ValueLineChart extends BaseChart {
             mIndicatorPaint.setColor(mIndicatorLineColor);
             mIndicatorPaint.setStrokeWidth(mIndicatorWidth);
 
+            _Canvas.translate(Utils.getTranslationX(mDrawMatrixValues), 0);
             _Canvas.drawLine(mTouchedArea.getX(), 0, mTouchedArea.getX(), mGraphHeight, mIndicatorPaint);
 
             if(mFocusedPoint != null) {
@@ -1145,7 +1177,7 @@ public class ValueLineChart extends BaseChart {
 
         if(!mSeries.isEmpty()) {
 
-            _Canvas.translate(mDrawMatrixValues[2], 0);
+            _Canvas.translate(Utils.getTranslationX(mDrawMatrixValues), 0);
 
             if (mUseCustomLegend) {
                 for (LegendModel model : mLegendList) {
@@ -1182,12 +1214,17 @@ public class ValueLineChart extends BaseChart {
             mGestureDetector.onTouchEvent(_Event);
         }
 
-        float newX = _Event.getX();
+        float newX = getScaledXCoordinate(_Event.getX());
         float newY = _Event.getY();
 
         switch (_Event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                findNearestPoint(newX, newY);
+
+            case MotionEvent.ACTION_UP:
+                if(!mIsInteracting) {
+                    findNearestPoint(newX, newY);
+                } else {
+                    mIsInteracting = false;
+                }
                 return true;
         }
 
@@ -1200,23 +1237,25 @@ public class ValueLineChart extends BaseChart {
 
             for (int i = 0; i < size; i++) {
 
+                float pointX = mSeries.get(0).getSeries().get(i).getCoordinates().getX();
+
                 // check if touchedX equals one the points
-                if (mSeries.get(0).getSeries().get(i).getCoordinates().getX() == _X) {
+                if (pointX == _X) {
                     mFocusedPoint = mSeries.get(0).getSeries().get(i);
                     break;
                 } else {
-                    // check if we reached the last when --> (true) use last point
+                    // check if we reached the last. if --> (true) use last point
                     if (i == size - 1) {
                         mFocusedPoint = mSeries.get(0).getSeries().get(i);
                         break;
                     } else {
-                        float x = mSeries.get(0).getSeries().get(i).getCoordinates().getX();
+
                         float nextX = mSeries.get(0).getSeries().get(i + 1).getCoordinates().getX();
 
                         // check if touchedX is between two points
-                        if (_X > x && _X < nextX) {
+                        if (_X > pointX && _X < nextX) {
                             // check which distance between touchedX and the two points is smaller
-                            if (_X - x > nextX - _X) {
+                            if (_X - pointX > nextX - _X) {
                                 mFocusedPoint = mSeries.get(0).getSeries().get(i + 1);
                                 break;
                             } else {
@@ -1225,7 +1264,7 @@ public class ValueLineChart extends BaseChart {
                             }
                         }
                         //check if touchedX distance between the points is equal -> choose first Point
-                        else if (_X > x && _X < nextX) {
+                        else if (_X > pointX && _X < nextX) {
                             mFocusedPoint = mSeries.get(0).getSeries().get(i);
                             break;
                         }
@@ -1254,6 +1293,11 @@ public class ValueLineChart extends BaseChart {
             invalidateGlobal();
         }
     }
+
+    private float getScaledXCoordinate(float _X) {
+        return _X - Utils.getTranslationX(mDrawMatrixValues);
+    }
+
 
 
     //##############################################################################################
@@ -1285,6 +1329,8 @@ public class ValueLineChart extends BaseChart {
     public static final boolean DEF_SHOW_LEGEND_BENEATH_INDICATOR   = false;
     public static final boolean DEF_USE_DYNAMIC_SCALING             = false;
     public static final float   DEF_SCALING_FACTOR                  = 0.96f;
+    public static final float   DEF_MAX_ZOOM_X                      = 3.f;
+    public static final float   DEF_MAX_ZOOM_Y                      = 1.f;
 
     private Paint                   mLinePaint;
     private Paint                   mLegendPaint;
@@ -1346,11 +1392,14 @@ public class ValueLineChart extends BaseChart {
      * should be subtracted to achieve the scaling.
      */
     private float                   mScalingFactor;
+    private float                   mMaxZoomX = DEF_MAX_ZOOM_X;
+    private float                   mMaxZoomY = DEF_MAX_ZOOM_Y;
 
     protected Matrix                mDrawMatrix = new Matrix();
     private   float[]               mDrawMatrixValues = new float[] {1f, 0f, 0f,
                                                                      0f, 1f, 0f,
-                                                                     0f, 0f, 0f};
+                                                                     0f, 0f, 1f};
+    private boolean                 mIsInteracting = false;
 
     // State objects and values related to gesture tracking.
     private ScaleGestureDetector mScaleGestureDetector;

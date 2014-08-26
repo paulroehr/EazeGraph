@@ -17,7 +17,7 @@
         app:egIndicatorLineColor="#FE6DA8"
         app:egIndicatorTextColor="#FE6DA8"
         app:egLegendHeight="40dp"
-        app:egShowStandardValue="false"
+        app:egShowStandardValue="true"
         app:egIndicatorTextUnit="g"
         app:egShowLegendBeneathIndicator="true"/>
 

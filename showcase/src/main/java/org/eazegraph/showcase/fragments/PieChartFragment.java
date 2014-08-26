@@ -57,6 +57,11 @@ public class PieChartFragment extends ChartFragment {
         mPieChart.startAnimation();
     }
 
+    @Override
+    public void onReset() {
+
+    }
+
     private void loadData() {
         mPieChart.addPieSlice(new PieModel("Freetime", 15, Color.parseColor("#FE6DA8")));
         mPieChart.addPieSlice(new PieModel("Sleep", 25, Color.parseColor("#56B7F1")));

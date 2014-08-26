@@ -64,6 +64,11 @@ public class StackedBarChartFragment extends ChartFragment {
         mStackedBarChart.startAnimation();
     }
 
+    @Override
+    public void onReset() {
+
+    }
+
     private void loadData() {
         StackedBarModel s1 = new StackedBarModel("12.4");
 

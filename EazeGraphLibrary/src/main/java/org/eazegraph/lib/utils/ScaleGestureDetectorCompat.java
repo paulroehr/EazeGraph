@@ -54,4 +54,28 @@ public class ScaleGestureDetectorCompat {
             return scaleGestureDetector.getCurrentSpan();
         }
     }
+
+    /**
+     * @see android.view.ScaleGestureDetector#getPreviousSpanX()
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static float getPreviousSpanX(ScaleGestureDetector scaleGestureDetector) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            return scaleGestureDetector.getPreviousSpanX();
+        } else {
+            return scaleGestureDetector.getPreviousSpan();
+        }
+    }
+
+    /**
+     * @see android.view.ScaleGestureDetector#getPreviousSpanY()
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static float getPreviousSpanY(ScaleGestureDetector scaleGestureDetector) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            return scaleGestureDetector.getPreviousSpanY();
+        } else {
+            return scaleGestureDetector.getPreviousSpan();
+        }
+    }
 }

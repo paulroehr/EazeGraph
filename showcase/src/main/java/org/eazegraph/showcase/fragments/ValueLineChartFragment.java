@@ -60,6 +60,11 @@ public class ValueLineChartFragment extends ChartFragment {
         mValueLineChart.startAnimation();
     }
 
+    @Override
+    public void onReset() {
+        mValueLineChart.resetZoom();
+    }
+
     private void loadData() {
 
 
