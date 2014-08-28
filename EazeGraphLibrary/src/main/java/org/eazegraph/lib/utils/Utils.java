@@ -23,6 +23,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 
 import org.eazegraph.lib.models.BaseModel;
@@ -193,25 +194,76 @@ public class Utils {
         }
     }
 
-    //normalizeLineSeries---------------------------------------------------------------------------
-    public static float normalizeLineSeries(ValueLineSeries _series, float _percentage) {
-        float subtractionOffset = 0;
-        if(_series != null && !_series.getSeries().isEmpty()) {
-            float minValue = _series.getSeries().get(0).getValue();
+    /**
+     * Returns the x-scale component of the _Matrix
+     * @param _Matrix A float 3x3 matrix
+     * @return X-Scale
+     */
+    public static float getScaleX(float[] _Matrix) {
+        return _Matrix[0];
+    }
 
-            for (ValueLinePoint point : _series.getSeries()) {
-                if (minValue > point.getValue())
-                    minValue = point.getValue();
-            }
+    /**
+     * Returns the y-scale component of the _Matrix
+     * @param _Matrix A float 3x3 matrix
+     * @return Y-Scale
+     */
+    public static float getScaleY(float[] _Matrix) {
+        return _Matrix[4];
+    }
 
-            subtractionOffset = minValue * _percentage;
+    /**
+     * Returns the x-translation component of the _Matrix
+     * @param _Matrix A float 3x3 matrix
+     * @return X-Translation
+     */
+    public static float getTranslationX(float[] _Matrix) {
+        return _Matrix[2];
+    }
 
-            for (ValueLinePoint point : _series.getSeries()) {
-                point.setValue(point.getValue() - subtractionOffset);
-            }
+    /**
+     * Returns the y-translation component of the _Matrix
+     * @param _Matrix A float 3x3 matrix
+     * @return Y-Translation
+     */
+    public static float getTranslationY(float[] _Matrix) {
+        return _Matrix[5];
+    }
 
-        }
-        return subtractionOffset;
+    /**
+     * Sets the x-scale component in a 3x3 matrix
+     * @param _Value        The value which will be set
+     * @param _DestMatrix   The matrix where the value will be saved
+     */
+    public static void setScaleX(float _Value, float[] _DestMatrix) {
+        _DestMatrix[0] = _Value;
+    }
+
+    /**
+     * Sets the y-scale component in a 3x3 matrix
+     * @param _Value        The value which will be set
+     * @param _DestMatrix   The matrix where the value will be saved
+     */
+    public static void setScaleY(float _Value, float[] _DestMatrix) {
+        _DestMatrix[4] = _Value;
+    }
+
+    /**
+     * Sets the x-translation component in a 3x3 matrix
+     * @param _Value        The value which will be set
+     * @param _DestMatrix   The matrix where the value will be saved
+     */
+    public static void setTranslationX(float _Value, float[] _DestMatrix) {
+        _DestMatrix[2] = _Value;
+    }
+
+    /**
+     * Sets the y-translation component in a 3x3 matrix
+     * @param _Value        The value which will be set
+     * @param _DestMatrix   The matrix where the value will be saved
+     */
+    public static void setTranslationY(float _Value, float[] _DestMatrix) {
+        _DestMatrix[5] = _Value;
     }
 
     private static final String LOG_TAG = Utils.class.getSimpleName();

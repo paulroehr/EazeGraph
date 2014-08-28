@@ -63,6 +63,11 @@ public class BarChartFragment extends ChartFragment {
         mBarChart.startAnimation();
     }
 
+    @Override
+    public void onReset() {
+
+    }
+
     private void loadData() {
         mBarChart.addBar(new BarModel(2.3f, 0xFF123456));
         mBarChart.addBar(new BarModel(2.f,  0xFF343456));

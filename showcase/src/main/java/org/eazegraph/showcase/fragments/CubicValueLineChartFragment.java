@@ -59,6 +59,11 @@ public class CubicValueLineChartFragment extends ChartFragment {
         mCubicValueLineChart.startAnimation();
     }
 
+    @Override
+    public void onReset() {
+        mCubicValueLineChart.resetZoom();
+    }
+
     private void loadData() {
         ValueLineSeries series = new ValueLineSeries();
         series.setColor(0xFF56B7F1);
