@@ -228,5 +228,41 @@ public class Utils {
         return _Matrix[5];
     }
 
+    /**
+     * Sets the x-scale component in a 3x3 matrix
+     * @param _Value        The value which will be set
+     * @param _DestMatrix   The matrix where the value will be saved
+     */
+    public static void setScaleX(float _Value, float[] _DestMatrix) {
+        _DestMatrix[0] = _Value;
+    }
+
+    /**
+     * Sets the y-scale component in a 3x3 matrix
+     * @param _Value        The value which will be set
+     * @param _DestMatrix   The matrix where the value will be saved
+     */
+    public static void setScaleY(float _Value, float[] _DestMatrix) {
+        _DestMatrix[4] = _Value;
+    }
+
+    /**
+     * Sets the x-translation component in a 3x3 matrix
+     * @param _Value        The value which will be set
+     * @param _DestMatrix   The matrix where the value will be saved
+     */
+    public static void setTranslationX(float _Value, float[] _DestMatrix) {
+        _DestMatrix[2] = _Value;
+    }
+
+    /**
+     * Sets the y-translation component in a 3x3 matrix
+     * @param _Value        The value which will be set
+     * @param _DestMatrix   The matrix where the value will be saved
+     */
+    public static void setTranslationY(float _Value, float[] _DestMatrix) {
+        _DestMatrix[5] = _Value;
+    }
+
     private static final String LOG_TAG = Utils.class.getSimpleName();
 }

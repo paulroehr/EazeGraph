@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.widget.Scroller;
 
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ValueAnimator;
@@ -84,6 +85,8 @@ public class ValueLineChart extends BaseChart {
         mShowLegendBeneathIndicator   = DEF_SHOW_LEGEND_BENEATH_INDICATOR;
         mUseDynamicScaling            = DEF_USE_DYNAMIC_SCALING;
         mScalingFactor                = DEF_SCALING_FACTOR;
+        mMaxZoomX                     = DEF_MAX_ZOOM_X;
+        mMaxZoomY                     = DEF_MAX_ZOOM_Y;
 
         initializeGraph();
     }
@@ -117,25 +120,27 @@ public class ValueLineChart extends BaseChart {
 
             mUseCubic                     = a.getBoolean(R.styleable.ValueLineChart_egUseCubic,                         DEF_USE_CUBIC);
             mUseOverlapFill               = a.getBoolean(R.styleable.ValueLineChart_egUseOverlapFill,                   DEF_USE_OVERLAP_FILL);
-            mLineStroke                   = a.getDimension(R.styleable.ValueLineChart_egLineStroke,                     Utils.dpToPx(DEF_LINE_STROKE));
-            mFirstMultiplier              = a.getFloat(R.styleable.ValueLineChart_egCurveSmoothness,                    DEF_FIRST_MULTIPLIER);
+            mLineStroke                   = a.getDimension(R.styleable.ValueLineChart_egLineStroke, Utils.dpToPx(DEF_LINE_STROKE));
+            mFirstMultiplier              = a.getFloat(R.styleable.ValueLineChart_egCurveSmoothness, DEF_FIRST_MULTIPLIER);
             mSecondMultiplier             = 1.0f - mFirstMultiplier;
             mShowIndicator                = a.getBoolean(R.styleable.ValueLineChart_egShowValueIndicator,               DEF_SHOW_INDICATOR);
-            mIndicatorWidth               = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth,                 Utils.dpToPx(DEF_INDICATOR_WIDTH));
-            mIndicatorLineColor           = a.getColor(R.styleable.ValueLineChart_egIndicatorLineColor,                 DEF_INDICATOR_COLOR);
-            mIndicatorTextColor           = a.getColor(R.styleable.ValueLineChart_egIndicatorTextColor,                 DEF_INDICATOR_COLOR);
-            mIndicatorTextSize            = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth,                 Utils.dpToPx(DEF_INDICATOR_TEXT_SIZE));
-            mIndicatorLeftPadding         = a.getDimension(R.styleable.ValueLineChart_egIndicatorLeftPadding,           Utils.dpToPx(DEF_INDICATOR_LEFT_PADDING));
+            mIndicatorWidth               = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth, Utils.dpToPx(DEF_INDICATOR_WIDTH));
+            mIndicatorLineColor           = a.getColor(R.styleable.ValueLineChart_egIndicatorLineColor, DEF_INDICATOR_COLOR);
+            mIndicatorTextColor           = a.getColor(R.styleable.ValueLineChart_egIndicatorTextColor, DEF_INDICATOR_COLOR);
+            mIndicatorTextSize            = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth, Utils.dpToPx(DEF_INDICATOR_TEXT_SIZE));
+            mIndicatorLeftPadding         = a.getDimension(R.styleable.ValueLineChart_egIndicatorLeftPadding, Utils.dpToPx(DEF_INDICATOR_LEFT_PADDING));
             mIndicatorTopPadding          = a.getDimension(R.styleable.ValueLineChart_egIndicatorTopPadding,            Utils.dpToPx(DEF_INDICATOR_TOP_PADDING));
-            mShowStandardValues           = a.getBoolean(R.styleable.ValueLineChart_egShowStandardValue,                DEF_SHOW_STANDARD_VALUE);
-            mXAxisStroke                  = a.getDimension(R.styleable.ValueLineChart_egXAxisStroke,                    Utils.dpToPx(DEF_X_AXIS_STROKE));
-            mActivateIndicatorShadow      = a.getBoolean(R.styleable.ValueLineChart_egActivateIndicatorShadow,          DEF_ACTIVATE_INDICATOR_SHADOW);
-            mIndicatorShadowStrength      = a.getDimension(R.styleable.ValueLineChart_egIndicatorShadowStrength,        Utils.dpToPx(DEF_INDICATOR_SHADOW_STRENGTH));
-            mIndicatorShadowColor         = a.getColor(R.styleable.ValueLineChart_egIndicatorShadowColor,               DEF_INDICATOR_SHADOW_COLOR);
+            mShowStandardValues           = a.getBoolean(R.styleable.ValueLineChart_egShowStandardValue, DEF_SHOW_STANDARD_VALUE);
+            mXAxisStroke                  = a.getDimension(R.styleable.ValueLineChart_egXAxisStroke, Utils.dpToPx(DEF_X_AXIS_STROKE));
+            mActivateIndicatorShadow      = a.getBoolean(R.styleable.ValueLineChart_egActivateIndicatorShadow, DEF_ACTIVATE_INDICATOR_SHADOW);
+            mIndicatorShadowStrength      = a.getDimension(R.styleable.ValueLineChart_egIndicatorShadowStrength, Utils.dpToPx(DEF_INDICATOR_SHADOW_STRENGTH));
+            mIndicatorShadowColor         = a.getColor(R.styleable.ValueLineChart_egIndicatorShadowColor, DEF_INDICATOR_SHADOW_COLOR);
             mIndicatorTextUnit            = a.getString(R.styleable.ValueLineChart_egIndicatorTextUnit);
-            mShowLegendBeneathIndicator   = a.getBoolean(R.styleable.ValueLineChart_egShowLegendBeneathIndicator,       DEF_SHOW_LEGEND_BENEATH_INDICATOR);
-            mUseDynamicScaling            = a.getBoolean(R.styleable.ValueLineChart_egUseDynamicScaling,                DEF_USE_DYNAMIC_SCALING);
-            mScalingFactor                = a.getFloat(R.styleable.ValueLineChart_egScalingFactor,                      DEF_SCALING_FACTOR);
+            mShowLegendBeneathIndicator   = a.getBoolean(R.styleable.ValueLineChart_egShowLegendBeneathIndicator, DEF_SHOW_LEGEND_BENEATH_INDICATOR);
+            mUseDynamicScaling            = a.getBoolean(R.styleable.ValueLineChart_egUseDynamicScaling, DEF_USE_DYNAMIC_SCALING);
+            mScalingFactor                = a.getFloat(R.styleable.ValueLineChart_egScalingFactor, DEF_SCALING_FACTOR);
+            mMaxZoomX                     = a.getFloat(R.styleable.ValueLineChart_egMaxXZoom, DEF_MAX_ZOOM_X);
+            mMaxZoomY                     = a.getFloat(R.styleable.ValueLineChart_egMaxYZoom,                           DEF_MAX_ZOOM_Y);
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -523,6 +528,26 @@ public class ValueLineChart extends BaseChart {
         onDataChanged();
     }
 
+    public float getMaxZoomX() {
+        return mMaxZoomX;
+    }
+
+    public void setMaxZoomX(float _maxZoomX) {
+        mMaxZoomX = _maxZoomX;
+        // TODO: Animate
+        resetZoom();
+    }
+
+    public float getMaxZoomY() {
+        return mMaxZoomY;
+    }
+
+    public void setMaxZoomY(float _maxZoomY) {
+        mMaxZoomY = _maxZoomY;
+        // TODO: Animate
+        resetZoom();
+    }
+
     public void resetZoom() {
 
         Log.d(LOG_TAG, "Matrix: " + mDrawMatrix.toShortString());
@@ -609,6 +634,7 @@ public class ValueLineChart extends BaseChart {
 
         mScaleGestureDetector = new ScaleGestureDetector(getContext(), mScaleGestureListener);
         mGestureDetector = new GestureDetector(getContext(), mGestureListener);
+        mScroller = new Scroller(getContext());
 
         mRevealAnimator = ValueAnimator.ofFloat(0, 1);
         mRevealAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -640,6 +666,18 @@ public class ValueLineChart extends BaseChart {
             @Override
             public void onAnimationRepeat(Animator animation) {
 
+            }
+        });
+
+        // The scroller doesn't have any built-in animation functions--it just supplies
+        // values when we ask it to. So we have to have a way to call it every frame
+        // until the fling ends. This code (ab)uses a ValueAnimator object to generate
+        // a callback on every animation frame. We don't use the animated value at all.
+        mScrollAnimator = ValueAnimator.ofFloat(0, 1);
+        mScrollAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                tickScrollAnimation();
+                invalidateGlobal();
             }
         });
 
@@ -1023,7 +1061,61 @@ public class ValueLineChart extends BaseChart {
             invalidateGlobal();
             return true;
         }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            fling((int) -velocityX, (int) -velocityY);
+            return true;
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            // The user is interacting with the pie, so we want to turn on acceleration
+            // so that the interaction is smooth.
+            if (!mScroller.isFinished()) {
+                stopScrolling();
+            }
+            return true;
+        }
     };
+
+    private void fling(int velocityX, int velocityY) {
+
+        mScroller.fling(
+                (int) -Utils.getTranslationX(mDrawMatrixValues),
+                (int) -Utils.getTranslationY(mDrawMatrixValues),
+                velocityX,
+                velocityY,
+                0, (int) calculateMaxTranslation(Utils.getScaleX(mDrawMatrixValues), mGraphWidth),
+                0, (int) calculateMaxTranslation(Utils.getScaleY(mDrawMatrixValues), mGraphHeight));
+
+        // Start the animator and tell it to animate for the expected duration of the fling.
+        mScrollAnimator.setDuration(mScroller.getDuration());
+        mScrollAnimator.start();
+    }
+
+    private void tickScrollAnimation() {
+
+        if (!mScroller.isFinished()) {
+            mScroller.computeScrollOffset();
+            int currX = -mScroller.getCurrX();
+            int currY = -mScroller.getCurrY();
+
+            mDrawMatrixValues[2] = currX;
+            mDrawMatrixValues[5] = currY;
+
+            mDrawMatrix.setValues(mDrawMatrixValues);
+        } else {
+            mScrollAnimator.cancel();
+        }
+    }
+
+    /**
+     * Force a stop to all pie motion. Called when the user taps during a fling.
+     */
+    private void stopScrolling() {
+        mScroller.forceFinished(true);
+    }
 
     public void constrainView() {
         mDrawMatrix.getValues(mDrawMatrixValues);
@@ -1043,17 +1135,23 @@ public class ValueLineChart extends BaseChart {
         float scaleX = Utils.getScaleX(mDrawMatrixValues);
         float scaleY = Utils.getScaleY(mDrawMatrixValues);
 
+        // check if maximum x-translation doesn't get too big
         float remainingTranslationX = (scaleX * mGraphWidth) + mDrawMatrixValues[2];
         if(remainingTranslationX < mGraphWidth) {
-            mDrawMatrixValues[2] = -(scaleX * mGraphWidth - mGraphWidth);
+            mDrawMatrixValues[2] = -calculateMaxTranslation(scaleX, mGraphWidth);
         }
 
+        // check if maximum y-translation doesn't get too big
         float remainingTranslationY = (scaleY * mGraphHeight) + mDrawMatrixValues[5];
         if(remainingTranslationY < mGraphHeight) {
-            mDrawMatrixValues[5] = -(scaleY * mGraphHeight - mGraphHeight);
+            mDrawMatrixValues[5] = -calculateMaxTranslation(scaleY, mGraphHeight);
         }
 
         mDrawMatrix.setValues(mDrawMatrixValues);
+    }
+
+    private float calculateMaxTranslation(float _Scale, float _Dimension) {
+        return _Scale * _Dimension - _Dimension;
     }
 
     /**
@@ -1212,20 +1310,20 @@ public class ValueLineChart extends BaseChart {
         if(!mStartedAnimation && !mSeries.isEmpty()) {
             mScaleGestureDetector.onTouchEvent(_Event);
             mGestureDetector.onTouchEvent(_Event);
-        }
 
-        float newX = getScaledXCoordinate(_Event.getX());
-        float newY = _Event.getY();
+            float newX = getScaledXCoordinate(_Event.getX());
+            float newY = _Event.getY();
 
-        switch (_Event.getAction()) {
+            switch (_Event.getAction()) {
 
-            case MotionEvent.ACTION_UP:
-                if(!mIsInteracting) {
-                    findNearestPoint(newX, newY);
-                } else {
-                    mIsInteracting = false;
-                }
-                return true;
+                case MotionEvent.ACTION_UP:
+                    if (!mIsInteracting) {
+                        findNearestPoint(newX, newY);
+                    } else {
+                        mIsInteracting = false;
+                    }
+                    return true;
+            }
         }
 
         return true;
@@ -1330,7 +1428,7 @@ public class ValueLineChart extends BaseChart {
     public static final boolean DEF_USE_DYNAMIC_SCALING             = false;
     public static final float   DEF_SCALING_FACTOR                  = 0.96f;
     public static final float   DEF_MAX_ZOOM_X                      = 3.f;
-    public static final float   DEF_MAX_ZOOM_Y                      = 1.f;
+    public static final float   DEF_MAX_ZOOM_Y                      = 3.f;
 
     private Paint                   mLinePaint;
     private Paint                   mLegendPaint;
@@ -1402,7 +1500,10 @@ public class ValueLineChart extends BaseChart {
     private boolean                 mIsInteracting = false;
 
     // State objects and values related to gesture tracking.
-    private ScaleGestureDetector mScaleGestureDetector;
-    private GestureDetector   mGestureDetector;
+    private ScaleGestureDetector    mScaleGestureDetector;
+    private GestureDetector         mGestureDetector;
+    private Scroller                mScroller;
+    private ValueAnimator           mScrollAnimator;
+
 
 }
