@@ -62,7 +62,7 @@ public class ValueLineChartFragment extends ChartFragment {
 
     @Override
     public void onReset() {
-        mValueLineChart.resetZoom();
+        mValueLineChart.resetZoom(true);
     }
 
     private void loadData() {

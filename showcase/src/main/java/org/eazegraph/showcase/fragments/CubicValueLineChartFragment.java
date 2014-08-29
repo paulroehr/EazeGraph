@@ -61,7 +61,7 @@ public class CubicValueLineChartFragment extends ChartFragment {
 
     @Override
     public void onReset() {
-        mCubicValueLineChart.resetZoom();
+        mCubicValueLineChart.resetZoom(true);
     }
 
     private void loadData() {
