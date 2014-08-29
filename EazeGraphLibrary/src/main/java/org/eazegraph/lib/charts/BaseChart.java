@@ -59,6 +59,7 @@ public abstract class BaseChart extends ViewGroup {
         mLegendColor    = DEF_LEGEND_COLOR;
         mAnimationTime  = DEF_ANIMATION_TIME;
         mShowDecimal    = DEF_SHOW_DECIMAL;
+        mEmptyDataText  = DEF_EMPTY_DATA_TEXT;
     }
 
     /**
@@ -90,13 +91,18 @@ public abstract class BaseChart extends ViewGroup {
 
             mLegendHeight       = a.getDimension(R.styleable.BaseChart_egLegendHeight,     Utils.dpToPx(DEF_LEGEND_HEIGHT));
             mLegendTextSize     = a.getDimension(R.styleable.BaseChart_egLegendTextSize,   Utils.dpToPx(DEF_LEGEND_TEXT_SIZE));
-            mAnimationTime      = a.getInt(R.styleable.BaseChart_egAnimationTime, DEF_ANIMATION_TIME);
-            mShowDecimal        = a.getBoolean(R.styleable.BaseChart_egShowDecimal, DEF_SHOW_DECIMAL);
-            mLegendColor        = a.getColor(R.styleable.BaseChart_egLegendColor, DEF_LEGEND_COLOR);
+            mAnimationTime      = a.getInt(R.styleable.BaseChart_egAnimationTime,          DEF_ANIMATION_TIME);
+            mShowDecimal        = a.getBoolean(R.styleable.BaseChart_egShowDecimal,        DEF_SHOW_DECIMAL);
+            mLegendColor        = a.getColor(R.styleable.BaseChart_egLegendColor,          DEF_LEGEND_COLOR);
+            mEmptyDataText      = a.getString(R.styleable.BaseChart_egEmptyDataText);
 
         } finally {
             // release the TypedArray so that it can be reused.
             a.recycle();
+        }
+
+        if(mEmptyDataText == null) {
+            mEmptyDataText = DEF_EMPTY_DATA_TEXT;
         }
 
     }
@@ -167,6 +173,14 @@ public abstract class BaseChart extends ViewGroup {
 
     public void setLegendColor(int _legendColor) {
         mLegendColor = _legendColor;
+    }
+
+    public String getEmptyDataText() {
+        return mEmptyDataText;
+    }
+
+    public void setEmptyDataText(String _emptyDataText) {
+        mEmptyDataText = _emptyDataText;
     }
 
     /**
@@ -554,6 +568,7 @@ public abstract class BaseChart extends ViewGroup {
     public static final float   DEF_LEGEND_TEXT_SIZE    = 12.f;
     public static final int     DEF_ANIMATION_TIME      = 2000;
     public static final boolean DEF_SHOW_DECIMAL        = false;
+    public static final String  DEF_EMPTY_DATA_TEXT     = "No Data available";
 
     protected Graph             mGraph;
     protected GraphOverlay      mGraphOverlay;
@@ -574,6 +589,8 @@ public abstract class BaseChart extends ViewGroup {
     protected int               mTopPadding;
     protected int               mRightPadding;
     protected int               mBottomPadding;
+
+    protected String            mEmptyDataText;
 
     protected float             mMaxFontHeight;
     protected float             mLegendTopPadding = Utils.dpToPx(4.f);

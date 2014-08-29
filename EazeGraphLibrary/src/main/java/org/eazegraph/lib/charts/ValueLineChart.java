@@ -550,18 +550,19 @@ public class ValueLineChart extends BaseChart {
 
     public void resetZoom() {
 
-        Log.d(LOG_TAG, "Matrix: " + mDrawMatrix.toShortString());
-
-        mDrawMatrixValues = new float[] {1f, 0f, 0f,
+        mDrawMatrixValues = new float[] {
+                1f, 0f, 0f,
                 0f, 1f, 0f,
                 0f, 0f, 1f};
         mDrawMatrix.setValues(mDrawMatrixValues);
 
-        recalculateXCoordinates(mGraphWidth * mDrawMatrixValues[0]);
-        if(calculateLegendBounds())
-            Utils.calculateLegendInformation(mSeries.get(0).getSeries(), 0, mGraphWidth * mDrawMatrixValues[0], mLegendPaint);
+        if(!mSeries.isEmpty()) {
+            recalculateXCoordinates(mGraphWidth * mDrawMatrixValues[0]);
+            if (calculateLegendBounds())
+                Utils.calculateLegendInformation(mSeries.get(0).getSeries(), 0, mGraphWidth * mDrawMatrixValues[0], mLegendPaint);
 
-        calculateValueTextHeight();
+            calculateValueTextHeight();
+        }
 
         invalidateGlobal();
     }
@@ -594,6 +595,8 @@ public class ValueLineChart extends BaseChart {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+
+        mUsableGraphHeight = (int) (mGraphHeight - mGraphHeightPadding);
 
         onDataChanged();
         if(mUseCustomLegend) {
@@ -718,7 +721,6 @@ public class ValueLineChart extends BaseChart {
     protected void onDataChanged() {
 
         if(!mSeries.isEmpty()) {
-            int   usableGraphHeight = (int) (mGraphHeight - Utils.dpToPx(1.f));
             int   seriesCount  = mSeries.size();
             float maxValue     = 0.f;
             float minValue     = Float.MAX_VALUE;
@@ -772,7 +774,7 @@ public class ValueLineChart extends BaseChart {
             }
 
 
-            float heightMultiplier  = usableGraphHeight / (maxValue - minValue);
+            float heightMultiplier  = mUsableGraphHeight / (maxValue - minValue);
 
             // calculate the offset
             if(mHasNegativeValues) {
@@ -782,7 +784,7 @@ public class ValueLineChart extends BaseChart {
             // calculate the y position for standardValue
             if(mShowStandardValues) {
                 for (StandardValue value : mStandardValues) {
-                    value.setY((int) (usableGraphHeight - mNegativeOffset - ((value.getValue() - minValue) * heightMultiplier)));
+                    value.setY((int) (mGraphHeight - mNegativeOffset - ((value.getValue() - minValue) * heightMultiplier)));
                 }
             }
 
@@ -803,7 +805,7 @@ public class ValueLineChart extends BaseChart {
 
                     // used to store first point and set it later as ending point, if a graph fill is selected
                     float firstX = currentOffset;
-                    float firstY = usableGraphHeight - ((series.getSeries().get(0).getValue() - minValue) * heightMultiplier);
+                    float firstY = mGraphHeight - ((series.getSeries().get(0).getValue() - minValue) * heightMultiplier);
 
                     Path path = new Path();
                     path.moveTo(firstX, firstY);
@@ -823,14 +825,14 @@ public class ValueLineChart extends BaseChart {
                             float offset3 = (seriesPointCount - i) < 3 ? mGraphWidth : currentOffset + (2*widthOffset);
 
                             P1.setX(currentOffset);
-                            P1.setY(usableGraphHeight - ((series.getSeries().get(i).getValue() - minValue) * heightMultiplier));
+                            P1.setY(mGraphHeight - ((series.getSeries().get(i).getValue() - minValue) * heightMultiplier));
 
                             P2.setX(offset2);
-                            P2.setY(usableGraphHeight - ((series.getSeries().get(i + 1).getValue() - minValue) * heightMultiplier));
+                            P2.setY(mGraphHeight - ((series.getSeries().get(i + 1).getValue() - minValue) * heightMultiplier));
                             Utils.calculatePointDiff(P1, P2, P1, mSecondMultiplier);
 
                             P3.setX(offset3);
-                            P3.setY(usableGraphHeight - ((series.getSeries().get(i3).getValue() - minValue) * heightMultiplier));
+                            P3.setY(mGraphHeight - ((series.getSeries().get(i3).getValue() - minValue) * heightMultiplier));
                             Utils.calculatePointDiff(P2, P3, P3, mFirstMultiplier);
 
                             currentOffset += widthOffset;
@@ -855,15 +857,15 @@ public class ValueLineChart extends BaseChart {
                                     currentOffset = mGraphWidth;
                                 }
                             }
-                            point.setCoordinates(new Point2D(currentOffset, usableGraphHeight - ((point.getValue() - minValue) * heightMultiplier)));
+                            point.setCoordinates(new Point2D(currentOffset, mGraphHeight - ((point.getValue() - minValue) * heightMultiplier)));
                             path.lineTo(point.getCoordinates().getX(), point.getCoordinates().getY());
                             count++;
                         }
                     }
 
                     if (mUseOverlapFill || seriesCount == 1) {
-                        path.lineTo(mGraphWidth, usableGraphHeight);
-                        path.lineTo(0, usableGraphHeight);
+                        path.lineTo(mGraphWidth, mGraphHeight);
+                        path.lineTo(0, mGraphHeight);
                         path.lineTo(firstX, firstY);
                     }
 
@@ -896,6 +898,8 @@ public class ValueLineChart extends BaseChart {
                     calculateValueTextHeight();
                 }
             }
+
+            resetZoom();
         }
 
         super.onDataChanged();
@@ -998,6 +1002,8 @@ public class ValueLineChart extends BaseChart {
         float mLastFocusX;
         float mLastFocusY;
 
+        boolean mZoomIn;
+
         @Override
         public boolean onScaleBegin(ScaleGestureDetector detector) {
             mLastFocusX = detector.getFocusX();
@@ -1039,6 +1045,11 @@ public class ValueLineChart extends BaseChart {
             invalidateGlobal();
 
             return true;
+        }
+
+        @Override
+        public void onScaleEnd(ScaleGestureDetector detector) {
+            super.onScaleEnd(detector);
         }
     };
 
@@ -1213,54 +1224,56 @@ public class ValueLineChart extends BaseChart {
                 mLegendPaint
         );
 
-        // draw standard value line
-        if(mShowStandardValues) {
-            for (StandardValue value : mStandardValues) {
-                mIndicatorPaint.setColor(value.getColor());
-                mIndicatorPaint.setStrokeWidth(value.getStroke());
-                _Canvas.drawLine(
-                        0,
-                        value.getY() * Utils.getScaleY(mDrawMatrixValues) + Utils.getTranslationY(mDrawMatrixValues),
-                        mGraphWidth,
-                        value.getY() * Utils.getScaleY(mDrawMatrixValues) + Utils.getTranslationY(mDrawMatrixValues),
-                        mIndicatorPaint
-                );
+        if(!mSeries.isEmpty()) {
+            // draw standard value line
+            if (mShowStandardValues) {
+                for (StandardValue value : mStandardValues) {
+                    mIndicatorPaint.setColor(value.getColor());
+                    mIndicatorPaint.setStrokeWidth(value.getStroke());
+                    _Canvas.drawLine(
+                            0,
+                            value.getY() * Utils.getScaleY(mDrawMatrixValues) + Utils.getTranslationY(mDrawMatrixValues),
+                            mGraphWidth,
+                            value.getY() * Utils.getScaleY(mDrawMatrixValues) + Utils.getTranslationY(mDrawMatrixValues),
+                            mIndicatorPaint
+                    );
+                }
             }
-        }
 
-        // draw touch indicator
-        // TODO: if mShowIndicator is true, then check all series not only if one series is inserted
-        if(mShowIndicator && mSeries.size() == 1) {
-            mIndicatorPaint.setColor(mIndicatorLineColor);
-            mIndicatorPaint.setStrokeWidth(mIndicatorWidth);
+            // draw touch indicator
+            // TODO: if mShowIndicator is true, then check all series not only if one series is inserted
+            if (mShowIndicator && mSeries.size() == 1) {
+                mIndicatorPaint.setColor(mIndicatorLineColor);
+                mIndicatorPaint.setStrokeWidth(mIndicatorWidth);
 
-            _Canvas.translate(Utils.getTranslationX(mDrawMatrixValues), 0);
-            _Canvas.drawLine(mTouchedArea.getX(), 0, mTouchedArea.getX(), mGraphHeight, mIndicatorPaint);
+                _Canvas.translate(Utils.getTranslationX(mDrawMatrixValues), 0);
+                _Canvas.drawLine(mTouchedArea.getX(), 0, mTouchedArea.getX(), mGraphHeight, mIndicatorPaint);
 
-            if(mFocusedPoint != null) {
+                if (mFocusedPoint != null) {
 
-                // set shadow
-                if(mActivateIndicatorShadow) {
-                    mIndicatorPaint.setShadowLayer(mIndicatorShadowStrength, 0, 0, mIndicatorShadowColor);
-                }
+                    // set shadow
+                    if (mActivateIndicatorShadow) {
+                        mIndicatorPaint.setShadowLayer(mIndicatorShadowStrength, 0, 0, mIndicatorShadowColor);
+                    }
 
-                mIndicatorPaint.setColor(mIndicatorTextColor);
-                _Canvas.drawText(Utils.getFloatString(mFocusedPoint.getValue(), mShowDecimal) + (!mIndicatorTextUnit.isEmpty() ? " " + mIndicatorTextUnit : ""),
-                        mValueLabelX,
-                        mValueLabelY,
-                        mIndicatorPaint);
+                    mIndicatorPaint.setColor(mIndicatorTextColor);
+                    _Canvas.drawText(Utils.getFloatString(mFocusedPoint.getValue(), mShowDecimal) + (!mIndicatorTextUnit.isEmpty() ? " " + mIndicatorTextUnit : ""),
+                            mValueLabelX,
+                            mValueLabelY,
+                            mIndicatorPaint);
 
-                if(mShowLegendBeneathIndicator) {
-                    mLegendPaint.setColor(mIndicatorTextColor);
-                    _Canvas.drawText(mFocusedPoint.getLegendLabel(),
-                            mLegendLabelX,
-                            mLegendLabelY,
-                            mLegendPaint);
-                }
+                    if (mShowLegendBeneathIndicator) {
+                        mLegendPaint.setColor(mIndicatorTextColor);
+                        _Canvas.drawText(mFocusedPoint.getLegendLabel(),
+                                mLegendLabelX,
+                                mLegendLabelY,
+                                mLegendPaint);
+                    }
 
-                // reset shadow
-                if(mActivateIndicatorShadow) {
-                    mIndicatorPaint.setShadowLayer(0, 0, 0, 0x00000000);
+                    // reset shadow
+                    if (mActivateIndicatorShadow) {
+                        mIndicatorPaint.setShadowLayer(0, 0, 0, 0x00000000);
+                    }
                 }
             }
         }
@@ -1433,6 +1446,13 @@ public class ValueLineChart extends BaseChart {
     private Paint                   mLinePaint;
     private Paint                   mLegendPaint;
     private Paint                   mIndicatorPaint;
+
+    /**
+     * This is used to have a little extra space on the top, so if a standard value is added
+     * and it is the biggest value, preventing the standard value line being cropped out a bit.
+     */
+    private int                     mUsableGraphHeight;
+    private float                   mGraphHeightPadding = Utils.dpToPx(2.f);
 
     private List<ValueLineSeries>   mSeries;
     private List<LegendModel>       mLegendList;
