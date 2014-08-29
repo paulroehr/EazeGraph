@@ -1237,7 +1237,7 @@ public class ValueLineChart extends BaseChart {
                 mLegendPaint
         );
 
-        if(!mSeries.isEmpty()) {
+        if(containsPoints()) {
             // draw standard value line
             if (mShowStandardValues) {
                 for (StandardValue value : mStandardValues) {
@@ -1426,6 +1426,15 @@ public class ValueLineChart extends BaseChart {
         return _X - Utils.getTranslationX(mDrawMatrixValues);
     }
 
+    private boolean containsPoints() {
+        boolean result = false;
+        for (ValueLineSeries sery : mSeries) {
+            if(!sery.getSeries().isEmpty()) {
+                result = true;
+            }
+        }
+        return result;
+    }
 
 
     //##############################################################################################
