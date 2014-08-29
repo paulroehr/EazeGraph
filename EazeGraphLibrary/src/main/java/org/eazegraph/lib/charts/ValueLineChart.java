@@ -544,7 +544,7 @@ public class ValueLineChart extends BaseChart {
     public void setMaxZoomX(float _maxZoomX) {
         mMaxZoomX = _maxZoomX;
         // TODO: Animate
-        resetZoom();
+        resetZoom(true);
     }
 
     public float getMaxZoomY() {
@@ -554,10 +554,10 @@ public class ValueLineChart extends BaseChart {
     public void setMaxZoomY(float _maxZoomY) {
         mMaxZoomY = _maxZoomY;
         // TODO: Animate
-        resetZoom();
+        resetZoom(true);
     }
 
-    public void resetZoom() {
+    public void resetZoom(boolean _recalculate) {
 
         mDrawMatrixValues = new float[] {
                 1f, 0f, 0f,
@@ -565,7 +565,7 @@ public class ValueLineChart extends BaseChart {
                 0f, 0f, 1f};
         mDrawMatrix.setValues(mDrawMatrixValues);
 
-        if(!mSeries.isEmpty()) {
+        if(!mSeries.isEmpty() && _recalculate) {
             recalculateXCoordinates(mGraphWidth * mDrawMatrixValues[0]);
             if (calculateLegendBounds())
                 Utils.calculateLegendInformation(mSeries.get(0).getSeries(), 0, mGraphWidth * mDrawMatrixValues[0], mLegendPaint);
@@ -908,7 +908,7 @@ public class ValueLineChart extends BaseChart {
                 }
             }
 
-            resetZoom();
+            resetZoom(false);
         }
 
         super.onDataChanged();
