@@ -3,10 +3,11 @@
 
     <declare-styleable name="BaseChart">
         <attr name="egAnimationTime"  format="integer"/>
-        <attr name="egLegendColor"   format="color" />
+        <attr name="egLegendColor"    format="color" />
         <attr name="egLegendHeight"   format="dimension" />
         <attr name="egLegendTextSize" format="dimension"/>
         <attr name="egShowDecimal"    format="boolean"/>
+        <attr name="egEmptyDataText"  format="string"/>
     </declare-styleable>
 
 </resources>

@@ -921,6 +921,29 @@ public class PieChart extends BaseChart {
         }
         else {
             // No Data available
+            mGraphPaint.setColor(0xFFB6B6B6);
+            _Canvas.drawArc(mGraphBounds,
+                    0,
+                    360,
+                    true, mGraphPaint);
+
+            // Draw inner white circle
+            if (mUseInnerPadding) {
+                mGraphPaint.setColor(0xFFC6C6C6);
+
+                _Canvas.drawArc(mInnerBounds,
+                        0,
+                        360,
+                        true, mGraphPaint);
+
+                mGraphPaint.setColor(mInnerPaddingColor);
+
+                _Canvas.drawArc(mInnerOutlineBounds,
+                        0,
+                        360,
+                        true,
+                        mGraphPaint);
+            }
         }
     }
 
@@ -970,10 +993,10 @@ public class PieChart extends BaseChart {
             );
         }
         else {
-            String str = "No Data available";
-            mLegendPaint.getTextBounds(str, 0, str.length(), mTextBounds);
+
+            mLegendPaint.getTextBounds(mEmptyDataText, 0, mEmptyDataText.length(), mTextBounds);
             _Canvas.drawText(
-                    str,
+                    mEmptyDataText,
                     (mLegendWidth / 2) - (mTextBounds.width() / 2),
                     mIndicatorSize * 2 + mIndicatorBottomMargin + mIndicatorTopMargin + height,
                     mLegendPaint
