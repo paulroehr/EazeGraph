@@ -180,8 +180,16 @@ public class ValueLineChart extends BaseChart {
      */
     public void addLegend(List<LegendModel> _Legend) {
         mLegendList.addAll(_Legend);
-        mUseCustomLegend = true;
         onLegendDataChanged();
+    }
+
+    public boolean isUseCustomLegend() {
+        return mUseCustomLegend;
+    }
+
+    public void setUseCustomLegend(boolean _useCustomLegend) {
+        mUseCustomLegend = _useCustomLegend;
+        invalidateGlobal();
     }
 
     /**
@@ -873,10 +881,8 @@ public class ValueLineChart extends BaseChart {
                 }
             }
 
-            if(!mUseCustomLegend) {
-                if(calculateLegendBounds())
-                    Utils.calculateLegendInformation(mSeries.get(0).getSeries(), 0, mGraphWidth, mLegendPaint);
-            }
+            if(calculateLegendBounds())
+                Utils.calculateLegendInformation(mSeries.get(0).getSeries(), 0, mGraphWidth, mLegendPaint);
 
             // set the first point for the indicator
             if(mShowIndicator && mSeries.size() == 1) {
