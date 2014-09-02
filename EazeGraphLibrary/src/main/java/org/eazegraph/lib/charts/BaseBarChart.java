@@ -188,6 +188,12 @@ public abstract class BaseBarChart extends BaseChart {
         onDataChanged();
     }
 
+    public void setScrollToEnd() {
+        mCurrentViewport.left = mContentRect.width() - mGraphWidth;
+        mCurrentViewport.right = mContentRect.width();
+        invalidateGlobal();
+    }
+
     /**
      * Implement this to do your drawing.
      *

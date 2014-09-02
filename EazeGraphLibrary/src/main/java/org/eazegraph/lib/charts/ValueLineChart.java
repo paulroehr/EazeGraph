@@ -189,7 +189,7 @@ public class ValueLineChart extends BaseChart {
 
     public void setUseCustomLegend(boolean _useCustomLegend) {
         mUseCustomLegend = _useCustomLegend;
-        invalidateGlobal();
+        onLegendDataChanged();
     }
 
     /**
@@ -957,16 +957,15 @@ public class ValueLineChart extends BaseChart {
     protected void onLegendDataChanged() {
 
         int   legendCount = mLegendList.size();
-        float margin = (mLegendWidth / legendCount);
+        float margin = (mGraphWidth / legendCount);
         float currentOffset = 0;
 
         for (LegendModel model : mLegendList) {
             model.setLegendBounds(new RectF(currentOffset, 0, currentOffset + margin, mLegendHeight));
-            Rect textBounds = new Rect();
-            mLegendPaint.getTextBounds(model.getLegendLabel(), 0, model.getLegendLabel().length(), textBounds);
-            model.setTextBounds(textBounds);
             currentOffset += margin;
         }
+
+        Utils.calculateLegendInformation(mLegendList, 0, mGraphWidth, mLegendPaint);
 
         invalidateGlobal();
     }
@@ -1298,10 +1297,13 @@ public class ValueLineChart extends BaseChart {
 
             if (mUseCustomLegend) {
                 for (LegendModel model : mLegendList) {
-                    Rect textBounds = model.getTextBounds();
                     RectF bounds = model.getLegendBounds();
-                    _Canvas.drawText(model.getLegendLabel(), bounds.centerX() - (textBounds.width() / 2), bounds.centerY(), mLegendPaint);
-                    _Canvas.drawLine(bounds.centerX(), bounds.centerY() - textBounds.height() - mLegendTopPadding, bounds.centerX(), mLegendTopPadding, mLegendPaint);
+                    _Canvas.drawText(model.getLegendLabel(), model.getLegendLabelPosition(), bounds.bottom - mMaxFontHeight, mLegendPaint);
+                    _Canvas.drawLine(
+                            bounds.centerX(),
+                            bounds.bottom - mMaxFontHeight * 2 - mLegendTopPadding,
+                            bounds.centerX(),
+                            mLegendTopPadding, mLegendPaint);
                 }
             } else {
                 List<? extends BaseModel> list = mSeries.get(0).getSeries();
@@ -1326,7 +1328,7 @@ public class ValueLineChart extends BaseChart {
 
         super.onGraphOverlayTouchEvent(_Event);
 
-        if(!mStartedAnimation && !mSeries.isEmpty()) {
+        if(!mStartedAnimation && containsPoints()) {
             mScaleGestureDetector.onTouchEvent(_Event);
             mGestureDetector.onTouchEvent(_Event);
 
