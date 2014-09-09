@@ -90,6 +90,13 @@ That's it. now you are ready to use the library!
 Usage
 =====
 
+### Project setup
+
+Before you use the project please prepare all required settings in a configuration file.
+There is an example file called `gradle.properties.example` contained in the repository
+which you can copy and rename to `gradle.properties`.
+
+
 ### Bar Chart
 
 ##### XML
