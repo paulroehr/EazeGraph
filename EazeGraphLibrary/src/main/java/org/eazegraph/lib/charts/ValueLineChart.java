@@ -564,7 +564,7 @@ public class ValueLineChart extends BaseChart {
                 0f, 0f, 1f};
         mDrawMatrix.setValues(mDrawMatrixValues);
 
-        if(!mSeries.isEmpty() && _recalculate) {
+        if(containsPoints() && _recalculate) {
             recalculateXCoordinates(mGraphWidth * mDrawMatrixValues[0]);
             if (calculateLegendBounds())
                 Utils.calculateLegendInformation(mSeries.get(0).getSeries(), 0, mGraphWidth * mDrawMatrixValues[0], mLegendPaint);
