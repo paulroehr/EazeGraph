@@ -1,0 +1,22 @@
+# Deployment
+GROUP="undefined"
+POM_ARTIFACT_ID="undefined"
+VERSION_NAME="undefined"
+POM_NAME="undefined"
+POM_PACKAGING="undefined"
+POM_DESCRIPTION="undefined"
+POM_URL="undefined"
+POM_SCM_URL="undefined"
+POM_SCM_CONNECTION="undefined"
+POM_SCM_DEV_CONNECTION="undefined"
+POM_LICENCE_NAME="undefined"
+POM_LICENCE_URL="undefined"
+POM_LICENCE_DIST="undefined"
+POM_DEVELOPER_ID="undefined"
+POM_DEVELOPER_NAME="undefined"
+
+# Signing
+STORE_FILE="undefined"
+STORE_PASSWORD="undefined"
+KEY_ALIAS="undefined"
+KEY_PASSWORD="undefined"
