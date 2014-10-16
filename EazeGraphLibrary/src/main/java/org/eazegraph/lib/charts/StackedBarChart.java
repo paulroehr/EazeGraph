@@ -2,12 +2,16 @@ package org.eazegraph.lib.charts;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import org.eazegraph.lib.models.BarModel;
 import org.eazegraph.lib.models.BaseModel;
+import org.eazegraph.lib.models.Point2D;
 import org.eazegraph.lib.models.StackedBarModel;
 import org.eazegraph.lib.utils.Utils;
 
@@ -106,6 +110,16 @@ public class StackedBarChart extends BaseBarChart {
         super.initializeGraph();
         mData = new ArrayList<StackedBarModel>();
 
+        mSeperatorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mSeperatorPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        mSeperatorPaint.setStrokeWidth(mSeperatorWidth);
+        mSeperatorPaint.setColor(0xFFFFFFFF);
+
+        mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mTextPaint.setTextSize(mTextSize);
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
+        mTextPaint.setColor(0xFFFFFFFF);
+
         if(this.isInEditMode()) {
             StackedBarModel s1 = new StackedBarModel();
 
@@ -140,11 +154,13 @@ public class StackedBarChart extends BaseBarChart {
      */
     protected void calculateBounds(float _Width, float _Margin) {
 
-        int   last = 0;
+        int last = 0;
 
         for (StackedBarModel model : mData) {
-            float lastHeight = 0;
+            float lastY = 0;
             float cumulatedValues = 0;
+            // used if seperators are enabled, to prevent information loss
+            int usableGraphHeight = mGraphHeight - (int) (mSeperatorWidth * (model.getBars().size() - 1));
 
             for (BarModel barModel : model.getBars()) {
                 cumulatedValues += barModel.getValue();
@@ -153,10 +169,21 @@ public class StackedBarChart extends BaseBarChart {
             last += _Margin / 2;
 
             for (BarModel barModel : model.getBars()) {
-                // calculate height for the StackedBarModel part
-                float height = ((barModel.getValue() * mGraphHeight) / cumulatedValues) + lastHeight;
-                barModel.setBarBounds(new RectF(last, lastHeight, last + _Width, height));
-                lastHeight = height;
+                // calculate topX for the StackedBarModel part
+                float newY = ((barModel.getValue() * usableGraphHeight) / cumulatedValues) + lastY;
+                float height = newY - lastY;
+                Rect textBounds = new Rect();
+                String value = String.valueOf(barModel.getValue());
+
+                mTextPaint.getTextBounds(value, 0, value.length(), textBounds);
+
+                if (textBounds.height() * 1.5f < height && textBounds.width() * 1.1f < _Width) {
+                    barModel.setShowValue(true);
+                    barModel.setValueBounds(textBounds);
+                }
+
+                barModel.setBarBounds(new RectF(last, lastY, last + _Width, newY));
+                lastY = newY;
             }
             model.setLegendBounds(new RectF(last, 0, last + _Width, mLegendHeight));
 
@@ -175,7 +202,9 @@ public class StackedBarChart extends BaseBarChart {
             float lastTop;
             float lastBottom = mGraphHeight;
 
-            for (BarModel barModel : model.getBars()) {
+            for (int index = 0; index < model.getBars().size(); index++) {
+                BarModel barModel = model.getBars().get(index);
+
                 RectF bounds = barModel.getBarBounds();
                 mGraphPaint.setColor(barModel.getColor());
 
@@ -187,9 +216,25 @@ public class StackedBarChart extends BaseBarChart {
                         lastTop,
                         bounds.right,
                         lastBottom,
-                        mGraphPaint);
+                        mGraphPaint
+                );
+
+                if (mDrawValues && barModel.isShowValue()) {
+                    _Canvas.drawText(
+                            String.valueOf(barModel.getValue()),
+                            bounds.centerX(),
+                            (lastTop + height / 2) + barModel.getValueBounds().height()/2,
+                            mTextPaint
+                    );
+                }
+
                 lastBottom = lastTop;
+
+                if (mShowSeperators && index < model.getBars().size() - 1) {
+                    lastBottom -= mSeperatorWidth;
+                }
             }
+
         }
     }
 
@@ -217,6 +262,13 @@ public class StackedBarChart extends BaseBarChart {
 
     private static final String LOG_TAG = BarChart.class.getSimpleName();
 
+    private Paint                  mSeperatorPaint;
+    private Paint                  mTextPaint;
+
     private List<StackedBarModel>  mData;
 
+    private boolean                mDrawValues = true;
+    private float                  mTextSize = Utils.dpToPx(12f);
+    private boolean                mShowSeperators = true;
+    private float                  mSeperatorWidth = Utils.dpToPx(2f);
 }

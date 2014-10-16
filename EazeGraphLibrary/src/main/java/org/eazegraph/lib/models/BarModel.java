@@ -17,6 +17,7 @@
 
 package org.eazegraph.lib.models;
 
+import android.graphics.Rect;
 import android.graphics.RectF;
 
 /**
@@ -66,6 +67,22 @@ public class BarModel extends BaseModel implements Comparable {
         mBarBounds = _bounds;
     }
 
+    public boolean isShowValue() {
+        return mShowValue;
+    }
+
+    public void setShowValue(boolean _showValue) {
+        mShowValue = _showValue;
+    }
+
+    public Rect getValueBounds() {
+        return mValueBounds;
+    }
+
+    public void setValueBounds(Rect _valueBounds) {
+        mValueBounds = _valueBounds;
+    }
+
     @Override
     public int compareTo(Object o) {
         BarModel bar = (BarModel) o;
@@ -94,4 +111,8 @@ public class BarModel extends BaseModel implements Comparable {
      * Bar boundaries.
      */
     private RectF mBarBounds;
+
+    private boolean mShowValue = false;
+
+    private Rect mValueBounds = new Rect();
 }
