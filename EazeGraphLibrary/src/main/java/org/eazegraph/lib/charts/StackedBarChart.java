@@ -267,6 +267,7 @@ public class StackedBarChart extends BaseBarChart {
 
     private List<StackedBarModel>  mData;
 
+    // TODO: Make XML attributes
     private boolean                mDrawValues = true;
     private float                  mTextSize = Utils.dpToPx(12f);
     private boolean                mShowSeperators = true;
