@@ -24,6 +24,7 @@
         <attr name="egScalingFactor"                format="float"/>
         <attr name="egMaxXZoom"                     format="float"/>
         <attr name="egMaxYZoom"                     format="float"/>
+        <attr name="egShowColoredStroke"            format="boolean"/>
 
     </declare-styleable>
 

@@ -19,6 +19,7 @@ package org.eazegraph.lib.utils;
 
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -264,6 +265,21 @@ public class Utils {
      */
     public static void setTranslationY(float _Value, float[] _DestMatrix) {
         _DestMatrix[5] = _Value;
+    }
+
+    /**
+     * Calculates a manipulated color based on the handed color.
+     *
+     * @param _color The base color
+     * @param _manipulationValue The value which is used to generate the manipulated color.
+     */
+    public static int manipulateColor(int _color, float _manipulationValue) {
+        return Color.argb(
+                0xff,
+                Math.min((int) (_manipulationValue * (float) Color.red(_color)), 0xff),
+                Math.min((int) (_manipulationValue * (float) Color.green(_color)), 0xff),
+                Math.min((int) (_manipulationValue * (float) Color.blue(_color)), 0xff)
+        );
     }
 
     private static final String LOG_TAG = Utils.class.getSimpleName();

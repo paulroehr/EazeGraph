@@ -88,6 +88,7 @@ public class ValueLineChart extends BaseChart {
         mScalingFactor                = DEF_SCALING_FACTOR;
         mMaxZoomX                     = DEF_MAX_ZOOM_X;
         mMaxZoomY                     = DEF_MAX_ZOOM_Y;
+        mShowColoredStroke            = DEF_SHOW_COLORED_STROKE;
 
         initializeGraph();
     }
@@ -142,6 +143,7 @@ public class ValueLineChart extends BaseChart {
             mScalingFactor                = a.getFloat(R.styleable.ValueLineChart_egScalingFactor, DEF_SCALING_FACTOR);
             mMaxZoomX                     = a.getFloat(R.styleable.ValueLineChart_egMaxXZoom, DEF_MAX_ZOOM_X);
             mMaxZoomY                     = a.getFloat(R.styleable.ValueLineChart_egMaxYZoom,                           DEF_MAX_ZOOM_Y);
+            mShowColoredStroke            = a.getBoolean(R.styleable.ValueLineChart_egShowColoredStroke, DEF_SHOW_COLORED_STROKE);
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -564,6 +566,15 @@ public class ValueLineChart extends BaseChart {
         mMaxZoomY = _maxZoomY;
         // TODO: Animate
         resetZoom(true);
+    }
+
+    public boolean isShowColoredStroke() {
+        return mShowColoredStroke;
+    }
+
+    public void setShowColoredStroke(boolean _showColoredStroke) {
+        mShowColoredStroke = _showColoredStroke;
+        invalidateGraph();
     }
 
     public void resetZoom(boolean _recalculate) {
@@ -1225,7 +1236,15 @@ public class ValueLineChart extends BaseChart {
         // drawing of lines
         for (ValueLineSeries series : mSeries) {
             mLinePaint.setColor(series.getColor());
+            mLinePaint.setStyle(Paint.Style.FILL);
             _Canvas.drawPath(series.getPath(), mLinePaint);
+
+            if (mShowColoredStroke) {
+                mLinePaint.setColor(Utils.manipulateColor(series.getColor(), 0.85f));
+                mLinePaint.setStyle(Paint.Style.STROKE);
+                _Canvas.drawPath(series.getPath(), mLinePaint);
+            }
+
         }
     }
 
@@ -1456,7 +1475,7 @@ public class ValueLineChart extends BaseChart {
 
     public static final boolean DEF_USE_CUBIC                       = false;
     public static final boolean DEF_USE_OVERLAP_FILL                = false;
-    public static final float   DEF_LINE_STROKE                     = 5f;
+    public static final float   DEF_LINE_STROKE                     = 2f;
     public static final float   DEF_FIRST_MULTIPLIER                = 0.33f;
     public static final boolean DEF_SHOW_INDICATOR                  = true;
     public static final float   DEF_INDICATOR_WIDTH                 = 2f;
@@ -1479,6 +1498,7 @@ public class ValueLineChart extends BaseChart {
     public static final float   DEF_SCALING_FACTOR                  = 0.96f;
     public static final float   DEF_MAX_ZOOM_X                      = 3.f;
     public static final float   DEF_MAX_ZOOM_Y                      = 3.f;
+    public static final boolean DEF_SHOW_COLORED_STROKE             = false;
 
     private Paint                   mLinePaint;
     private Paint                   mLegendPaint;
@@ -1542,6 +1562,8 @@ public class ValueLineChart extends BaseChart {
     private int                     mIndicatorShadowColor;
     private String                  mIndicatorTextUnit;
     private boolean                 mShowLegendBeneathIndicator;
+    private boolean                 mShowColoredStroke = true;
+
     /**
      * Enabling this when only positive and big values are present and only have little fluctuations,
      * a y-axis scaling takes place to see a better difference between the values.

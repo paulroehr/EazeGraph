@@ -256,7 +256,7 @@ public class PieChart extends BaseChart {
     public void setHighlightStrength(float _highlightStrength) {
         mHighlightStrength = _highlightStrength;
         for (PieModel model : mPieData) {
-            highlightSlice(model);
+            model.setHighlightedColor(Utils.manipulateColor(model.getColor(), mHighlightStrength));
         }
         invalidateGlobal();
     }
@@ -497,7 +497,7 @@ public class PieChart extends BaseChart {
      * @param _Slice The newly added PieSlice.
      */
     public void addPieSlice(PieModel _Slice) {
-        highlightSlice(_Slice);
+        _Slice.setHighlightedColor(Utils.manipulateColor(_Slice.getColor(), mHighlightStrength));
         mPieData.add(_Slice);
         mTotalValue += _Slice.getValue();
         onDataChanged();
@@ -735,23 +735,6 @@ public class PieChart extends BaseChart {
         }
         calcCurrentItem();
         onScrollFinished();
-    }
-
-    /**
-     * Calculate the highlight color. Saturate at 0xff to make sure that high values
-     * don't result in aliasing.
-     *
-     * @param _Slice The Slice which will be highlighted.
-     */
-    private void highlightSlice(PieModel _Slice) {
-
-        int color = _Slice.getColor();
-        _Slice.setHighlightedColor(Color.argb(
-                0xff,
-                Math.min((int) (mHighlightStrength * (float) Color.red(color)), 0xff),
-                Math.min((int) (mHighlightStrength * (float) Color.green(color)), 0xff),
-                Math.min((int) (mHighlightStrength * (float) Color.blue(color)), 0xff)
-        ));
     }
 
     /**
