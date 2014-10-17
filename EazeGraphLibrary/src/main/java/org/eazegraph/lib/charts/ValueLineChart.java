@@ -20,6 +20,7 @@ package org.eazegraph.lib.charts;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -1245,6 +1246,8 @@ public class ValueLineChart extends BaseChart {
         if(containsPoints()) {
             // draw standard value line
             if (mShowStandardValues) {
+
+                mIndicatorPaint.setPathEffect(mDashPathEffect);
                 for (StandardValue value : mStandardValues) {
                     mIndicatorPaint.setColor(value.getColor());
                     mIndicatorPaint.setStrokeWidth(value.getStroke());
@@ -1259,8 +1262,8 @@ public class ValueLineChart extends BaseChart {
             }
 
             // draw touch indicator
-            // TODO: if mShowIndicator is true, then check all series not only if one series is inserted
             if(mShowIndicator && mSeries.size() > 0) {
+                mIndicatorPaint.setPathEffect(null);
                 mIndicatorPaint.setColor(mIndicatorLineColor);
                 mIndicatorPaint.setStrokeWidth(mIndicatorWidth);
 
@@ -1557,6 +1560,8 @@ public class ValueLineChart extends BaseChart {
                                                                      0f, 1f, 0f,
                                                                      0f, 0f, 1f};
     private boolean                 mIsInteracting = false;
+
+    private DashPathEffect          mDashPathEffect = new DashPathEffect(new float[] {10,20}, 0);
 
     // State objects and values related to gesture tracking.
     private ScaleGestureDetector    mScaleGestureDetector;
