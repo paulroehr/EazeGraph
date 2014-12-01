@@ -12,14 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         app:egUseCubic="true"
-        app:egUseOverlapFill="true"
         app:egCurveSmoothness="0.25"
-        app:egIndicatorLineColor="#FE6DA8"
-        app:egIndicatorTextColor="#FE6DA8"
+        app:egUseDynamicScaling="false"
         app:egLegendHeight="40dp"
-        app:egShowStandardValue="true"
-        app:egIndicatorTextUnit="g"
-        app:egShowDecimal="true"
-        app:egShowLegendBeneathIndicator="true"/>
+        app:egShowDecimal="true"/>
 
 </LinearLayout>

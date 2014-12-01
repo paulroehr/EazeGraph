@@ -6,12 +6,6 @@
         <attr name="egInnerPaddingOutline"    format="float"/>
         <attr name="egUseInnerPadding"        format="boolean"/>
         <attr name="egHighlightStrength"      format="float"/>
-        <attr name="egUsePieRotation"         format="boolean"/>
-        <attr name="egAutoCenter"             format="boolean"/>
-        <attr name="egDrawValueInPie"         format="boolean"/>
-        <attr name="egValueTextSize"          format="dimension"/>
-        <attr name="egValueTextColor"         format="color"/>
-        <attr name="egUseCustomInnerValue"    format="boolean"/>
         <attr name="egOpenClockwise"          format="boolean"/>
         <attr name="egInnerPaddingColor"      format="color"/>
         <attr name="egInnerValueUnit"         format="string"/>

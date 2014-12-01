@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 20
-    buildToolsVersion "19.1.0"
+    compileSdkVersion 21
+    buildToolsVersion "21.1.1"
 
     signingConfigs {
         release {
@@ -16,7 +16,7 @@ android {
     defaultConfig {
         applicationId "org.eazegraph.app"
         minSdkVersion 9
-        targetSdkVersion 20
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
     }
@@ -27,29 +27,31 @@ android {
 
     buildTypes {
         release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            runProguard false
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             signingConfig signingConfigs.release
 
             // this is used to alter output directory and file name. If you don't need it
             // you can safely comment it out.
             applicationVariants.all { variant ->
-                def file = variant.outputFile
+                variant.outputs.each { output ->
+                    def file = output.outputFile
 
-                String parent = file.parent
-                if( project.hasProperty('OUTPUT_DIR') && new File( (String)OUTPUT_DIR ).exists() )
-                    parent = OUTPUT_DIR
+                    String parent = file.parent
+                    if (project.hasProperty('OUTPUT_DIR') && new File((String) OUTPUT_DIR).exists())
+                        parent = OUTPUT_DIR
 
-                variant.outputFile = new File(
-                        parent,
-                        (String) file.name.replace(
-                                ".apk",
+                    output.outputFile = new File(
+                            parent,
+                            (String) file.name.replace(
+                                    ".apk",
 
-                                // alter this string to change output file name
-                                "-" + defaultConfig.versionName + "-build" + defaultConfig.versionCode + ".apk"
-                        )
-                )
+                                    // alter this string to change output file name
+                                    "-" + defaultConfig.versionName + "-build" + defaultConfig.versionCode + ".apk"
+                            )
+                    )
+                }
             }
         }
     }
@@ -58,5 +60,5 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':EazeGraphLibrary')
-    compile 'com.android.support:appcompat-v7:19.+'
+    compile 'com.android.support:appcompat-v7:21.+'
 }

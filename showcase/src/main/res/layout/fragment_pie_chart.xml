@@ -11,10 +11,7 @@
         android:layout_height="300dp"
         android:padding="10dp"
         app:egLegendTextSize="18sp"
-        app:egUsePieRotation="true"
         app:egValueTextSize="36sp"
-        app:egAutoCenter="true"
-        app:egOpenClockwise="false"
-        app:egInnerValueUnit="%"/>
+        app:egOpenClockwise="false"/>
 
 </FrameLayout>

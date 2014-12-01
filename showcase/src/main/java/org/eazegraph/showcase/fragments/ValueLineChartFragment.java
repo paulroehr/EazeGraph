@@ -18,14 +18,11 @@
 package org.eazegraph.showcase.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.eazegraph.lib.charts.ValueLineChart;
-import org.eazegraph.lib.communication.IOnPointFocusedListener;
-import org.eazegraph.lib.models.StandardValue;
 import org.eazegraph.lib.models.ValueLinePoint;
 import org.eazegraph.lib.models.ValueLineSeries;
 import org.eazegraph.showcase.R;
@@ -62,7 +59,6 @@ public class ValueLineChartFragment extends ChartFragment {
 
     @Override
     public void onReset() {
-        mValueLineChart.resetZoom(true);
     }
 
     private void loadData() {
@@ -128,12 +124,7 @@ public class ValueLineChartFragment extends ChartFragment {
 //        mValueLineChart.addStandardValue(new StandardValue(140f));
 //        mValueLineChart.addStandardValue(new StandardValue(163.4f));
         mValueLineChart.addSeries(series);
-        mValueLineChart.setOnPointFocusedListener(new IOnPointFocusedListener() {
-            @Override
-            public void onPointFocused(int _PointPos) {
-                Log.d("Test", "Pos: " + _PointPos);
-            }
-        });
+
 
     }
 

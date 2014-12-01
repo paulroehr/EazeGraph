@@ -562,7 +562,7 @@ public abstract class BaseChart extends ViewGroup {
 
     protected final static NumberFormat mFormatter = NumberFormat.getInstance(Locale.getDefault());
 
-    public static final float   DEF_LEGEND_HEIGHT       = 58.f;
+    public static final float   DEF_LEGEND_HEIGHT       = 40.f;
     public static final int     DEF_LEGEND_COLOR        = 0xFF898989;
     // will be interpreted as sp value
     public static final float   DEF_LEGEND_TEXT_SIZE    = 12.f;
