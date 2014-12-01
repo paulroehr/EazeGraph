@@ -24,6 +24,7 @@ import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -384,6 +385,10 @@ public class ValueLineChart extends BaseChart {
                 minValue = 0;
             }
 
+            mAxisValues[0] = (float) ((maxValue - minValue) * 0.25) + minValue;
+            mAxisValues[1] = (float) ((maxValue - minValue) * 0.50) + minValue;
+            mAxisValues[2] = (float) ((maxValue - minValue) * 0.75) + minValue;
+
             float heightMultiplier  = mUsableGraphHeight / (maxValue - minValue);
 
             // calculate the offset
@@ -542,6 +547,20 @@ public class ValueLineChart extends BaseChart {
     //                          Override methods from view layers
     // ---------------------------------------------------------------------------------------------
 
+
+    @Override
+    protected void onGraphUnderlayDraw(Canvas _Canvas) {
+        super.onGraphUnderlayDraw(_Canvas);
+        mLegendPaint.setStrokeWidth(mXAxisStroke);
+        _Canvas.drawText(Utils.getFloatString(mAxisValues[2], mShowDecimal), mAxisTextPadding, (int) (mGraphHeight * 0.25) - mAxisTextPadding, mLegendPaint);
+        _Canvas.drawLine(0, (int) (mGraphHeight * 0.25), mWidth, (int) (mGraphHeight * 0.25), mLegendPaint);
+        _Canvas.drawText(Utils.getFloatString(mAxisValues[1], mShowDecimal), mAxisTextPadding, (int) (mGraphHeight * 0.50) - mAxisTextPadding, mLegendPaint);
+        _Canvas.drawLine(0, (int) (mGraphHeight * 0.50), mWidth, (int) (mGraphHeight * 0.50), mLegendPaint);
+        _Canvas.drawText(Utils.getFloatString(mAxisValues[0], mShowDecimal), mAxisTextPadding, (int) (mGraphHeight * 0.75) - mAxisTextPadding, mLegendPaint);
+        _Canvas.drawLine(0, (int) (mGraphHeight * 0.75), mWidth, (int) (mGraphHeight * 0.75), mLegendPaint);
+        _Canvas.drawLine(0, mGraphHeight - mMinimumPadding, mWidth, mGraphHeight - mMinimumPadding, mLegendPaint);
+    }
+
     @Override
     protected void onGraphDraw(Canvas _Canvas) {
         super.onGraphDraw(_Canvas);
@@ -563,15 +582,15 @@ public class ValueLineChart extends BaseChart {
     protected void onGraphOverlayDraw(Canvas _Canvas) {
         super.onGraphOverlayDraw(_Canvas);
 
-        // draw x-axis
-        mLegendPaint.setStrokeWidth(mXAxisStroke);
-        _Canvas.drawLine(
-                0,
-                (mGraphHeight - mNegativeOffset) * Utils.getScaleY(mDrawMatrixValues) + Utils.getTranslationY(mDrawMatrixValues),
-                mGraphWidth,
-                (mGraphHeight - mNegativeOffset) * Utils.getScaleY(mDrawMatrixValues) + Utils.getTranslationY(mDrawMatrixValues),
-                mLegendPaint
-        );
+//        // draw x-axis
+//        mLegendPaint.setStrokeWidth(mXAxisStroke);
+//        _Canvas.drawLine(
+//                0,
+//                (mGraphHeight - mNegativeOffset) * Utils.getScaleY(mDrawMatrixValues) + Utils.getTranslationY(mDrawMatrixValues),
+//                mGraphWidth,
+//                (mGraphHeight - mNegativeOffset) * Utils.getScaleY(mDrawMatrixValues) + Utils.getTranslationY(mDrawMatrixValues),
+//                mLegendPaint
+//        );
     }
 
     @Override
@@ -619,7 +638,7 @@ public class ValueLineChart extends BaseChart {
     public static final boolean DEF_USE_CUBIC                       = false;
     public static final float   DEF_LINE_STROKE                     = 2f;
     public static final float   DEF_FIRST_MULTIPLIER                = 0.33f;
-    public static final float   DEF_X_AXIS_STROKE                   = 2f;
+    public static final float   DEF_X_AXIS_STROKE                   = 0.5f;
     public static final float   DEF_LEGEND_STROKE                   = 2f;
     public static final boolean DEF_USE_DYNAMIC_SCALING             = false;
     public static final float   DEF_SCALING_FACTOR                  = 0.96f;
@@ -655,6 +674,7 @@ public class ValueLineChart extends BaseChart {
     private float                   mXAxisStroke;
     private boolean                 mShowColoredStroke = true;
     private float                   mScalingFactor;
+    private float                   mAxisTextPadding = Utils.dpToPx(3f);
 
     /**
      * Enabling this when only positive and big values are present and only have little fluctuations,
@@ -666,5 +686,12 @@ public class ValueLineChart extends BaseChart {
     private   float[]               mDrawMatrixValues = new float[] {1f, 0f, 0f,
                                                                      0f, 1f, 0f,
                                                                      0f, 0f, 1f};
-
+    /**
+     * The values which will be drawn over the axis lines (25%, 50%, 75%)
+     *
+     * 25% = [0]
+     * 50% = [1]
+     * 75% = [2]
+     */
+    private float[]                 mAxisValues = new float[] {5.6f, 11.2f, 16.8f};
 }

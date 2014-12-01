@@ -15,38 +15,6 @@
  *   limitations under the License.
  */
 
-/**
- * Important:
- *
- * This PieChart partially uses google provided code from their developer website (code sample):
- *
- *      http://developer.android.com/training/custom-views/create-view.html
- *
- * Mainly it's the code which handles the touch and rotation/animation handling. I did not logically modified
- * the code, I only copied and used the bits I needed and renamed the variables.
- * Another function which I extracted from the code sample is the "vectorToScalarScroll(...)" - function.
- * This can be found in the "Utils" - class.
- *
- * That's why I include the Apache License part from the sample:
- *
- * *************************************************************************************************
- *
- *  Copyright (C) 2012 The Android Open Source Project
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- */
-
 package org.eazegraph.lib.charts;
 
 import android.content.Context;

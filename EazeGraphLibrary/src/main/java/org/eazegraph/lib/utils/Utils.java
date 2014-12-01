@@ -32,6 +32,7 @@ import org.eazegraph.lib.models.Point2D;
 import org.eazegraph.lib.models.ValueLinePoint;
 import org.eazegraph.lib.models.ValueLineSeries;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -63,30 +64,6 @@ public class Utils {
         float diffY = _P2.getY() - _P1.getY();
         _Result.setX(_P1.getX() + (diffX * _Multiplier));
         _Result.setY(_P1.getY() + (diffY * _Multiplier));
-    }
-
-    /**
-     * Helper method for translating (_X,_Y) scroll vectors into scalar rotation of a circle.
-     *
-     * @param _Dx The _X component of the current scroll vector.
-     * @param _Dy The _Y component of the current scroll vector.
-     * @param _X  The _X position of the current touch, relative to the circle center.
-     * @param _Y  The _Y position of the current touch, relative to the circle center.
-     * @return The scalar representing the change in angular position for this scroll.
-     */
-    public static float vectorToScalarScroll(float _Dx, float _Dy, float _X, float _Y) {
-        // get the length of the vector
-        float l = (float) Math.sqrt(_Dx * _Dx + _Dy * _Dy);
-
-        // decide if the scalar should be negative or positive by finding
-        // the dot product of the vector perpendicular to (_X,_Y).
-        float crossX = -_Y;
-        float crossY = _X;
-
-        float dot = (crossX * _Dx + crossY * _Dy);
-        float sign = Math.signum(dot);
-
-        return l * sign;
     }
 
     /**
@@ -150,7 +127,7 @@ public class Utils {
      */
     public static String getFloatString(float _value, boolean _showDecimal) {
         if (_showDecimal) {
-            return _value+"";
+            return mDecimalFormat.format(_value);
         }
         else {
             return ((int) _value) + "";
@@ -283,4 +260,5 @@ public class Utils {
     }
 
     private static final String LOG_TAG = Utils.class.getSimpleName();
+    private static final DecimalFormat mDecimalFormat = new DecimalFormat("#.#");
 }

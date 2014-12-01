@@ -12,8 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         app:egUseCubic="true"
-        app:egCurveSmoothness="0.25"
-        app:egUseDynamicScaling="false"
+        app:egCurveSmoothness="0.20"
+        app:egUseDynamicScaling="true"
+        app:egUseLeftFiller="true"
         app:egLegendHeight="40dp"
         app:egShowDecimal="true"/>
 

@@ -8,6 +8,8 @@
         <attr name="egLegendTextSize" format="dimension"/>
         <attr name="egShowDecimal"    format="boolean"/>
         <attr name="egEmptyDataText"  format="string"/>
+        <attr name="egUseLeftFiller"  format="boolean"/>
+        <attr name="egLeftFillerSize" format="dimension"/>
     </declare-styleable>
 
 </resources>

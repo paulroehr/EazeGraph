@@ -20,9 +20,6 @@ package org.eazegraph.lib.charts;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.PointF;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -60,6 +57,8 @@ public abstract class BaseChart extends ViewGroup {
         mAnimationTime  = DEF_ANIMATION_TIME;
         mShowDecimal    = DEF_SHOW_DECIMAL;
         mEmptyDataText  = DEF_EMPTY_DATA_TEXT;
+        mUseLeftFiller  = DEF_USE_LEFT_FILLER;
+        mLeftFillerSize = DEF_LEFT_FILLER_SIZE;
     }
 
     /**
@@ -95,6 +94,8 @@ public abstract class BaseChart extends ViewGroup {
             mShowDecimal        = a.getBoolean(R.styleable.BaseChart_egShowDecimal,        DEF_SHOW_DECIMAL);
             mLegendColor        = a.getColor(R.styleable.BaseChart_egLegendColor,          DEF_LEGEND_COLOR);
             mEmptyDataText      = a.getString(R.styleable.BaseChart_egEmptyDataText);
+            mUseLeftFiller      = a.getBoolean(R.styleable.BaseChart_egUseLeftFiller,      DEF_USE_LEFT_FILLER);
+            mLeftFillerSize     = a.getDimensionPixelSize(R.styleable.BaseChart_egLeftFillerSize, DEF_LEFT_FILLER_SIZE);
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -205,9 +206,15 @@ public abstract class BaseChart extends ViewGroup {
         mRightPadding   = getPaddingRight();
         mBottomPadding  = getPaddingBottom();
 
-        mGraph.layout(mLeftPadding, mTopPadding, w - mRightPadding, (int) (h - mLegendHeight - mBottomPadding));
-        mGraphOverlay.layout(mLeftPadding, mTopPadding, w - mRightPadding, (int) (h - mLegendHeight - mBottomPadding));
-        mLegend.layout(mLeftPadding, (int) (h - mLegendHeight - mBottomPadding), w - mRightPadding, h - mBottomPadding);
+        int filler = 0;
+        if (mUseLeftFiller) {
+            filler = mLeftFillerSize;
+        }
+
+        mGraphUnderlay.layout   (mLeftPadding, mTopPadding, w - mRightPadding, (int) (h - mLegendHeight - mBottomPadding));
+        mGraph.layout           (mLeftPadding + filler, mTopPadding, w - mRightPadding, (int) (h - mLegendHeight - mBottomPadding));
+        mGraphOverlay.layout    (mLeftPadding + filler, mTopPadding, w - mRightPadding, (int) (h - mLegendHeight - mBottomPadding));
+        mLegend.layout          (mLeftPadding + filler, (int) (h - mLegendHeight - mBottomPadding), w - mRightPadding, h - mBottomPadding);
     }
 
     /**
@@ -225,6 +232,9 @@ public abstract class BaseChart extends ViewGroup {
      * and its corresponding members.
      */
     protected void initializeGraph() {
+        mGraphUnderlay = new GraphUnderlay(getContext());
+        addView(mGraphUnderlay);
+
         mGraph = new Graph(getContext());
         addView(mGraph);
 
@@ -267,12 +277,17 @@ public abstract class BaseChart extends ViewGroup {
      */
     protected final void invalidateGlobal() {
         mGraph.invalidate();
+        mGraphUnderlay.invalidate();
         mGraphOverlay.invalidate();
         mLegend.invalidate();
     }
 
     protected final void invalidateGraph() {
         mGraph.invalidate();
+    }
+
+    protected final void invalidateGraphUnderlay() {
+        mGraphUnderlay.invalidate();
     }
 
     protected final void invalidateGraphOverlay() {
@@ -295,6 +310,10 @@ public abstract class BaseChart extends ViewGroup {
 
     }
 
+    protected void onGraphUnderlayDraw(Canvas _Canvas) {
+
+    }
+
     protected void onLegendDraw(Canvas _Canvas) {
 
     }
@@ -304,6 +323,10 @@ public abstract class BaseChart extends ViewGroup {
     }
 
     protected void onGraphSizeChanged(int w, int h, int oldw, int oldh) {
+
+    }
+
+    protected void onGraphUnderlaySizeChanged(int w, int h, int oldw, int oldh) {
 
     }
 
@@ -359,6 +382,56 @@ public abstract class BaseChart extends ViewGroup {
             mGraphHeight = h;
 
             onGraphSizeChanged(w, h, oldw, oldh);
+        }
+
+        @Override
+        public boolean performClick() {
+            return super.performClick();
+        }
+
+    }
+
+    //##############################################################################################
+    // GraphOverlay
+    //##############################################################################################
+    protected class GraphUnderlay extends View {
+        /**
+         * Simple constructor to use when creating a view from code.
+         *
+         * @param context The Context the view is running in, through which it can
+         *                access the current theme, resources, etc.
+         */
+        private GraphUnderlay(Context context) {
+            super(context);
+
+        }
+
+        /**
+         * Implement this to do your drawing.
+         *
+         * @param canvas the canvas on which the background will be drawn
+         */
+        @Override
+        protected void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
+            onGraphUnderlayDraw(canvas);
+        }
+
+        /**
+         * This is called during layout when the size of this view has changed. If
+         * you were just added to the view hierarchy, you're called with the old
+         * values of 0.
+         *
+         * @param w    Current width of this view.
+         * @param h    Current height of this view.
+         * @param oldw Old width of this view.
+         * @param oldh Old height of this view.
+         */
+        @Override
+        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+            super.onSizeChanged(w, h, oldw, oldh);
+
+            onGraphUnderlaySizeChanged(w, h, oldw, oldh);
         }
 
         @Override
@@ -512,8 +585,11 @@ public abstract class BaseChart extends ViewGroup {
     public static final int     DEF_ANIMATION_TIME      = 2000;
     public static final boolean DEF_SHOW_DECIMAL        = false;
     public static final String  DEF_EMPTY_DATA_TEXT     = "No Data available";
+    public static final boolean DEF_USE_LEFT_FILLER     = false;
+    public static final int     DEF_LEFT_FILLER_SIZE    = (int) Utils.dpToPx(30f);
 
     protected Graph             mGraph;
+    protected GraphUnderlay     mGraphUnderlay;
     protected GraphOverlay      mGraphOverlay;
     protected Legend            mLegend;
 
@@ -532,6 +608,7 @@ public abstract class BaseChart extends ViewGroup {
     protected int               mTopPadding;
     protected int               mRightPadding;
     protected int               mBottomPadding;
+    protected int               mLeftFillerSize;
 
     protected String            mEmptyDataText;
 
@@ -539,10 +616,13 @@ public abstract class BaseChart extends ViewGroup {
     protected float             mLegendTopPadding = Utils.dpToPx(4.f);
 
     protected boolean           mShowDecimal;
+    protected boolean           mUseLeftFiller;
 
     protected ValueAnimator     mRevealAnimator     = null;
     protected float             mRevealValue        = 1.0f;
     protected int               mAnimationTime      = 1000;
     protected boolean           mStartedAnimation   = false;
+
+    protected int               mMinimumPadding = (int) Utils.dpToPx(1f);
 
 }
