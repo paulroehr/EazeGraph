@@ -24,13 +24,10 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 
 import org.eazegraph.lib.models.BaseModel;
 import org.eazegraph.lib.models.Point2D;
-import org.eazegraph.lib.models.ValueLinePoint;
-import org.eazegraph.lib.models.ValueLineSeries;
 
 import java.text.DecimalFormat;
 import java.util.List;

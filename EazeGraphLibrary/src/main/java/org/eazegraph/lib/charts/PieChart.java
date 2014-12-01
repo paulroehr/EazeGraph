@@ -22,7 +22,6 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 
@@ -91,12 +90,12 @@ public class PieChart extends BaseChart {
 
         try {
 
-            mUseInnerPadding     = a.getBoolean(R.styleable.PieChart_egUseInnerPadding,     DEF_USE_INNER_PADDING);
+            mUseInnerPadding     = a.getBoolean(R.styleable.PieChart_egUseInnerPadding, DEF_USE_INNER_PADDING);
             mInnerPadding        = a.getFloat(R.styleable.PieChart_egInnerPadding,          DEF_INNER_PADDING);
             mInnerPaddingOutline = a.getFloat(R.styleable.PieChart_egInnerPaddingOutline,   DEF_INNER_PADDING_OUTLINE);
-            mHighlightStrength   = a.getFloat(R.styleable.PieChart_egHighlightStrength,     DEF_HIGHLIGHT_STRENGTH);
-            mOpenClockwise       = a.getBoolean(R.styleable.PieChart_egOpenClockwise,       DEF_OPEN_CLOCKWISE);
-            mInnerPaddingColor   = a.getColor(R.styleable.PieChart_egInnerPaddingColor,     DEF_INNER_PADDING_COLOR);
+            mHighlightStrength   = a.getFloat(R.styleable.PieChart_egHighlightStrength, DEF_HIGHLIGHT_STRENGTH);
+            mOpenClockwise       = a.getBoolean(R.styleable.PieChart_egOpenClockwise, DEF_OPEN_CLOCKWISE);
+            mInnerPaddingColor   = a.getColor(R.styleable.PieChart_egInnerPaddingColor, DEF_INNER_PADDING_COLOR);
 
         } finally {
             // release the TypedArray so that it can be reused.

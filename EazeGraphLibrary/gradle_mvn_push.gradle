@@ -102,13 +102,13 @@ afterEvaluate { project ->
         from androidJavadocs.destinationDir
     }
 
-    task androidSourcesJar(type: Jar) {
+    task sourcesJar(type: Jar) {
         classifier = 'sources'
-        from android.sourceSets.main.java.source
+        from 'src/main/java'
     }
 
     artifacts {
-        archives androidSourcesJar
-        archives androidJavadocsJar
+        archives sourcesJar
+//        archives androidJavadocsJar
     }
 }

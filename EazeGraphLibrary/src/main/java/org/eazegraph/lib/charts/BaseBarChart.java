@@ -21,15 +21,9 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
-import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.widget.OverScroller;
-import android.widget.Scroller;
 
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ValueAnimator;
@@ -87,9 +81,9 @@ public abstract class BaseBarChart extends BaseChart {
 
         try {
 
-            mBarWidth           = a.getDimension(R.styleable.BaseBarChart_egBarWidth,         Utils.dpToPx(DEF_BAR_WIDTH));
-            mBarMargin          = a.getDimension(R.styleable.BaseBarChart_egBarMargin,        Utils.dpToPx(DEF_BAR_MARGIN));
-            mFixedBarWidth      = a.getBoolean(R.styleable.BaseBarChart_egFixedBarWidth,      DEF_FIXED_BAR_WIDTH);
+            mBarWidth           = a.getDimension(R.styleable.BaseBarChart_egBarWidth, Utils.dpToPx(DEF_BAR_WIDTH));
+            mBarMargin          = a.getDimension(R.styleable.BaseBarChart_egBarMargin, Utils.dpToPx(DEF_BAR_MARGIN));
+            mFixedBarWidth      = a.getBoolean(R.styleable.BaseBarChart_egFixedBarWidth, DEF_FIXED_BAR_WIDTH);
 
         } finally {
             // release the TypedArray so that it can be reused.
