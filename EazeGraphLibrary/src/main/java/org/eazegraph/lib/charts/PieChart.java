@@ -111,6 +111,10 @@ public class PieChart extends BaseChart {
             a.recycle();
         }
 
+        if (mInnerValueString == null) {
+            mInnerValueString = "";
+        }
+
         initializeGraph();
     }
 
@@ -304,23 +308,6 @@ public class PieChart extends BaseChart {
     @Override
     protected void onLayout(boolean b, int i, int i2, int i3, int i4) {
 
-    }
-
-    /**
-     * This is called during layout when the size of this view has changed. If
-     * you were just added to the view hierarchy, you're called with the old
-     * values of 0.
-     *
-     * @param w    Current width of this view.
-     * @param h    Current height of this view.
-     * @param oldw Old width of this view.
-     * @param oldh Old height of this view.
-     */
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-
-        onDataChanged();
     }
 
     /**
@@ -548,6 +535,11 @@ public class PieChart extends BaseChart {
                 mGraphBounds.centerY() - mCalculatedInnerPadding,
                 mGraphBounds.centerX() + mCalculatedInnerPadding,
                 mGraphBounds.centerY() + mCalculatedInnerPadding);
+
+        mGraph.setPivot(mGraphBounds.centerX(), mGraphBounds.centerY());
+        mGraph.rotateTo((-90 % 360 + 360) % 360);
+        onDataChanged();
+
     }
 
     //##############################################################################################

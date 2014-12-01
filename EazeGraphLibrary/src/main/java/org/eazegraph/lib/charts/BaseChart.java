@@ -20,6 +20,9 @@ package org.eazegraph.lib.charts;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.PointF;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -90,11 +93,11 @@ public abstract class BaseChart extends ViewGroup {
 
             mLegendHeight       = a.getDimension(R.styleable.BaseChart_egLegendHeight,     Utils.dpToPx(DEF_LEGEND_HEIGHT));
             mLegendTextSize     = a.getDimension(R.styleable.BaseChart_egLegendTextSize,   Utils.dpToPx(DEF_LEGEND_TEXT_SIZE));
-            mAnimationTime      = a.getInt(R.styleable.BaseChart_egAnimationTime,          DEF_ANIMATION_TIME);
-            mShowDecimal        = a.getBoolean(R.styleable.BaseChart_egShowDecimal,        DEF_SHOW_DECIMAL);
-            mLegendColor        = a.getColor(R.styleable.BaseChart_egLegendColor,          DEF_LEGEND_COLOR);
+            mAnimationTime      = a.getInt(R.styleable.BaseChart_egAnimationTime, DEF_ANIMATION_TIME);
+            mShowDecimal        = a.getBoolean(R.styleable.BaseChart_egShowDecimal, DEF_SHOW_DECIMAL);
+            mLegendColor        = a.getColor(R.styleable.BaseChart_egLegendColor, DEF_LEGEND_COLOR);
             mEmptyDataText      = a.getString(R.styleable.BaseChart_egEmptyDataText);
-            mUseLeftFiller      = a.getBoolean(R.styleable.BaseChart_egUseLeftFiller,      DEF_USE_LEFT_FILLER);
+            mUseLeftFiller      = a.getBoolean(R.styleable.BaseChart_egUseLeftFiller, DEF_USE_LEFT_FILLER);
             mLeftFillerSize     = a.getDimensionPixelSize(R.styleable.BaseChart_egLeftFillerSize, DEF_LEFT_FILLER_SIZE);
 
         } finally {
@@ -362,6 +365,12 @@ public abstract class BaseChart extends ViewGroup {
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
 
+            if (Build.VERSION.SDK_INT < 11) {
+                mTransform.set(canvas.getMatrix());
+                mTransform.preRotate(mRotation, mPivot.x, mPivot.y);
+                canvas.setMatrix(mTransform);
+            }
+
             onGraphDraw(canvas);
         }
 
@@ -388,6 +397,30 @@ public abstract class BaseChart extends ViewGroup {
         public boolean performClick() {
             return super.performClick();
         }
+
+        public void rotateTo(float pieRotation) {
+            mRotation = pieRotation;
+            if (Build.VERSION.SDK_INT >= 11) {
+                setRotation(pieRotation);
+            } else {
+                this.invalidate();
+            }
+        }
+
+        public void setPivot(float x, float y) {
+            mPivot.x = x;
+            mPivot.y = y;
+            if (Build.VERSION.SDK_INT >= 11) {
+                setPivotX(x);
+                setPivotY(y);
+            } else {
+                this.invalidate();
+            }
+        }
+
+        private float  mRotation  = 0;
+        private Matrix mTransform = new Matrix();
+        private PointF mPivot     = new PointF();
 
     }
 
