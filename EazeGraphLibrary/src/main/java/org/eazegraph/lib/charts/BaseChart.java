@@ -329,19 +329,6 @@ public abstract class BaseChart extends ViewGroup {
             super(context);
         }
 
-        /**
-         * Enable hardware acceleration (consumes memory)
-         */
-        public void accelerate() {
-            Utils.setLayerToHW(this);
-        }
-
-        /**
-         * Disable hardware acceleration (releases memory)
-         */
-        public void decelerate() {
-            Utils.setLayerToSW(this);
-        }
 
         /**
          * Implement this to do your drawing.
@@ -351,12 +338,6 @@ public abstract class BaseChart extends ViewGroup {
         @Override
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
-
-            if (Build.VERSION.SDK_INT < 11) {
-                mTransform.set(canvas.getMatrix());
-                mTransform.preRotate(mRotation, mPivot.x, mPivot.y);
-                canvas.setMatrix(mTransform);
-            }
 
             onGraphDraw(canvas);
         }
@@ -385,30 +366,6 @@ public abstract class BaseChart extends ViewGroup {
             return super.performClick();
         }
 
-        public void rotateTo(float pieRotation) {
-            mRotation = pieRotation;
-            if (Build.VERSION.SDK_INT >= 11) {
-                setRotation(pieRotation);
-            } else {
-                this.invalidate();
-            }
-        }
-
-        public void setPivot(float x, float y) {
-            mPivot.x = x;
-            mPivot.y = y;
-            if (Build.VERSION.SDK_INT >= 11) {
-                setPivotX(x);
-                setPivotY(y);
-            } else {
-                this.invalidate();
-            }
-        }
-
-        private float  mRotation  = 0;
-        private Matrix mTransform = new Matrix();
-        private PointF mPivot     = new PointF();
-
     }
 
     //##############################################################################################
@@ -424,20 +381,6 @@ public abstract class BaseChart extends ViewGroup {
         private GraphOverlay(Context context) {
             super(context);
 
-        }
-
-        /**
-         * Enable hardware acceleration (consumes memory)
-         */
-        public void accelerate() {
-            Utils.setLayerToHW(this);
-        }
-
-        /**
-         * Disable hardware acceleration (releases memory)
-         */
-        public void decelerate() {
-            Utils.setLayerToSW(this);
         }
 
         /**

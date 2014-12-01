@@ -304,8 +304,6 @@ public class PieChart extends BaseChart {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        mGraph.setPivot(mGraphBounds.centerX(), mGraphBounds.centerY());
-
         onDataChanged();
     }
 
