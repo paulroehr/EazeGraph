@@ -22,6 +22,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 
@@ -58,6 +59,10 @@ public class PieChart extends BaseChart {
         mHighlightStrength   = DEF_HIGHLIGHT_STRENGTH;
         mOpenClockwise       = DEF_OPEN_CLOCKWISE;
         mInnerPaddingColor   = DEF_INNER_PADDING_COLOR;
+        mUseInnerValue       = DEF_USE_INNER_VALUE;
+        mInnerValueSize      = Utils.dpToPx(DEF_INNER_VALUE_SIZE);
+        mInnerValueColor     = DEF_INNER_VALUE_COLOR;
+        mInnerValueString    = "";
 
         initializeGraph();
     }
@@ -90,12 +95,16 @@ public class PieChart extends BaseChart {
 
         try {
 
-            mUseInnerPadding     = a.getBoolean(R.styleable.PieChart_egUseInnerPadding, DEF_USE_INNER_PADDING);
+            mUseInnerPadding     = a.getBoolean(R.styleable.PieChart_egUseInnerPadding,     DEF_USE_INNER_PADDING);
             mInnerPadding        = a.getFloat(R.styleable.PieChart_egInnerPadding,          DEF_INNER_PADDING);
             mInnerPaddingOutline = a.getFloat(R.styleable.PieChart_egInnerPaddingOutline,   DEF_INNER_PADDING_OUTLINE);
-            mHighlightStrength   = a.getFloat(R.styleable.PieChart_egHighlightStrength, DEF_HIGHLIGHT_STRENGTH);
-            mOpenClockwise       = a.getBoolean(R.styleable.PieChart_egOpenClockwise, DEF_OPEN_CLOCKWISE);
-            mInnerPaddingColor   = a.getColor(R.styleable.PieChart_egInnerPaddingColor, DEF_INNER_PADDING_COLOR);
+            mHighlightStrength   = a.getFloat(R.styleable.PieChart_egHighlightStrength,     DEF_HIGHLIGHT_STRENGTH);
+            mOpenClockwise       = a.getBoolean(R.styleable.PieChart_egOpenClockwise,       DEF_OPEN_CLOCKWISE);
+            mInnerPaddingColor   = a.getColor(R.styleable.PieChart_egInnerPaddingColor,     DEF_INNER_PADDING_COLOR);
+            mUseInnerValue       = a.getBoolean(R.styleable.PieChart_egUseInnerValue,       DEF_USE_INNER_VALUE);
+            mInnerValueSize      = a.getDimension(R.styleable.PieChart_egInnerValueSize,    Utils.dpToPx(DEF_INNER_VALUE_SIZE));
+            mInnerValueColor     = a.getColor(R.styleable.PieChart_egInnerValueColor,       DEF_INNER_VALUE_COLOR);
+            mInnerValueString    = a.getString(R.styleable.PieChart_egInnerValueString);
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -218,6 +227,46 @@ public class PieChart extends BaseChart {
         mOpenClockwise = _openClockwise;
     }
 
+    public boolean isUseInnerValue() {
+        return mUseInnerValue;
+    }
+
+    public void setUseInnerValue(boolean _useInnerValue) {
+        mUseInnerValue = _useInnerValue;
+        invalidateGlobal();
+    }
+
+    public float getInnerValueSize() {
+        return mInnerValueSize;
+    }
+
+    public void setInnerValueSize(float _innerValueSize) {
+        mInnerValueSize = _innerValueSize;
+        mValuePaint.setTextSize(_innerValueSize);
+        calculateInnerValueHeight();
+        invalidateGlobal();
+    }
+
+    public int getInnerValueColor() {
+        return mInnerValueColor;
+    }
+
+    public void setInnerValueColor(int _innerValueColor) {
+        mInnerValueColor = _innerValueColor;
+        mValuePaint.setColor(_innerValueColor);
+        invalidateGlobal();
+    }
+
+    public String getInnerValueString() {
+        return mInnerValueString;
+    }
+
+    public void setInnerValueString(String _innerValueString) {
+        mInnerValueString = _innerValueString;
+        calculateInnerValueHeight();
+        invalidateGlobal();
+    }
+
     /**
      * Adds a new Pie Slice to the PieChart. After inserting and calculation of the highlighting color
      * a complete recalculation is initiated.
@@ -292,6 +341,11 @@ public class PieChart extends BaseChart {
         mLegendPaint.setColor(DEF_LEGEND_COLOR);
         mLegendPaint.setStyle(Paint.Style.FILL);
 
+        mValuePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mValuePaint.setColor(mInnerValueColor);
+        mValuePaint.setTextSize(mInnerValueSize);
+        mValuePaint.setTextAlign(Paint.Align.CENTER);
+
         mRevealAnimator = ValueAnimator.ofFloat(0, 1);
         mRevealAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -321,6 +375,8 @@ public class PieChart extends BaseChart {
 
             }
         });
+
+        calculateInnerValueHeight();
 
         if(this.isInEditMode()) {
             addPieSlice(new PieModel("Breakfast", 15, Color.parseColor("#FE6DA8")));
@@ -355,6 +411,12 @@ public class PieChart extends BaseChart {
             currentAngle = model.getEndAngle();
             index++;
         }
+    }
+
+    private void calculateInnerValueHeight() {
+        Rect bounds = new Rect();
+        mValuePaint.getTextBounds(mInnerValueString, 0, mInnerValueString.length(), bounds);
+        mInnerValueHeight = bounds.height();
     }
 
     /**
@@ -445,6 +507,14 @@ public class PieChart extends BaseChart {
     protected void onGraphOverlayDraw(Canvas _Canvas) {
         super.onGraphOverlayDraw(_Canvas);
 
+        if (mUseInnerValue) {
+            _Canvas.drawText(
+                    mInnerValueString,
+                    mGraphBounds.centerX(),
+                    mGraphBounds.centerY() + mInnerValueHeight / 2,
+                    mValuePaint);
+        }
+
     }
 
     @Override
@@ -492,12 +562,15 @@ public class PieChart extends BaseChart {
     public static final float   DEF_HIGHLIGHT_STRENGTH      = 1.15f;
     public static final boolean DEF_OPEN_CLOCKWISE          = true;
     public static final int     DEF_INNER_PADDING_COLOR     = 0xFFF3F3F3; // Holo light background
-
+    public static final boolean DEF_USE_INNER_VALUE         = false;
+    public static final float   DEF_INNER_VALUE_SIZE        = 12f;
+    public static final int     DEF_INNER_VALUE_COLOR       = 0xFF898989;
 
     private List<PieModel>      mPieData;
 
     private Paint               mGraphPaint;
     private Paint               mLegendPaint;
+    private Paint               mValuePaint;
 
     private RectF               mGraphBounds;
     private RectF               mInnerBounds;
@@ -514,8 +587,13 @@ public class PieChart extends BaseChart {
     private int                 mInnerPaddingColor;
     private float               mHighlightStrength;
     private boolean             mOpenClockwise;
+    private boolean             mUseInnerValue;
+    private float               mInnerValueSize;
+    private int                 mInnerValueColor;
+    private String              mInnerValueString;
     // END - Attributes -----------------------------------------------
 
+    private int                 mInnerValueHeight;
     private float               mCalculatedInnerPadding;
     private float               mCalculatedInnerPaddingOutline;
 

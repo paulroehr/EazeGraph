@@ -8,7 +8,11 @@
         <attr name="egHighlightStrength"      format="float"/>
         <attr name="egOpenClockwise"          format="boolean"/>
         <attr name="egInnerPaddingColor"      format="color"/>
-        <attr name="egInnerValueUnit"         format="string"/>
+        <attr name="egUseInnerValue"          format="boolean"/>
+        <attr name="egInnerValueSize"         format="dimension"/>
+        <attr name="egInnerValueColor"        format="color"/>
+        <attr name="egInnerValueString"         format="string"/>
+
 
     </declare-styleable>
 

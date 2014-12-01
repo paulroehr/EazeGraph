@@ -11,6 +11,9 @@
         android:layout_height="300dp"
         android:padding="10dp"
         app:egLegendTextSize="18sp"
-        app:egOpenClockwise="false"/>
+        app:egOpenClockwise="false"
+        app:egUseInnerValue="true"
+        app:egInnerValueString="Test"
+        app:egInnerValueSize="60sp"/>
 
 </FrameLayout>
