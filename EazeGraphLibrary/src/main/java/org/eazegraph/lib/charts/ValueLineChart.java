@@ -63,7 +63,8 @@ public class ValueLineChart extends BaseChart {
         mXAxisStroke                  = Utils.dpToPx(DEF_X_AXIS_STROKE);
         mUseDynamicScaling            = DEF_USE_DYNAMIC_SCALING;
         mScalingFactor                = DEF_SCALING_FACTOR;
-        mShowColoredStroke            = DEF_SHOW_COLORED_STROKE;
+        mAxisTextColor                = DEF_AXIS_TEXT_COLOR;
+        mAxisTextSize                 = Utils.dpToPx(DEF_AXIS_TEXT_SIZE);
 
         initializeGraph();
     }
@@ -102,7 +103,8 @@ public class ValueLineChart extends BaseChart {
             mXAxisStroke                  = a.getDimension(R.styleable.ValueLineChart_egXAxisStroke, Utils.dpToPx(DEF_X_AXIS_STROKE));
             mUseDynamicScaling            = a.getBoolean(R.styleable.ValueLineChart_egUseDynamicScaling, DEF_USE_DYNAMIC_SCALING);
             mScalingFactor                = a.getFloat(R.styleable.ValueLineChart_egScalingFactor, DEF_SCALING_FACTOR);
-            mShowColoredStroke            = a.getBoolean(R.styleable.ValueLineChart_egShowColoredStroke, DEF_SHOW_COLORED_STROKE);
+            mAxisTextColor                = a.getColor(R.styleable.ValueLineChart_egAxisTextColor, DEF_AXIS_TEXT_COLOR);
+            mAxisTextSize                 = a.getDimension(R.styleable.ValueLineChart_egAxisTextSize, Utils.dpToPx(DEF_AXIS_TEXT_SIZE));
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -207,13 +209,24 @@ public class ValueLineChart extends BaseChart {
         onDataChanged();
     }
 
-    public boolean isShowColoredStroke() {
-        return mShowColoredStroke;
+    public int getAxisTextColor() {
+        return mAxisTextColor;
     }
 
-    public void setShowColoredStroke(boolean _showColoredStroke) {
-        mShowColoredStroke = _showColoredStroke;
-        invalidateGraph();
+    public void setAxisTextColor(int _axisTextColor) {
+        mAxisTextColor = _axisTextColor;
+        mAxisTextPaint.setColor(mAxisTextColor);
+        invalidateGlobal();
+    }
+
+    public float getAxisTextSize() {
+        return mAxisTextSize;
+    }
+
+    public void setAxisTextSize(float _axisTextSize) {
+        mAxisTextSize = Utils.dpToPx(_axisTextSize);
+        mAxisTextPaint.setTextSize(mAxisTextSize);
+        invalidateGlobal();
     }
 
     /**
@@ -263,8 +276,8 @@ public class ValueLineChart extends BaseChart {
 
         mDrawMatrix.setValues(mDrawMatrixValues);
 
-        mSeries     = new ArrayList<ValueLineSeries>();
-        mLegendList = new ArrayList<LegendModel>();
+        mSeries     = new ArrayList<>();
+        mLegendList = new ArrayList<>();
 
         mLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mLinePaint.setStyle(Paint.Style.STROKE);
@@ -273,8 +286,14 @@ public class ValueLineChart extends BaseChart {
         mLegendPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mLegendPaint.setColor(mLegendColor);
         mLegendPaint.setTextSize(mLegendTextSize);
-        mLegendPaint.setStrokeWidth(2);
+        mLegendPaint.setStrokeWidth(mXAxisStroke);
         mLegendPaint.setStyle(Paint.Style.FILL);
+
+        mAxisTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mAxisTextPaint.setColor(mAxisTextColor);
+        mAxisTextPaint.setTextSize(mAxisTextSize);
+        mAxisTextPaint.setStrokeWidth(mXAxisStroke);
+        mAxisTextPaint.setStyle(Paint.Style.FILL);
 
         mMaxFontHeight = Utils.calculateMaxTextHeight(mLegendPaint);
 
@@ -374,6 +393,7 @@ public class ValueLineChart extends BaseChart {
             }
             else {
                 minValue *= mScalingFactor;
+                maxValue *= (1f - mScalingFactor) + 1f;
             }
 
             // check if values below zero were found
@@ -550,13 +570,16 @@ public class ValueLineChart extends BaseChart {
     protected void onGraphUnderlayDraw(Canvas _Canvas) {
         super.onGraphUnderlayDraw(_Canvas);
         mLegendPaint.setStrokeWidth(mXAxisStroke);
-        _Canvas.drawText(Utils.getFloatString(mAxisValues[2], mShowDecimal), mAxisTextPadding, (int) (mGraphHeight * 0.25) - mAxisTextPadding, mLegendPaint);
-        _Canvas.drawLine(0, (int) (mGraphHeight * 0.25), mWidth, (int) (mGraphHeight * 0.25), mLegendPaint);
-        _Canvas.drawText(Utils.getFloatString(mAxisValues[1], mShowDecimal), mAxisTextPadding, (int) (mGraphHeight * 0.50) - mAxisTextPadding, mLegendPaint);
-        _Canvas.drawLine(0, (int) (mGraphHeight * 0.50), mWidth, (int) (mGraphHeight * 0.50), mLegendPaint);
-        _Canvas.drawText(Utils.getFloatString(mAxisValues[0], mShowDecimal), mAxisTextPadding, (int) (mGraphHeight * 0.75) - mAxisTextPadding, mLegendPaint);
-        _Canvas.drawLine(0, (int) (mGraphHeight * 0.75), mWidth, (int) (mGraphHeight * 0.75), mLegendPaint);
-        _Canvas.drawLine(0, mGraphHeight - mMinimumPadding, mWidth, mGraphHeight - mMinimumPadding, mLegendPaint);
+        _Canvas.drawText(Utils.getFloatString(mAxisValues[2], mShowDecimal), mAxisTextPadding, (int) (mGraphHeight * 0.25) - mAxisTextPadding, mAxisTextPaint);
+        _Canvas.drawLine(0, (int) (mGraphHeight * 0.25), mWidth, (int) (mGraphHeight * 0.25), mAxisTextPaint);
+
+        _Canvas.drawText(Utils.getFloatString(mAxisValues[1], mShowDecimal), mAxisTextPadding, (int) (mGraphHeight * 0.50) - mAxisTextPadding, mAxisTextPaint);
+        _Canvas.drawLine(0, (int) (mGraphHeight * 0.50), mWidth, (int) (mGraphHeight * 0.50), mAxisTextPaint);
+
+        _Canvas.drawText(Utils.getFloatString(mAxisValues[0], mShowDecimal), mAxisTextPadding, (int) (mGraphHeight * 0.75) - mAxisTextPadding, mAxisTextPaint);
+        _Canvas.drawLine(0, (int) (mGraphHeight * 0.75), mWidth, (int) (mGraphHeight * 0.75), mAxisTextPaint);
+
+        _Canvas.drawLine(0, mGraphHeight - mMinimumPadding, mWidth, mGraphHeight - mMinimumPadding, mAxisTextPaint);
     }
 
     @Override
@@ -640,10 +663,12 @@ public class ValueLineChart extends BaseChart {
     public static final float   DEF_LEGEND_STROKE                   = 2f;
     public static final boolean DEF_USE_DYNAMIC_SCALING             = false;
     public static final float   DEF_SCALING_FACTOR                  = 0.96f;
-    public static final boolean DEF_SHOW_COLORED_STROKE             = false;
+    public static final int     DEF_AXIS_TEXT_COLOR                 = 0xFF898989;
+    public static final float   DEF_AXIS_TEXT_SIZE                  = 12f;
 
     private Paint                   mLinePaint;
     private Paint                   mLegendPaint;
+    private Paint                   mAxisTextPaint;
 
     /**
      * This is used to have a little extra space on the top, so if a standard value is added
@@ -670,9 +695,10 @@ public class ValueLineChart extends BaseChart {
     private boolean                 mUseCubic;
     private float                   mLineStroke;
     private float                   mXAxisStroke;
-    private boolean                 mShowColoredStroke = true;
     private float                   mScalingFactor;
     private float                   mAxisTextPadding = Utils.dpToPx(3f);
+    private int                     mAxisTextColor;
+    private float                   mAxisTextSize;
 
     /**
      * Enabling this when only positive and big values are present and only have little fluctuations,
@@ -691,5 +717,5 @@ public class ValueLineChart extends BaseChart {
      * 50% = [1]
      * 75% = [2]
      */
-    private float[]                 mAxisValues = new float[] {5.6f, 11.2f, 16.8f};
+    private float[]                 mAxisValues = new float[] {0f, 0f, 0f};
 }

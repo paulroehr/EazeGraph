@@ -9,7 +9,8 @@
         <attr name="egXAxisStroke"                  format="dimension"/>
         <attr name="egUseDynamicScaling"            format="boolean"/>
         <attr name="egScalingFactor"                format="float"/>
-        <attr name="egShowColoredStroke"            format="boolean"/>
+        <attr name="egAxisTextColor"                format="color"/>
+        <attr name="egAxisTextSize"                 format="dimension"/>
 
     </declare-styleable>
 
