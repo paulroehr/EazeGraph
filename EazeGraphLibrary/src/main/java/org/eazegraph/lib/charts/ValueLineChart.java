@@ -367,47 +367,47 @@ public class ValueLineChart extends BaseChart {
     protected void onDataChanged() {
 
         if(!mSeries.isEmpty()) {
-            float maxValue     = 0.f;
-            float minValue     = Float.MAX_VALUE;
-            mNegativeValue     = 0.f;
-            mNegativeOffset    = 0.f;
-            mHasNegativeValues = false;
+            mMaxValue           = 0.f;
+            mMinValue           = Float.MAX_VALUE;
+            mNegativeValue      = 0.f;
+            mNegativeOffset     = 0.f;
+            mHasNegativeValues  = false;
 
             // calculate the maximum and minimum value present in data
             for (ValueLineSeries series : mSeries) {
                 for (ValueLinePoint point : series.getSeries()) {
 
-                    if (point.getValue() > maxValue)
-                        maxValue = point.getValue();
+                    if (point.getValue() > mMaxValue)
+                        mMaxValue = point.getValue();
 
                     if (point.getValue() < mNegativeValue)
                         mNegativeValue = point.getValue();
 
-                    if (point.getValue() < minValue)
-                        minValue = point.getValue();
+                    if (point.getValue() < mMinValue)
+                        mMinValue = point.getValue();
                 }
             }
 
             if(!mUseDynamicScaling) {
-                minValue = 0;
+                mMinValue = 0;
             }
             else {
-                minValue *= mScalingFactor;
-                maxValue *= (1f - mScalingFactor) + 1f;
+                mMinValue *= mScalingFactor;
+                mMaxValue *= (1f - mScalingFactor) + 1f;
             }
 
             // check if values below zero were found
             if(mNegativeValue < 0) {
                 mHasNegativeValues = true;
-                maxValue += (mNegativeValue * -1);
-                minValue = 0;
+                mMaxValue += (mNegativeValue * -1);
+                mMinValue = 0;
             }
 
-            mAxisValues[0] = (float) ((maxValue - minValue) * 0.25) + minValue;
-            mAxisValues[1] = (float) ((maxValue - minValue) * 0.50) + minValue;
-            mAxisValues[2] = (float) ((maxValue - minValue) * 0.75) + minValue;
+            mAxisValues[0] = (float) ((mMaxValue - mMinValue) * 0.25) + mMinValue;
+            mAxisValues[1] = (float) ((mMaxValue - mMinValue) * 0.50) + mMinValue;
+            mAxisValues[2] = (float) ((mMaxValue - mMinValue) * 0.75) + mMinValue;
 
-            float heightMultiplier  = mUsableGraphHeight / (maxValue - minValue);
+            float heightMultiplier  = mUsableGraphHeight / (mMaxValue - mMinValue);
 
             // calculate the offset
             if(mHasNegativeValues) {
@@ -431,7 +431,7 @@ public class ValueLineChart extends BaseChart {
 
                     // used to store first point and set it later as ending point, if a graph fill is selected
                     float firstX = currentOffset;
-                    float firstY = mGraphHeight - ((series.getSeries().get(0).getValue() - minValue) * heightMultiplier);
+                    float firstY = mGraphHeight - ((series.getSeries().get(0).getValue() - mMinValue) * heightMultiplier);
 
                     Path path = new Path();
                     path.moveTo(firstX, firstY);
@@ -451,14 +451,14 @@ public class ValueLineChart extends BaseChart {
                             float offset3 = (seriesPointCount - i) < 3 ? mGraphWidth : currentOffset + (2*widthOffset);
 
                             P1.setX(currentOffset);
-                            P1.setY(mGraphHeight - ((series.getSeries().get(i).getValue() - minValue) * heightMultiplier));
+                            P1.setY(mGraphHeight - ((series.getSeries().get(i).getValue() - mMinValue) * heightMultiplier));
 
                             P2.setX(offset2);
-                            P2.setY(mGraphHeight - ((series.getSeries().get(i + 1).getValue() - minValue) * heightMultiplier));
+                            P2.setY(mGraphHeight - ((series.getSeries().get(i + 1).getValue() - mMinValue) * heightMultiplier));
                             Utils.calculatePointDiff(P1, P2, P1, mSecondMultiplier);
 
                             P3.setX(offset3);
-                            P3.setY(mGraphHeight - ((series.getSeries().get(i3).getValue() - minValue) * heightMultiplier));
+                            P3.setY(mGraphHeight - ((series.getSeries().get(i3).getValue() - mMinValue) * heightMultiplier));
                             Utils.calculatePointDiff(P2, P3, P3, mFirstMultiplier);
 
                             currentOffset += widthOffset;
@@ -483,7 +483,7 @@ public class ValueLineChart extends BaseChart {
                                     currentOffset = mGraphWidth;
                                 }
                             }
-                            point.setCoordinates(new Point2D(currentOffset, mGraphHeight - ((point.getValue() - minValue) * heightMultiplier)));
+                            point.setCoordinates(new Point2D(currentOffset, mGraphHeight - ((point.getValue() - mMinValue) * heightMultiplier)));
                             path.lineTo(point.getCoordinates().getX(), point.getCoordinates().getY());
                             count++;
                         }
@@ -579,6 +579,7 @@ public class ValueLineChart extends BaseChart {
         _Canvas.drawText(Utils.getFloatString(mAxisValues[0], mShowDecimal), mAxisTextPadding, (int) (mGraphHeight * 0.75) - mAxisTextPadding, mAxisTextPaint);
         _Canvas.drawLine(0, (int) (mGraphHeight * 0.75), mWidth, (int) (mGraphHeight * 0.75), mAxisTextPaint);
 
+        _Canvas.drawText(Utils.getFloatString(mMinValue, mShowDecimal), mAxisTextPadding, mGraphHeight - mAxisTextPadding, mAxisTextPaint);
         _Canvas.drawLine(0, mGraphHeight - mMinimumPadding, mWidth, mGraphHeight - mMinimumPadding, mAxisTextPaint);
     }
 
@@ -683,6 +684,8 @@ public class ValueLineChart extends BaseChart {
     private boolean                 mHasNegativeValues  = false;
     private float                   mNegativeValue      = 0.f;
     private float                   mNegativeOffset     = 0.f;
+    private float                   mMinValue           = Float.MAX_VALUE;
+    private float                   mMaxValue           = 0.f;
 
     private float                   mFirstMultiplier;
     private float                   mSecondMultiplier;
