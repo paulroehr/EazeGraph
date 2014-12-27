@@ -12,6 +12,8 @@
         android:padding="10dp"
         app:egEnableScroll="false"
         app:egFixedBarWidth="true"
+        app:egDrawValues="true"
+        app:egShowSeparators="true"
         app:egBarWidth="20dp"
         app:egLegendHeight="40dp"/>
 

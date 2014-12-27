@@ -227,7 +227,7 @@ __________
     app:egUseCubic="true"
     app:egUseOverlapFill="true"
     app:egCurveSmoothness="0.4"
-    app:egIndicatorColor="#FE6DA8"
+    app:egIndicatorLineColor="#FE6DA8"
     app:egLegendHeight="40dp"
     app:egShowStandardValue="true"/>
 ```

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="StackedBarChart">
+        <attr name="egDrawValues"          format="boolean" />
+        <attr name="egBarTextSize"         format="dimension" />
+        <attr name="egShowSeparators"      format="boolean"/>
+        <attr name="egSeparatorWidth"      format="dimension"/>
+    </declare-styleable>
+</resources>

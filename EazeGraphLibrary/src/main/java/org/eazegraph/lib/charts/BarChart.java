@@ -28,6 +28,7 @@ import android.view.MotionEvent;
 import org.eazegraph.lib.R;
 import org.eazegraph.lib.models.BarModel;
 import org.eazegraph.lib.models.BaseModel;
+import org.eazegraph.lib.models.StackedBarModel;
 import org.eazegraph.lib.utils.Utils;
 
 import java.util.ArrayList;

@@ -1,17 +1,17 @@
 package org.eazegraph.lib.charts;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 
+import org.eazegraph.lib.R;
 import org.eazegraph.lib.models.BarModel;
 import org.eazegraph.lib.models.BaseModel;
-import org.eazegraph.lib.models.Point2D;
 import org.eazegraph.lib.models.StackedBarModel;
 import org.eazegraph.lib.utils.Utils;
 
@@ -32,6 +32,12 @@ public class StackedBarChart extends BaseBarChart {
      */
     public StackedBarChart(Context context) {
         super(context);
+
+        mDrawValues     = DEF_DRAW_VALUE;
+        mTextSize       = Utils.dpToPx(DEF_TEXT_SIZE);
+        mShowSeparators = DEF_SHOW_SEPARATORS;
+        mSeparatorWidth = Utils.dpToPx(DEF_SEPARATOR_WIDTH);
+
         initializeGraph();
     }
 
@@ -53,7 +59,95 @@ public class StackedBarChart extends BaseBarChart {
      */
     public StackedBarChart(Context context, AttributeSet attrs) {
         super(context, attrs);
+        TypedArray a = context.getTheme().obtainStyledAttributes(
+                attrs,
+                R.styleable.StackedBarChart,
+                0, 0
+        );
+
+        try {
+
+            mDrawValues     = a.getBoolean(R.styleable.StackedBarChart_egDrawValues,        DEF_DRAW_VALUE);
+            mTextSize       = a.getDimension(R.styleable.StackedBarChart_egBarTextSize,     Utils.dpToPx(DEF_TEXT_SIZE));
+            mShowSeparators = a.getBoolean(R.styleable.StackedBarChart_egShowSeparators,    DEF_SHOW_SEPARATORS);
+            mSeparatorWidth = a.getDimension(R.styleable.StackedBarChart_egSeparatorWidth,  Utils.dpToPx(DEF_SEPARATOR_WIDTH));
+
+        } finally {
+            // release the TypedArray so that it can be reused.
+            a.recycle();
+        }
+
         initializeGraph();
+    }
+
+    /**
+     * Returns the current state if the values in the bar is shown or not
+     * @return True if the values are shown
+     */
+    public boolean isDrawValues() {
+        return mDrawValues;
+    }
+
+    /**
+     * Sets the parameter which decides whether the values int the bars should be shown or not
+     * @param _drawValues True if the values should be shown
+     */
+    public void setDrawValues(boolean _drawValues) {
+        mDrawValues = _drawValues;
+        invalidateGlobal();
+    }
+
+    // TODO: Make method which returns the sp value
+    /**
+     * Returns the text size for the values which are shown in the bars.
+     * @return The text size in px
+     */
+    public float getTextSize() {
+        return mTextSize;
+    }
+
+    /**
+     * Sets the text size for the values which are shown in the bars.
+     * @param _textSize Size in sp
+     */
+    public void setTextSize(float _textSize) {
+        mTextSize = Utils.dpToPx(_textSize);
+        onDataChanged();
+    }
+
+    /**
+     * Returns the current state if the separator between the bars are shown or not
+     * @return True if the separators are shown
+     */
+    public boolean isShowSeparators() {
+        return mShowSeparators;
+    }
+
+    /**
+     * Sets the parameter if the separators between the bars should be shown or not
+     * @param _showSeparators True if the separators should be shown
+     */
+    public void setShowSeparators(boolean _showSeparators) {
+        mShowSeparators = _showSeparators;
+        invalidateGlobal();
+    }
+
+    // TODO: Make method which returns the sp value
+    /**
+     * Returns the separator width.
+     * @return The separator width in px.
+     */
+    public float getSeparatorWidth() {
+        return mSeparatorWidth;
+    }
+
+    /**
+     * Sets the separator width.
+     * @param _separatorWidth The width in sp.
+     */
+    public void setSeparatorWidth(float _separatorWidth) {
+        mSeparatorWidth = _separatorWidth;
+        onDataChanged();
     }
 
     /**
@@ -108,11 +202,11 @@ public class StackedBarChart extends BaseBarChart {
     @Override
     protected void initializeGraph() {
         super.initializeGraph();
-        mData = new ArrayList<StackedBarModel>();
+        mData = new ArrayList<>();
 
         mSeperatorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mSeperatorPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        mSeperatorPaint.setStrokeWidth(mSeperatorWidth);
+        mSeperatorPaint.setStrokeWidth(mSeparatorWidth);
         mSeperatorPaint.setColor(0xFFFFFFFF);
 
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -160,7 +254,7 @@ public class StackedBarChart extends BaseBarChart {
             float lastY = 0;
             float cumulatedValues = 0;
             // used if seperators are enabled, to prevent information loss
-            int usableGraphHeight = mGraphHeight - (int) (mSeperatorWidth * (model.getBars().size() - 1));
+            int usableGraphHeight = mGraphHeight - (int) (mSeparatorWidth * (model.getBars().size() - 1));
 
             for (BarModel barModel : model.getBars()) {
                 cumulatedValues += barModel.getValue();
@@ -230,8 +324,8 @@ public class StackedBarChart extends BaseBarChart {
 
                 lastBottom = lastTop;
 
-                if (mShowSeperators && index < model.getBars().size() - 1) {
-                    lastBottom -= mSeperatorWidth;
+                if (mShowSeparators && index < model.getBars().size() - 1) {
+                    lastBottom -= mSeparatorWidth;
                 }
             }
 
@@ -262,14 +356,18 @@ public class StackedBarChart extends BaseBarChart {
 
     private static final String LOG_TAG = BarChart.class.getSimpleName();
 
+    public static final boolean DEF_DRAW_VALUE      = false;
+    public static final float   DEF_TEXT_SIZE       = 12f;
+    public static final boolean DEF_SHOW_SEPARATORS = false;
+    public static final float   DEF_SEPARATOR_WIDTH = 2f;
+
     private Paint                  mSeperatorPaint;
     private Paint                  mTextPaint;
 
     private List<StackedBarModel>  mData;
 
-    // TODO: Make XML attributes
-    private boolean                mDrawValues = true;
-    private float                  mTextSize = Utils.dpToPx(12f);
-    private boolean                mShowSeperators = true;
-    private float                  mSeperatorWidth = Utils.dpToPx(2f);
+    private boolean                mDrawValues;
+    private float                  mTextSize;
+    private boolean                mShowSeparators;
+    private float                  mSeparatorWidth;
 }

@@ -184,6 +184,42 @@ public abstract class BaseChart extends ViewGroup {
     }
 
     /**
+     * Reloads the view and everything will be drawn again.
+     */
+    public void reloadView () {
+        invalidateGlobal();
+    }
+
+    /**
+     * Returns the datasets which are currently inserted.
+     * @return the datasets
+     */
+    public abstract List<? extends BaseModel> getData();
+
+    /**
+     * Resets and clears the data object.
+     */
+    public abstract void clearChart();
+
+    /**
+     * Should be called when the dataset changed and the graph should update and redraw.
+     * Graph implementations might overwrite this method to do more work than just call onDataChanged()
+     */
+    public void update() {
+        onDataChanged();
+    }
+
+    /**
+     * Starts the chart animation.
+     */
+    public void startAnimation() {
+        if(mRevealAnimator != null) {
+            mStartedAnimation = true;
+            mRevealAnimator.setDuration(mAnimationTime).start();
+        }
+    }
+
+    /**
      * This is called during layout when the size of this view has changed. If
      * you were just added to the view hierarchy, you're called with the old
      * values of 0.
@@ -211,16 +247,6 @@ public abstract class BaseChart extends ViewGroup {
     }
 
     /**
-     * Starts the chart animation.
-     */
-    public void startAnimation() {
-        if(mRevealAnimator != null) {
-            mStartedAnimation = true;
-            mRevealAnimator.setDuration(mAnimationTime).start();
-        }
-    }
-
-    /**
      * This is the main entry point after the graph has been inflated. Used to initialize the graph
      * and its corresponding members.
      */
@@ -244,25 +270,6 @@ public abstract class BaseChart extends ViewGroup {
     }
 
     /**
-     * Returns the datasets which are currently inserted.
-     * @return the datasets
-     */
-    public abstract List<? extends BaseModel> getData();
-
-    /**
-     * Resets and clears the data object.
-     */
-    public abstract void clearChart();
-
-    /**
-     * Should be called when the dataset changed and the graph should update and redraw.
-     * Graph implementations might overwrite this method to do more work than just call onDataChanged()
-     */
-    public void update() {
-        onDataChanged();
-    }
-
-    /**
      * Invalidates graph and legend and forces them to be redrawn.
      */
     protected final void invalidateGlobal() {
@@ -283,9 +290,9 @@ public abstract class BaseChart extends ViewGroup {
         mLegend.invalidate();
     }
 
-    // ---------------------------------------------------------------------------------------------
+    // #############################################################################################
     //                          Override methods from view layers
-    // ---------------------------------------------------------------------------------------------
+    // ##############################################################################################
 
     protected void onGraphDraw(Canvas _Canvas) {
 

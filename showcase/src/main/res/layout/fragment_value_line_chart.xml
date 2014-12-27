@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         app:egUseCubic="false"
-        app:egUseOverlapFill="false"
+        app:egUseOverlapFill="true"
         app:egCurveSmoothness="0.4"
         app:egIndicatorLineColor="#FE6DA8"
         app:egLegendHeight="40dp"

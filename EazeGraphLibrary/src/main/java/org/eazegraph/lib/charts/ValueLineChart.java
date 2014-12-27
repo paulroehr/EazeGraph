@@ -119,29 +119,29 @@ public class ValueLineChart extends BaseChart {
 
         try {
 
-            mUseCubic                     = a.getBoolean(R.styleable.ValueLineChart_egUseCubic,                         DEF_USE_CUBIC);
-            mUseOverlapFill               = a.getBoolean(R.styleable.ValueLineChart_egUseOverlapFill,                   DEF_USE_OVERLAP_FILL);
-            mLineStroke                   = a.getDimension(R.styleable.ValueLineChart_egLineStroke, Utils.dpToPx(DEF_LINE_STROKE));
-            mFirstMultiplier              = a.getFloat(R.styleable.ValueLineChart_egCurveSmoothness, DEF_FIRST_MULTIPLIER);
+            mUseCubic                     = a.getBoolean(R.styleable.ValueLineChart_egUseCubic,                     DEF_USE_CUBIC);
+            mUseOverlapFill               = a.getBoolean(R.styleable.ValueLineChart_egUseOverlapFill,               DEF_USE_OVERLAP_FILL);
+            mLineStroke                   = a.getDimension(R.styleable.ValueLineChart_egLineStroke,                 Utils.dpToPx(DEF_LINE_STROKE));
+            mFirstMultiplier              = a.getFloat(R.styleable.ValueLineChart_egCurveSmoothness,                DEF_FIRST_MULTIPLIER);
             mSecondMultiplier             = 1.0f - mFirstMultiplier;
-            mShowIndicator                = a.getBoolean(R.styleable.ValueLineChart_egShowValueIndicator,               DEF_SHOW_INDICATOR);
-            mIndicatorWidth               = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth, Utils.dpToPx(DEF_INDICATOR_WIDTH));
-            mIndicatorLineColor           = a.getColor(R.styleable.ValueLineChart_egIndicatorLineColor, DEF_INDICATOR_COLOR);
-            mIndicatorTextColor           = a.getColor(R.styleable.ValueLineChart_egIndicatorTextColor, DEF_INDICATOR_COLOR);
-            mIndicatorTextSize            = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth, Utils.dpToPx(DEF_INDICATOR_TEXT_SIZE));
-            mIndicatorLeftPadding         = a.getDimension(R.styleable.ValueLineChart_egIndicatorLeftPadding, Utils.dpToPx(DEF_INDICATOR_LEFT_PADDING));
-            mIndicatorTopPadding          = a.getDimension(R.styleable.ValueLineChart_egIndicatorTopPadding,            Utils.dpToPx(DEF_INDICATOR_TOP_PADDING));
-            mShowStandardValues           = a.getBoolean(R.styleable.ValueLineChart_egShowStandardValue, DEF_SHOW_STANDARD_VALUE);
-            mXAxisStroke                  = a.getDimension(R.styleable.ValueLineChart_egXAxisStroke, Utils.dpToPx(DEF_X_AXIS_STROKE));
-            mActivateIndicatorShadow      = a.getBoolean(R.styleable.ValueLineChart_egActivateIndicatorShadow, DEF_ACTIVATE_INDICATOR_SHADOW);
-            mIndicatorShadowStrength      = a.getDimension(R.styleable.ValueLineChart_egIndicatorShadowStrength, Utils.dpToPx(DEF_INDICATOR_SHADOW_STRENGTH));
-            mIndicatorShadowColor         = a.getColor(R.styleable.ValueLineChart_egIndicatorShadowColor, DEF_INDICATOR_SHADOW_COLOR);
+            mShowIndicator                = a.getBoolean(R.styleable.ValueLineChart_egShowValueIndicator,           DEF_SHOW_INDICATOR);
+            mIndicatorWidth               = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth,             Utils.dpToPx(DEF_INDICATOR_WIDTH));
+            mIndicatorLineColor           = a.getColor(R.styleable.ValueLineChart_egIndicatorLineColor,             DEF_INDICATOR_COLOR);
+            mIndicatorTextColor           = a.getColor(R.styleable.ValueLineChart_egIndicatorTextColor,             DEF_INDICATOR_COLOR);
+            mIndicatorTextSize            = a.getDimension(R.styleable.ValueLineChart_egIndicatorWidth,             Utils.dpToPx(DEF_INDICATOR_TEXT_SIZE));
+            mIndicatorLeftPadding         = a.getDimension(R.styleable.ValueLineChart_egIndicatorLeftPadding,       Utils.dpToPx(DEF_INDICATOR_LEFT_PADDING));
+            mIndicatorTopPadding          = a.getDimension(R.styleable.ValueLineChart_egIndicatorTopPadding,        Utils.dpToPx(DEF_INDICATOR_TOP_PADDING));
+            mShowStandardValues           = a.getBoolean(R.styleable.ValueLineChart_egShowStandardValue,            DEF_SHOW_STANDARD_VALUE);
+            mXAxisStroke                  = a.getDimension(R.styleable.ValueLineChart_egXAxisStroke,                Utils.dpToPx(DEF_X_AXIS_STROKE));
+            mActivateIndicatorShadow      = a.getBoolean(R.styleable.ValueLineChart_egActivateIndicatorShadow,      DEF_ACTIVATE_INDICATOR_SHADOW);
+            mIndicatorShadowStrength      = a.getDimension(R.styleable.ValueLineChart_egIndicatorShadowStrength,    Utils.dpToPx(DEF_INDICATOR_SHADOW_STRENGTH));
+            mIndicatorShadowColor         = a.getColor(R.styleable.ValueLineChart_egIndicatorShadowColor,           DEF_INDICATOR_SHADOW_COLOR);
             mIndicatorTextUnit            = a.getString(R.styleable.ValueLineChart_egIndicatorTextUnit);
-            mShowLegendBeneathIndicator   = a.getBoolean(R.styleable.ValueLineChart_egShowLegendBeneathIndicator, DEF_SHOW_LEGEND_BENEATH_INDICATOR);
-            mUseDynamicScaling            = a.getBoolean(R.styleable.ValueLineChart_egUseDynamicScaling, DEF_USE_DYNAMIC_SCALING);
-            mScalingFactor                = a.getFloat(R.styleable.ValueLineChart_egScalingFactor, DEF_SCALING_FACTOR);
-            mMaxZoomX                     = a.getFloat(R.styleable.ValueLineChart_egMaxXZoom, DEF_MAX_ZOOM_X);
-            mMaxZoomY                     = a.getFloat(R.styleable.ValueLineChart_egMaxYZoom,                           DEF_MAX_ZOOM_Y);
+            mShowLegendBeneathIndicator   = a.getBoolean(R.styleable.ValueLineChart_egShowLegendBeneathIndicator,   DEF_SHOW_LEGEND_BENEATH_INDICATOR);
+            mUseDynamicScaling            = a.getBoolean(R.styleable.ValueLineChart_egUseDynamicScaling,            DEF_USE_DYNAMIC_SCALING);
+            mScalingFactor                = a.getFloat(R.styleable.ValueLineChart_egScalingFactor,                  DEF_SCALING_FACTOR);
+            mMaxZoomX                     = a.getFloat(R.styleable.ValueLineChart_egMaxXZoom,                       DEF_MAX_ZOOM_X);
+            mMaxZoomY                     = a.getFloat(R.styleable.ValueLineChart_egMaxYZoom,                       DEF_MAX_ZOOM_Y);
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -872,7 +872,7 @@ public class ValueLineChart extends BaseChart {
                         }
                     }
 
-                    if (mUseOverlapFill || seriesCount == 1) {
+                    if (mUseOverlapFill) {
                         path.lineTo(mGraphWidth, mGraphHeight);
                         path.lineTo(0, mGraphHeight);
                         path.lineTo(firstX, firstY);
@@ -1195,13 +1195,8 @@ public class ValueLineChart extends BaseChart {
             mLinePaint.setStyle(Paint.Style.FILL);
         }
         else {
-            if(mSeries.size() == 1) {
-                mLinePaint.setStyle(Paint.Style.FILL);
-            }
-            else {
-                mLinePaint.setStrokeWidth(mLineStroke);
-                mLinePaint.setStyle(Paint.Style.STROKE);
-            }
+            mLinePaint.setStrokeWidth(mLineStroke);
+            mLinePaint.setStyle(Paint.Style.STROKE);
         }
 
         _Canvas.concat(mDrawMatrix);
