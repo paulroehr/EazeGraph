@@ -265,7 +265,7 @@ Changelog
 =========
 **1.2.0**
 * Fixed many bugs and added zooming for LineCharts and scrolling for BarCharts if there are many values.
-I had those things on my HDD for some months and never had the time to release it or to polish it.
+* I had those things on my HDD for some months and never had the time to release it or to polish it.
 I think this should be stable and release it for you guys. I know there are some open issues and I really want to fix those error or implement new features,
 but I am not able to do anything of those as I am completely busy with my university and work.
 In addition to that I made a lightweight variant of the library for my work which can be downloaded as the version `1.2.5l`.
