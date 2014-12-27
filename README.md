@@ -64,21 +64,20 @@ https://play.google.com/store/apps/details?id=org.eazegraph.app
 Including in your project
 =========================
 
-Insert in your root project's 'build.gradle' under repositories:
-
-```groovy
-repositories {
-    maven {
-        url 'https://oss.sonatype.org/content/groups/public'
-    }
-}
-```
-
-and in your android app project folder in the 'build.gradle' under dependencies:
+Add in your android app project folder in the 'build.gradle' under dependencies:
 
 ```groovy
 dependencies {
-    compile 'com.github.blackfizz:eazegraph:1.1.14-SNAPSHOT@aar'
+    compile 'com.github.blackfizz:eazegraph:1.2.0@aar'
+    compile 'com.nineoldandroids:library:2.4.0'
+}
+```
+
+Or if you want to use my new lightweight library without any interaction some new features then download this:
+
+```groovy
+dependencies {
+    compile 'com.github.blackfizz:eazegraph:1.2.5l@aar'
     compile 'com.nineoldandroids:library:2.4.0'
 }
 ```
@@ -264,6 +263,17 @@ Wiki
 
 Changelog
 =========
+**1.2.0**
+* Fixed many bugs and added zooming for LineCharts and scrolling for BarCharts if there are many values.
+I had those things on my HDD for some months and never had the time to release it or to polish it.
+I think this should be stable and release it for you guys. I know there are some open issues and I really want to fix those error or implement new features,
+but I am not able to do anything of those as I am completely busy with my university and work.
+In addition to that I made a lightweight variant of the library for my work which can be downloaded as the version `1.2.5l`.
+This removes every physical interaction with the library and only provides displaying functionality. Most of the work went into the
+ValueLineChart as it now has a X-Grid with 4 stages. I don't know when I have some time again to implement new stuff or fix bugs,
+but i hope it won't be so long as my last absence. Happy using :)
+
+
 **1.1.14**
 * added missing getter and setter for new attributes
 
