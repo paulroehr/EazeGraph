@@ -636,7 +636,7 @@ public class ValueLineChart extends BaseChart {
         mLegendPaint.setStrokeWidth(2);
         mLegendPaint.setStyle(Paint.Style.FILL);
 
-        mMaxFontHeight = Utils.calculateMaxTextHeight(mLegendPaint);
+        mMaxFontHeight = Utils.calculateMaxTextHeight(mLegendPaint, null);
 
         mIndicatorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mIndicatorPaint.setColor(mIndicatorLineColor);

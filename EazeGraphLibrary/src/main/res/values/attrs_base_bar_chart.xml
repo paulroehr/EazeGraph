@@ -2,6 +2,7 @@
 <resources>
 
     <declare-styleable name="BaseBarChart">
+        <attr name="egShowValues"         format="boolean"/>
         <attr name="egBarWidth"           format="dimension" />
         <attr name="egBarMargin"          format="dimension" />
         <attr name="egFixedBarWidth"      format="boolean"/>

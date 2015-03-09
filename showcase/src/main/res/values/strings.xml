@@ -6,6 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_chart">ChartActivity</string>
     <string name="nav_bar_chart">Bar Chart</string>
+    <string name="nav_vertical_bar_chart">Vertical Bar Chart</string>
     <string name="nav_stacked_bar_chart">Stacked Bar Chart</string>
     <string name="nav_pie_chart">Pie Chart</string>
     <string name="nav_value_line_chart">Line Chart</string>

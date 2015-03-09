@@ -156,18 +156,22 @@ public class Utils {
 
     /**
      * Calculates the maximum text height which is possible based on the used Paint and its settings.
+     *
      * @param _Paint Paint object which will be used to display a text.
+     * @param _Text  The text which should be measured. If null, a default text is chosen, which
+     *               has a maximum possible height
      * @return Maximum text height in px.
      */
-    public static float calculateMaxTextHeight(Paint _Paint) {
+    public static float calculateMaxTextHeight(Paint _Paint, String _Text) {
         Rect height = new Rect();
-        String text = "MgHITasger";
+        String text = _Text == null ? "MgHITasger" : _Text;
         _Paint.getTextBounds(text, 0, text.length(), height);
         return height.height();
     }
 
     /**
      * Checks if a point is in the given rectangle.
+     *
      * @param _Rect rectangle which is checked
      * @param _X    x-coordinate of the point
      * @param _Y    y-coordinate of the point

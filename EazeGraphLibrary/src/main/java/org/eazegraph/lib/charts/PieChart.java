@@ -977,7 +977,7 @@ public class PieChart extends BaseChart {
 
         _Canvas.drawPath(mTriangle, mLegendPaint);
 
-        float height = mMaxFontHeight = Utils.calculateMaxTextHeight(mLegendPaint);
+        float height = mMaxFontHeight = Utils.calculateMaxTextHeight(mLegendPaint, null);
 
         if(!mPieData.isEmpty()) {
             PieModel model = mPieData.get(mCurrentItem);

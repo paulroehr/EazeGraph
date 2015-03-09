@@ -1,6 +1,6 @@
 /**
  *
- *   Copyright (C) 2014 Paul Cech
+ *   Copyright (C) 2015 Paul Cech
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -55,12 +55,12 @@ public abstract class BaseBarChart extends BaseChart {
     public BaseBarChart(Context context) {
         super(context);
 
+        mShowValues         = DEF_SHOW_VALUES;
         mBarWidth           = Utils.dpToPx(DEF_BAR_WIDTH);
         mBarMargin          = Utils.dpToPx(DEF_BAR_MARGIN);
         mFixedBarWidth      = DEF_FIXED_BAR_WIDTH;
         mScrollEnabled      = DEF_SCROLL_ENABLED;
         mVisibleBars        = DEF_VISIBLE_BARS;
-
     }
 
     /**
@@ -90,6 +90,7 @@ public abstract class BaseBarChart extends BaseChart {
 
         try {
 
+            mShowValues         = a.getBoolean(R.styleable.BaseBarChart_egShowValues,         DEF_SHOW_VALUES);
             mBarWidth           = a.getDimension(R.styleable.BaseBarChart_egBarWidth,         Utils.dpToPx(DEF_BAR_WIDTH));
             mBarMargin          = a.getDimension(R.styleable.BaseBarChart_egBarMargin,        Utils.dpToPx(DEF_BAR_MARGIN));
             mFixedBarWidth      = a.getBoolean(R.styleable.BaseBarChart_egFixedBarWidth,      DEF_FIXED_BAR_WIDTH);
@@ -188,6 +189,24 @@ public abstract class BaseBarChart extends BaseChart {
         onDataChanged();
     }
 
+    /**
+     * Determines if the values of each data should be shown in the graph.
+     * @param _showValues true to show values in the graph.
+     */
+    public void setShowValues(boolean _showValues) {
+        mShowValues = _showValues;
+        invalidateGlobal();
+    }
+
+    /**
+     * Returns if the values are drawn on top of the bars.
+     * @return True if they are drawn.
+     */
+    public boolean isShowValues() {
+        return mShowValues;
+    }
+
+    // TODO: Check for vertical stuff
     public void setScrollToEnd() {
         mCurrentViewport.left = mContentRect.width() - mGraphWidth;
         mCurrentViewport.right = mContentRect.width();
@@ -222,6 +241,9 @@ public abstract class BaseBarChart extends BaseChart {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+        // Check if the current graph is a VerticalBarChart and set the
+        // availableScreenSize to the chartHeight
+        mAvailableScreenSize = this instanceof VerticalBarChart ? mGraphHeight : mGraphWidth;
 
         if(getData().size() > 0) {
             onDataChanged();
@@ -245,7 +267,7 @@ public abstract class BaseBarChart extends BaseChart {
         mLegendPaint.setStrokeWidth(2);
         mLegendPaint.setStyle(Paint.Style.FILL);
 
-        mMaxFontHeight = Utils.calculateMaxTextHeight(mLegendPaint);
+        mMaxFontHeight = Utils.calculateMaxTextHeight(mLegendPaint, null);
 
         mGestureDetector = new GestureDetector(getContext(), mGestureListener);
         mScroller = new Scroller(getContext());
@@ -300,13 +322,13 @@ public abstract class BaseBarChart extends BaseChart {
      */
     protected void calculateBarPositions(int _DataSize) {
 
-        int dataSize = mScrollEnabled ? mVisibleBars : _DataSize;
+        int   dataSize = mScrollEnabled ? mVisibleBars : _DataSize;
         float barWidth = mBarWidth;
         float margin   = mBarMargin;
 
         if (!mFixedBarWidth) {
             // calculate the bar width if the bars should be dynamically displayed
-            barWidth = (mGraphWidth / _DataSize) - margin;
+            barWidth = (mAvailableScreenSize / _DataSize) - margin;
         } else {
 
             if(_DataSize < mVisibleBars) {
@@ -315,14 +337,19 @@ public abstract class BaseBarChart extends BaseChart {
 
             // calculate margin between bars if the bars have a fixed width
             float cumulatedBarWidths = barWidth * dataSize;
-            float remainingWidth = mGraphWidth - cumulatedBarWidths;
+            float remainingScreenSize = mAvailableScreenSize - cumulatedBarWidths;
 
-            margin = remainingWidth / dataSize;
+            margin = remainingScreenSize / dataSize;
         }
 
+        boolean isVertical = this instanceof VerticalBarChart;
 
-        mContentRect = new Rect(0, 0, (int) ((barWidth * _DataSize) + (margin * _DataSize)), mGraphHeight);
-        mCurrentViewport = new RectF(0, 0, mGraphWidth, mGraphHeight);
+        int calculatedSize = (int) ((barWidth * _DataSize) + (margin * _DataSize));
+        int contentWidth   = isVertical ? mGraphWidth : calculatedSize;
+        int contentHeight  = isVertical ? calculatedSize : mGraphHeight;
+
+        mContentRect       = new Rect(0, 0, contentWidth, contentHeight);
+        mCurrentViewport   = new RectF(0, 0, mGraphWidth, mGraphHeight);
 
         calculateBounds(barWidth, margin);
         mLegend.invalidate();
@@ -340,7 +367,7 @@ public abstract class BaseBarChart extends BaseChart {
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 
             if (mCurrentViewport.left + distanceX > mContentRect.left && mCurrentViewport.right + distanceX < mContentRect.right) {
-                mCurrentViewport.left += distanceX;
+                mCurrentViewport.left  += distanceX;
                 mCurrentViewport.right += distanceX;
             }
 
@@ -367,6 +394,7 @@ public abstract class BaseBarChart extends BaseChart {
 
     private void fling(int velocityX, int velocityY) {
 
+        // TODO: Check for vertical stuff
         mScroller.fling(
                 (int) mCurrentViewport.left,
                 0,
@@ -385,8 +413,9 @@ public abstract class BaseBarChart extends BaseChart {
             mScroller.computeScrollOffset();
             int currX = mScroller.getCurrX();
 
-            if (currX > mContentRect.left && currX + mGraphWidth< mContentRect.right) {
-                mCurrentViewport.left = currX;
+            // TODO: Check for vertical stuff
+            if (currX > mContentRect.left && currX + mGraphWidth < mContentRect.right) {
+                mCurrentViewport.left  = currX;
                 mCurrentViewport.right = currX + mGraphWidth;
             }
         } else {
@@ -446,7 +475,7 @@ public abstract class BaseBarChart extends BaseChart {
                 _Canvas.drawText(model.getLegendLabel(), model.getLegendLabelPosition(), bounds.bottom - mMaxFontHeight, mLegendPaint);
                 _Canvas.drawLine(
                         bounds.centerX(),
-                        bounds.bottom - mMaxFontHeight*2 - mLegendTopPadding,
+                        bounds.bottom - mMaxFontHeight * 2 - mLegendTopPadding,
                         bounds.centerX(),
                         mLegendTopPadding, mLegendPaint
                 );
@@ -494,6 +523,7 @@ public abstract class BaseBarChart extends BaseChart {
     private static final String LOG_TAG = BaseBarChart.class.getSimpleName();
 
     // All float values are dp values and will be converted into px values in the constructor
+    public static final boolean DEF_SHOW_VALUES         = true;
     public static final float   DEF_BAR_WIDTH           = 32.f;
     public static final boolean DEF_FIXED_BAR_WIDTH     = false;
     public static final float   DEF_BAR_MARGIN          = 12.f;
@@ -530,9 +560,11 @@ public abstract class BaseBarChart extends BaseChart {
     protected float           mBarWidth;
     protected boolean         mFixedBarWidth;
     protected float           mBarMargin;
+    protected int             mAvailableScreenSize;
 
     protected boolean         mScrollEnabled;
     protected int             mVisibleBars;
+    protected boolean         mShowValues;
 
     private GestureDetector   mGestureDetector;
     private Scroller          mScroller;

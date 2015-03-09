@@ -33,7 +33,6 @@ public class StackedBarChart extends BaseBarChart {
     public StackedBarChart(Context context) {
         super(context);
 
-        mDrawValues     = DEF_DRAW_VALUE;
         mTextSize       = Utils.dpToPx(DEF_TEXT_SIZE);
         mShowSeparators = DEF_SHOW_SEPARATORS;
         mSeparatorWidth = Utils.dpToPx(DEF_SEPARATOR_WIDTH);
@@ -67,7 +66,6 @@ public class StackedBarChart extends BaseBarChart {
 
         try {
 
-            mDrawValues     = a.getBoolean(R.styleable.StackedBarChart_egDrawValues,        DEF_DRAW_VALUE);
             mTextSize       = a.getDimension(R.styleable.StackedBarChart_egBarTextSize,     Utils.dpToPx(DEF_TEXT_SIZE));
             mShowSeparators = a.getBoolean(R.styleable.StackedBarChart_egShowSeparators,    DEF_SHOW_SEPARATORS);
             mSeparatorWidth = a.getDimension(R.styleable.StackedBarChart_egSeparatorWidth,  Utils.dpToPx(DEF_SEPARATOR_WIDTH));
@@ -78,23 +76,6 @@ public class StackedBarChart extends BaseBarChart {
         }
 
         initializeGraph();
-    }
-
-    /**
-     * Returns the current state if the values in the bar is shown or not
-     * @return True if the values are shown
-     */
-    public boolean isDrawValues() {
-        return mDrawValues;
-    }
-
-    /**
-     * Sets the parameter which decides whether the values int the bars should be shown or not
-     * @param _drawValues True if the values should be shown
-     */
-    public void setDrawValues(boolean _drawValues) {
-        mDrawValues = _drawValues;
-        invalidateGlobal();
     }
 
     // TODO: Make method which returns the sp value
@@ -313,7 +294,7 @@ public class StackedBarChart extends BaseBarChart {
                         mGraphPaint
                 );
 
-                if (mDrawValues && barModel.isShowValue()) {
+                if (mShowValues && barModel.isShowValue()) {
                     _Canvas.drawText(
                             String.valueOf(barModel.getValue()),
                             bounds.centerX(),
@@ -356,7 +337,6 @@ public class StackedBarChart extends BaseBarChart {
 
     private static final String LOG_TAG = BarChart.class.getSimpleName();
 
-    public static final boolean DEF_DRAW_VALUE      = false;
     public static final float   DEF_TEXT_SIZE       = 12f;
     public static final boolean DEF_SHOW_SEPARATORS = false;
     public static final float   DEF_SEPARATOR_WIDTH = 2f;
@@ -366,7 +346,6 @@ public class StackedBarChart extends BaseBarChart {
 
     private List<StackedBarModel>  mData;
 
-    private boolean                mDrawValues;
     private float                  mTextSize;
     private boolean                mShowSeparators;
     private float                  mSeparatorWidth;

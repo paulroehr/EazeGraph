@@ -69,6 +69,9 @@ public class ChartActivity extends ActionBarActivity
             case 4:
                 mCurrentFragment = new CubicValueLineChartFragment();
                 break;
+            case 5:
+                mCurrentFragment = new VerticalBarChartFragment();
+                break;
             default:
                 mCurrentFragment = new BarChartFragment();
                 break;
@@ -96,6 +99,9 @@ public class ChartActivity extends ActionBarActivity
                 break;
             case 4:
                 mTitle = getString(R.string.nav_cubic_value_line_chart);
+                break;
+            case 5:
+                mTitle = getString(R.string.nav_vertical_bar_chart);
                 break;
         }
     }

@@ -2,7 +2,6 @@
 <resources>
 
     <declare-styleable name="BarChart">
-        <attr name="egShowValues" format="boolean"/>
     </declare-styleable>
 
 </resources>

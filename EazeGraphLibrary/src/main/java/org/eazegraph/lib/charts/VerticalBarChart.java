@@ -1,6 +1,6 @@
 /**
 *
-*   Copyright (C) 2015 Paul Cech
+*   Copyright (C) 2014 Paul Cech
 *
 *   Licensed under the Apache License, Version 2.0 (the "License");
 *   you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import android.view.MotionEvent;
 import org.eazegraph.lib.R;
 import org.eazegraph.lib.models.BarModel;
 import org.eazegraph.lib.models.BaseModel;
-import org.eazegraph.lib.models.StackedBarModel;
 import org.eazegraph.lib.utils.Utils;
 
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ import java.util.List;
 /**
  * A simple Bar Chart where the bar heights are dependent on each other.
  */
-public class BarChart extends BaseBarChart {
+public class VerticalBarChart extends BaseBarChart {
 
     /**
      * Simple constructor to use when creating a view from code.
@@ -45,8 +44,11 @@ public class BarChart extends BaseBarChart {
      * @param context The Context the view is running in, through which it can
      *                access the current theme, resources, etc.
      */
-    public BarChart(Context context) {
+    public VerticalBarChart(Context context) {
         super(context);
+
+        mUseMaximumValue = DEF_USE_MAXIMUM_VALUE;
+        mMaximumValue    = DEF_MAXIMUM_VALUE;
 
         initializeGraph();
     }
@@ -67,16 +69,19 @@ public class BarChart extends BaseBarChart {
      * @param attrs   The attributes of the XML tag that is inflating the view.
      * @see #View(android.content.Context, android.util.AttributeSet, int)
      */
-    public BarChart(Context context, AttributeSet attrs) {
+    public VerticalBarChart(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
-                R.styleable.BarChart,
+                R.styleable.VerticalBarChart,
                 0, 0
         );
 
         try {
+
+            mUseMaximumValue = a.getBoolean(R.styleable.VerticalBarChart_egUseMaximumValue, DEF_USE_MAXIMUM_VALUE);
+            mMaximumValue    = a.getFloat(R.styleable.VerticalBarChart_egMaximumValue,      DEF_MAXIMUM_VALUE);
 
         } finally {
             // release the TypedArray so that it can be reused.
@@ -113,6 +118,24 @@ public class BarChart extends BaseBarChart {
         return mData;
     }
 
+    public float getMaximumValue() {
+        return mMaximumValue;
+    }
+
+    public void setMaximumValue(float _maximumValue) {
+        mMaximumValue = _maximumValue;
+        onDataChanged();
+    }
+
+    public boolean isUseMaximumValue() {
+        return mUseMaximumValue;
+    }
+
+    public void setUseMaximumValue(boolean _useMaximumValue) {
+        mUseMaximumValue = _useMaximumValue;
+        onDataChanged();
+    }
+
     /**
      * Resets and clears the data object.
      */
@@ -141,7 +164,8 @@ public class BarChart extends BaseBarChart {
         mData = new ArrayList<>();
 
         mValuePaint = new Paint(mLegendPaint);
-        mValuePaint.setTextAlign(Paint.Align.CENTER);
+        mValuePaint.setColor(0xFFFFFFFF);
+        mValuePaint.setTextAlign(Paint.Align.RIGHT);
 
         if(this.isInEditMode()) {
             addBar(new BarModel(2.3f));
@@ -176,25 +200,29 @@ public class BarChart extends BaseBarChart {
         float maxValue = 0;
         int   last     = 0;
 
-        for (BarModel model : mData) {
-            if(model.getValue() > maxValue) {
-                maxValue = model.getValue();
+        if (mUseMaximumValue) {
+            maxValue = mMaximumValue;
+        }
+        else {
+            for (BarModel model : mData) {
+                if(model.getValue() > maxValue) {
+                    maxValue = model.getValue();
+                }
             }
         }
 
-        int valuePadding = mShowValues ? (int) mValuePaint.getTextSize() + mValueDistance : 0;
-
-        float heightMultiplier = (mGraphHeight - valuePadding) / maxValue;
+        float widthMultiplier = mGraphWidth / maxValue;
 
         for (BarModel model : mData) {
-            float height = model.getValue() * heightMultiplier;
+            float width = model.getValue() * widthMultiplier;
             last += _Margin / 2;
-            model.setBarBounds(new RectF(last, mGraphHeight - height, last + _Width, mGraphHeight));
+            model.setBarBounds(new RectF(0, last, width, last + _Width));
             model.setLegendBounds(new RectF(last, 0, last + _Width, mLegendHeight));
             last += _Width + (_Margin / 2);
         }
 
         Utils.calculateLegendInformation(mData, 0, mContentRect.width(), mLegendPaint);
+        mMaxFontHeight = Utils.calculateMaxTextHeight(mValuePaint, "190");
     }
 
     /**
@@ -209,13 +237,17 @@ public class BarChart extends BaseBarChart {
 
             _Canvas.drawRect(
                     bounds.left,
-                    bounds.bottom - (bounds.height() * mRevealValue),
-                    bounds.right,
+                    bounds.top,
+                    bounds.right * mRevealValue,
                     bounds.bottom, mGraphPaint);
 
             if (mShowValues) {
-                _Canvas.drawText(Utils.getFloatString(model.getValue(), mShowDecimal), model.getLegendBounds().centerX(),
-                        bounds.bottom - (bounds.height() * mRevealValue) - mValueDistance, mValuePaint);
+                _Canvas.drawText(
+                        Utils.getFloatString(model.getValue(), mShowDecimal),
+                        (bounds.right * mRevealValue) - mValueDistance,
+                        bounds.centerY() + (mMaxFontHeight / 2),
+                        mValuePaint
+                );
             }
         }
     }
@@ -242,10 +274,17 @@ public class BarChart extends BaseBarChart {
     // Variables
     //##############################################################################################
 
-    private static final String LOG_TAG = BarChart.class.getSimpleName();
+    private static final String LOG_TAG = VerticalBarChart.class.getSimpleName();
+
+    public static final boolean DEF_USE_MAXIMUM_VALUE   = false;
+    public static final float   DEF_MAXIMUM_VALUE       = 150.0f;
 
     private List<BarModel>  mData;
 
     private Paint           mValuePaint;
+
+    private float           mMaximumValue;
+    private boolean         mUseMaximumValue;
+
     private int             mValueDistance = (int) Utils.dpToPx(3);
 }
