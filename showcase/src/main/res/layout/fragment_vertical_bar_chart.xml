@@ -9,12 +9,12 @@
         android:id="@+id/barchart"
         android:layout_width="match_parent"
         android:layout_height="412dp"
-        android:padding="10dp"
+        android:padding="20dp"
         app:egFixedBarWidth="true"
         app:egBarWidth="25dp"
         app:egLegendHeight="0dp"
         app:egShowValues="true"
-        app:egEnableScroll="false"
+        app:egEnableScroll="true"
         app:egShowDecimal="true"/>
 
 

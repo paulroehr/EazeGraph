@@ -206,7 +206,6 @@ public abstract class BaseBarChart extends BaseChart {
         return mShowValues;
     }
 
-    // TODO: Check for vertical stuff
     public void setScrollToEnd() {
         mCurrentViewport.left = mContentRect.width() - mGraphWidth;
         mCurrentViewport.right = mContentRect.width();
@@ -371,6 +370,11 @@ public abstract class BaseBarChart extends BaseChart {
                 mCurrentViewport.right += distanceX;
             }
 
+            if (mCurrentViewport.top + distanceY > mContentRect.top && mCurrentViewport.bottom + distanceY < mContentRect.bottom) {
+                mCurrentViewport.top    += distanceY;
+                mCurrentViewport.bottom += distanceY;
+            }
+
             invalidateGlobal();
             return true;
         }
@@ -394,14 +398,13 @@ public abstract class BaseBarChart extends BaseChart {
 
     private void fling(int velocityX, int velocityY) {
 
-        // TODO: Check for vertical stuff
         mScroller.fling(
                 (int) mCurrentViewport.left,
-                0,
+                (int) mCurrentViewport.top,
                 velocityX,
                 velocityY,
                 0, mContentRect.width() - mGraphWidth,
-                0, mContentRect.height());
+                0, mContentRect.height() - mGraphHeight);
 
         // Start the animator and tell it to animate for the expected duration of the fling.
         mScrollAnimator.setDuration(mScroller.getDuration());
@@ -412,11 +415,16 @@ public abstract class BaseBarChart extends BaseChart {
         if (!mScroller.isFinished()) {
             mScroller.computeScrollOffset();
             int currX = mScroller.getCurrX();
+            int currY = mScroller.getCurrY();
 
-            // TODO: Check for vertical stuff
             if (currX > mContentRect.left && currX + mGraphWidth < mContentRect.right) {
                 mCurrentViewport.left  = currX;
                 mCurrentViewport.right = currX + mGraphWidth;
+            }
+
+            if (currY > mContentRect.top && currY + mGraphHeight < mContentRect.bottom) {
+                mCurrentViewport.top    = currY;
+                mCurrentViewport.bottom = currY + mGraphHeight;
             }
         } else {
             mScrollAnimator.cancel();
@@ -459,7 +467,7 @@ public abstract class BaseBarChart extends BaseChart {
     @Override
     protected void onGraphDraw(Canvas _Canvas) {
         super.onGraphDraw(_Canvas);
-        _Canvas.translate(-mCurrentViewport.left, 0);
+        _Canvas.translate(-mCurrentViewport.left, -mCurrentViewport.top);
         drawBars(_Canvas);
     }
 
@@ -497,7 +505,7 @@ public abstract class BaseBarChart extends BaseChart {
                     BaseBarChart.this.onTouchEvent(_Event);
                 } else {
                     float newX = _Event.getX() + mCurrentViewport.left;
-                    float newY = _Event.getY();
+                    float newY = _Event.getY() + mCurrentViewport.top;
                     int   counter = 0;
 
                     for (RectF rectF : getBarBounds()) {
