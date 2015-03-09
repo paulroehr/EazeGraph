@@ -68,7 +68,7 @@ Add in your android app project folder in the 'build.gradle' under dependencies:
 
 ```groovy
 dependencies {
-    compile 'com.github.blackfizz:eazegraph:1.2.0@aar'
+    compile 'com.github.blackfizz:eazegraph:1.2.1@aar'
     compile 'com.nineoldandroids:library:2.4.0'
 }
 ```
@@ -263,6 +263,9 @@ Wiki
 
 Changelog
 =========
+**1.2.1**
+* Added support for vertical barchart
+
 **1.2.0**
 * Fixed many bugs and added zooming for LineCharts and scrolling for BarCharts if there are many values.
  
@@ -371,19 +374,18 @@ Contributing
 
 I would love to see people contributing to this project. So just go ahead. If you think you did something amazing and your feature should be implemented in this library, make a pull request! Do not hesitate.
 
-Credit
-======
+Reference
+=========
 
-This library was developed for the official YAZIO Android app:
+Apps using EazeGraph:
 
 https://play.google.com/store/apps/details?id=com.yazio.android
 
-https://play.google.com/store/apps/details?id=com.yazio.android.pro
 
 License
 =======
 
-    Copyright (C) 2014 Paul Cech
+    Copyright (C) 2015 Paul Cech
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
