@@ -15,7 +15,10 @@
         app:egLegendHeight="0dp"
         app:egShowValues="true"
         app:egEnableScroll="true"
-        app:egShowDecimal="true"/>
+        app:egShowDecimal="true"
+        app:egValueUnit="%"
+        app:egShowBarLabel="true"
+        app:egLegendColor="#FFFFFF"/>
 
 
 </FrameLayout>

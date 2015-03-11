@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -49,6 +50,9 @@ public class VerticalBarChart extends BaseBarChart {
 
         mUseMaximumValue = DEF_USE_MAXIMUM_VALUE;
         mMaximumValue    = DEF_MAXIMUM_VALUE;
+        mValueUnit       = DEF_VALUE_UNIT;
+        mShowBarLabel    = DEF_SHOW_BAR_LABEL;
+        mBarLabelColor   = DEF_BAR_LABEL_COLOR;
 
         initializeGraph();
     }
@@ -82,10 +86,17 @@ public class VerticalBarChart extends BaseBarChart {
 
             mUseMaximumValue = a.getBoolean(R.styleable.VerticalBarChart_egUseMaximumValue, DEF_USE_MAXIMUM_VALUE);
             mMaximumValue    = a.getFloat(R.styleable.VerticalBarChart_egMaximumValue,      DEF_MAXIMUM_VALUE);
+            mValueUnit       = a.getString(R.styleable.VerticalBarChart_egValueUnit);
+            mShowBarLabel    = a.getBoolean(R.styleable.VerticalBarChart_egShowBarLabel,    DEF_SHOW_BAR_LABEL);
+            mBarLabelColor   = a.getColor(R.styleable.VerticalBarChart_egBarLabelColor,     DEF_BAR_LABEL_COLOR);
 
         } finally {
             // release the TypedArray so that it can be reused.
             a.recycle();
+        }
+
+        if (mValueUnit == null) {
+            mValueUnit = DEF_VALUE_UNIT;
         }
 
         initializeGraph();
@@ -118,22 +129,88 @@ public class VerticalBarChart extends BaseBarChart {
         return mData;
     }
 
+    /**
+     *
+     * @return
+     */
     public float getMaximumValue() {
         return mMaximumValue;
     }
 
+    /**
+     *
+     * @param _maximumValue
+     */
     public void setMaximumValue(float _maximumValue) {
         mMaximumValue = _maximumValue;
         onDataChanged();
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isUseMaximumValue() {
         return mUseMaximumValue;
     }
 
+    /**
+     *
+     * @param _useMaximumValue
+     */
     public void setUseMaximumValue(boolean _useMaximumValue) {
         mUseMaximumValue = _useMaximumValue;
         onDataChanged();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getValueUnit() {
+        return mValueUnit;
+    }
+
+    /**
+     *
+     * @param _valueUnit
+     */
+    public void setValueUnit(String _valueUnit) {
+        mValueUnit = _valueUnit == null ? DEF_VALUE_UNIT : _valueUnit;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean getBarLabel() {
+        return mShowBarLabel;
+    }
+
+    /**
+     *
+     * @param _showBarLabel
+     */
+    public void setBarLabel(boolean _showBarLabel) {
+        mShowBarLabel = _showBarLabel;
+        onDataChanged();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getBarLabelColor() {
+        return mBarLabelColor;
+    }
+
+    /**
+     *
+     * @param _barLabelColor
+     */
+    public void setBarLabelColor(int _barLabelColor) {
+        mBarLabelColor = _barLabelColor;
+        invalidateGraph();
     }
 
     /**
@@ -164,8 +241,6 @@ public class VerticalBarChart extends BaseBarChart {
         mData = new ArrayList<>();
 
         mValuePaint = new Paint(mLegendPaint);
-        mValuePaint.setColor(0xFFFFFFFF);
-        mValuePaint.setTextAlign(Paint.Align.RIGHT);
 
         if(this.isInEditMode()) {
             addBar(new BarModel(2.3f));
@@ -197,8 +272,9 @@ public class VerticalBarChart extends BaseBarChart {
      * @param _Margin   Calculated bar margin
      */
     protected void calculateBounds(float _Width, float _Margin) {
-        float maxValue = 0;
-        int   last     = 0;
+        float maxValue       = 0;
+        int   last           = 0;
+        float maxLegendWidth = 0;
 
         if (mUseMaximumValue) {
             maxValue = mMaximumValue;
@@ -211,7 +287,19 @@ public class VerticalBarChart extends BaseBarChart {
             }
         }
 
-        float widthMultiplier = mGraphWidth / maxValue;
+
+        if (mShowBarLabel) {
+            float measuredText;
+            for (BarModel model : mData) {
+                measuredText = mValuePaint.measureText(model.getLegendLabel());
+                if (maxLegendWidth < measuredText) {
+                    maxLegendWidth = measuredText;
+                }
+            }
+        }
+
+        float legendWidthDistance = mShowBarLabel ? maxLegendWidth + mValueDistance : 0;
+        float widthMultiplier = (mGraphWidth - legendWidthDistance) / maxValue;
 
         for (BarModel model : mData) {
             float width = model.getValue() * widthMultiplier;
@@ -225,14 +313,23 @@ public class VerticalBarChart extends BaseBarChart {
         mMaxFontHeight = Utils.calculateMaxTextHeight(mValuePaint, "190");
     }
 
+
+
     /**
      * Callback method for drawing the bars in the child classes.
      * @param _Canvas The canvas object of the graph view.
      */
     protected void drawBars(Canvas _Canvas) {
 
+        RectF  bounds;
+        String valueString;
+        float  animatedRightOffset;
+
         for (BarModel model : mData) {
-            RectF bounds = model.getBarBounds();
+            bounds              = model.getBarBounds();
+            valueString         = Utils.getFloatString(model.getValue(), mShowDecimal) + mValueUnit;
+            animatedRightOffset = bounds.right * mRevealValue;
+
             mGraphPaint.setColor(model.getColor());
 
             _Canvas.drawRect(
@@ -241,10 +338,21 @@ public class VerticalBarChart extends BaseBarChart {
                     bounds.right * mRevealValue,
                     bounds.bottom, mGraphPaint);
 
-            if (mShowValues) {
+            if (mShowValues && animatedRightOffset > mValuePaint.measureText(valueString)) {
+                mValuePaint.setColor(mLegendColor);
                 _Canvas.drawText(
-                        Utils.getFloatString(model.getValue(), mShowDecimal),
-                        (bounds.right * mRevealValue) - mValueDistance,
+                        valueString,
+                        bounds.left + mValueDistance,
+                        bounds.centerY() + (mMaxFontHeight / 2),
+                        mValuePaint
+                );
+            }
+
+            if (mShowBarLabel) {
+                mValuePaint.setColor(mBarLabelColor);
+                _Canvas.drawText(
+                        model.getLegendLabel(),
+                        animatedRightOffset + mValueDistance,
                         bounds.centerY() + (mMaxFontHeight / 2),
                         mValuePaint
                 );
@@ -278,6 +386,9 @@ public class VerticalBarChart extends BaseBarChart {
 
     public static final boolean DEF_USE_MAXIMUM_VALUE   = false;
     public static final float   DEF_MAXIMUM_VALUE       = 150.0f;
+    public static final String  DEF_VALUE_UNIT          = "";
+    public static final boolean DEF_SHOW_BAR_LABEL      = false;
+    public static final int     DEF_BAR_LABEL_COLOR     = 0xFF898989;
 
     private List<BarModel>  mData;
 
@@ -285,6 +396,9 @@ public class VerticalBarChart extends BaseBarChart {
 
     private float           mMaximumValue;
     private boolean         mUseMaximumValue;
+    private String          mValueUnit;
+    private boolean         mShowBarLabel;
+    private int             mBarLabelColor;
 
-    private int             mValueDistance = (int) Utils.dpToPx(3);
+    private int             mValueDistance = (int) Utils.dpToPx(4);
 }

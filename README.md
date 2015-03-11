@@ -68,7 +68,7 @@ Add in your android app project folder in the 'build.gradle' under dependencies:
 
 ```groovy
 dependencies {
-    compile 'com.github.blackfizz:eazegraph:1.2.1@aar'
+    compile 'com.github.blackfizz:eazegraph:1.2.2@aar'
     compile 'com.nineoldandroids:library:2.4.0'
 }
 ```
@@ -263,6 +263,9 @@ Wiki
 
 Changelog
 =========
+**1.2.2**
+* Made some little additions to vertical barchart
+
 **1.2.1**
 * Added support for vertical barchart
 

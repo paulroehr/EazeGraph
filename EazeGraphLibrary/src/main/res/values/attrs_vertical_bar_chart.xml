@@ -2,8 +2,11 @@
 <resources>
 
     <declare-styleable name="VerticalBarChart">
-        <attr name="egUseMaximumValue"  format="boolean"/>
-        <attr name="egMaximumValue"     format="float"/>
+        <attr name="egUseMaximumValue"  format="boolean" />
+        <attr name="egMaximumValue"     format="float" />
+        <attr name="egValueUnit"        format="string" />
+        <attr name="egShowBarLabel"     format="boolean" />
+        <attr name="egBarLabelColor"    format="color" />
     </declare-styleable>
 
 </resources>
