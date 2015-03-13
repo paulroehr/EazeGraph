@@ -611,7 +611,7 @@ public class PieChart extends BaseChart {
         mGraphPaint  = new Paint(Paint.ANTI_ALIAS_FLAG);
         mLegendPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mLegendPaint.setTextSize(mLegendTextSize);
-        mLegendPaint.setColor(DEF_LEGEND_COLOR);
+        mLegendPaint.setColor(mLegendColor);
         mLegendPaint.setStyle(Paint.Style.FILL);
 
         mValuePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
