@@ -261,7 +261,7 @@ public abstract class BaseBarChart extends BaseChart {
         mGraphPaint.setStyle(Paint.Style.FILL);
 
         mLegendPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.LINEAR_TEXT_FLAG);
-        mLegendPaint.setColor(DEF_LEGEND_COLOR);
+        mLegendPaint.setColor(mLegendColor);
         mLegendPaint.setTextSize(mLegendTextSize);
         mLegendPaint.setStrokeWidth(2);
         mLegendPaint.setStyle(Paint.Style.FILL);
