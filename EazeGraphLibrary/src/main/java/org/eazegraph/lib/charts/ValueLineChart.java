@@ -1357,13 +1357,20 @@ public class ValueLineChart extends BaseChart {
 
                 float pointX = mSeries.get(0).getSeries().get(i).getCoordinates().getX();
 
+                
                 // check if touchedX equals one the points
                 if (pointX == _X) {
                     mFocusedPoint = mSeries.get(0).getSeries().get(i);
                     break;
                 } else {
+                    // if first point bigger than touched x select first
+                    if (i == 0 && pointX > _X) {
+                        mFocusedPoint = series.get(i);
+                        focusedPointOrder = i;
+                        break;
+                    } 
                     // check if we reached the last. if --> (true) use last point
-                    if (i == size - 1) {
+                    else if (i == size - 1) {
                         mFocusedPoint = mSeries.get(0).getSeries().get(i);
                         break;
                     } else {
