@@ -1047,7 +1047,9 @@ public class ValueLineChart extends BaseChart {
             mLastFocusX = focusX;
             mLastFocusY = focusY;
 
-            calculateValueTextHeight();
+            if(mFocusedPoint != null) {
+                calculateValueTextHeight();
+            }
             invalidateGlobal();
 
             return true;
