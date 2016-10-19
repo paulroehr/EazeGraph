@@ -320,6 +320,11 @@ public abstract class BaseBarChart extends BaseChart {
      * @param _DataSize Amount of data sets
      */
     protected void calculateBarPositions(int _DataSize) {
+        if (_DataSize == 0) {
+            // no need to calculate anything if there is no data
+            // -> return avoids "java.lang.ArithmeticException: divide by zero"
+            return;
+        }
 
         int   dataSize = mScrollEnabled ? mVisibleBars : _DataSize;
         float barWidth = mBarWidth;
