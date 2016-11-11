@@ -957,7 +957,7 @@ public class PieChart extends BaseChart {
             if(!mUseCustomInnerValue) {
                 mInnerValueString = Utils.getFloatString(model.getValue(), mShowDecimal);
                 if (mInnerValueUnit != null && mInnerValueUnit.length() > 0) {
-                    mInnerValueString += " " + mInnerValueUnit;
+                    mInnerValueString += "" + mInnerValueUnit;
                 }
             }
 
